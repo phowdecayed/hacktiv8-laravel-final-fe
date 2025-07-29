@@ -62,7 +62,6 @@ export const useOrdersStore = defineStore('orders', () => {
         delete params.status
       }
 
-      console.log('Fetching orders with params:', params)
       const response = await apiService.get<ApiResponse<MyTransactionsPaginatedResponse>>(
         '/my-transactions',
         params,
