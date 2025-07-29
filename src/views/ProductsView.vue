@@ -92,6 +92,7 @@ import MobileFilters from '@/components/product/MobileFilters.vue'
 import PageLayout from '@/components/layout/PageLayout.vue'
 import { ChevronLeft, ChevronRight } from 'lucide-vue-next'
 import { useProducts } from '@/composables/useProducts'
+import { useCart } from '@/composables/useCart'
 import type { Product, ProductFilters as ProductFiltersType } from '@/types/api'
 
 const router = useRouter()
@@ -114,6 +115,8 @@ const {
   goToPage,
   clearError,
 } = useProducts()
+
+const { addToCart } = useCart()
 
 // Local state
 const viewMode = ref<'grid' | 'list'>('grid')
@@ -152,9 +155,9 @@ const handleProductDetails = (product: Product) => {
   router.push(`/products/${product.id}`)
 }
 
-const handleAddToCart = (product: Product) => {
-  // TODO: Implement add to cart functionality in cart task
-  console.log('Add to cart:', product)
+const handleAddToCart = async (product: Product) => {
+  if (!product) return
+  await addToCart(product.id, 1)
 }
 
 const handleViewModeChange = (mode: 'grid' | 'list') => {

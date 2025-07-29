@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { RouterView } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
 import { Toaster } from '@/components/ui/sonner'
 import AppHeader from '@/components/layout/AppHeader.vue'
 import AppFooter from '@/components/layout/AppFooter.vue'
@@ -8,6 +9,12 @@ import MobileNavigation from '@/components/layout/MobileNavigation.vue'
 import ErrorBoundary from '@/components/common/ErrorBoundary.vue'
 import GlobalLoading from '@/components/common/GlobalLoading.vue'
 import 'vue-sonner/style.css' // vue-sonner v2 requires this import
+
+const authStore = useAuthStore()
+
+onMounted(async () => {
+  await authStore.checkAuth()
+})
 
 // Global loading state
 const isGlobalLoading = ref(false)

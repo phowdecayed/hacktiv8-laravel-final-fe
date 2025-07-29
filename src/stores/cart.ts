@@ -2,11 +2,11 @@ import { defineStore } from 'pinia'
 import { ref, computed, readonly } from 'vue'
 import type {
   CartItem,
-  CartSummary,
-  ApiResponse,
+  PaginatedResponse,
   AddToCartRequest,
   UpdateCartItemRequest,
   CartValidationResult,
+  ApiResponse,
 } from '@/types/api'
 import apiService from '@/lib/api'
 import { useAuthStore } from '@/stores/auth'
@@ -14,14 +14,17 @@ import { useAuthStore } from '@/stores/auth'
 export const useCartStore = defineStore('cart', () => {
   // State
   const items = ref<CartItem[]>([])
-  const cartSummary = ref<CartSummary | null>(null)
   const isLoading = ref(false)
   const isInitialized = ref(false)
 
   // Getters
-  const itemCount = computed(() => cartSummary.value?.item_count ?? 0)
+  const itemCount = computed(() => {
+    return items.value.reduce((sum, item) => sum + item.quantity, 0)
+  })
 
-  const total = computed(() => cartSummary.value?.total ?? '0.00')
+  const total = computed(() => {
+    return items.value.reduce((sum, item) => sum + Number(item.total_price), 0).toFixed(2)
+  })
 
   const isEmpty = computed(() => items.value.length === 0)
 
@@ -30,7 +33,7 @@ export const useCartStore = defineStore('cart', () => {
   const getItemById = computed(() => (id: number) => items.value.find((item) => item.id === id))
 
   const getItemByProductId = computed(
-    () => (productId: number) => items.value.find((item) => item.product_id === productId),
+    () => (productId: number) => items.value.find((item) => item.product.id === productId),
   )
 
   // Actions
@@ -38,19 +41,24 @@ export const useCartStore = defineStore('cart', () => {
     const authStore = useAuthStore()
     if (!authStore.isAuthenticated) {
       items.value = []
-      cartSummary.value = null
+      isInitialized.value = true
       return
     }
 
     isLoading.value = true
     try {
-      const response = await apiService.get<ApiResponse<CartSummary>>('/cart')
-      cartSummary.value = response.data
-      items.value = response.data.data
+      const response = await apiService.get<PaginatedResponse<CartItem>>('/cart', {
+        limit: 100, // Fetch up to 100 items
+      })
+
+      if (response.data && Array.isArray(response.data)) {
+        items.value = response.data
+      } else {
+        items.value = []
+      }
     } catch (error) {
       console.error('Failed to fetch cart:', error)
       items.value = []
-      cartSummary.value = null
     } finally {
       isLoading.value = false
       isInitialized.value = true
@@ -71,18 +79,17 @@ export const useCartStore = defineStore('cart', () => {
       }
       const response = await apiService.post<ApiResponse<CartItem>>('/cart', requestData)
 
-      // Check if item already exists in cart
-      const existingItemIndex = items.value.findIndex((item) => item.product_id === productId)
+      const updatedItem = response.data
+      const itemIndex = items.value.findIndex((item) => item.id === updatedItem.id)
 
-      if (existingItemIndex !== -1) {
-        // Update existing item
-        items.value[existingItemIndex] = response.data
+      if (itemIndex !== -1) {
+        items.value[itemIndex] = updatedItem
       } else {
-        // Add new item
-        items.value.push(response.data)
+        items.value.push(updatedItem)
       }
     } catch (error) {
       console.error('Failed to add item to cart:', error)
+      await fetchCart() // a full refetch on error to ensure consistency
       throw error
     } finally {
       isLoading.value = false
@@ -113,6 +120,7 @@ export const useCartStore = defineStore('cart', () => {
       }
     } catch (error) {
       console.error('Failed to update cart item:', error)
+      await fetchCart() // a full refetch on error to ensure consistency
       throw error
     } finally {
       isLoading.value = false
@@ -128,9 +136,11 @@ export const useCartStore = defineStore('cart', () => {
     isLoading.value = true
     try {
       await apiService.delete(`/cart/${itemId}`)
+
       items.value = items.value.filter((item) => item.id !== itemId)
     } catch (error) {
       console.error('Failed to remove cart item:', error)
+      await fetchCart() // a full refetch on error to ensure consistency
       throw error
     } finally {
       isLoading.value = false
@@ -146,27 +156,14 @@ export const useCartStore = defineStore('cart', () => {
     isLoading.value = true
     try {
       await apiService.delete('/cart')
+
       items.value = []
     } catch (error) {
       console.error('Failed to clear cart:', error)
+      await fetchCart() // a full refetch on error to ensure consistency
       throw error
     } finally {
       isLoading.value = false
-    }
-  }
-
-  const validateStock = async (): Promise<CartValidationResult> => {
-    const authStore = useAuthStore()
-    if (!authStore.isAuthenticated) {
-      return { valid: false, errors: ['Authentication required'] }
-    }
-
-    try {
-      const response = await apiService.post<ApiResponse<CartValidationResult>>('/cart/validate')
-      return response.data
-    } catch (error) {
-      console.error('Failed to validate cart:', error)
-      return { valid: false, errors: ['Failed to validate cart'] }
     }
   }
 
@@ -212,7 +209,6 @@ export const useCartStore = defineStore('cart', () => {
     updateQuantity,
     removeItem,
     clearCart,
-    validateStock,
     syncWithBackend,
     initializeCart,
     resetCart,

@@ -13,53 +13,50 @@
       </Button>
     </SheetTrigger>
 
-    <SheetContent side="right" class="w-full sm:max-w-lg">
+    <SheetContent class="flex flex-col gap-6 sm:max-w-lg">
       <SheetHeader>
         <SheetTitle class="flex items-center gap-2">
           <ShoppingCart class="h-5 w-5" />
-          Shopping Cart
-          <span v-if="itemCount > 0" class="text-muted-foreground">
-            ({{ itemCount }} {{ itemCount === 1 ? 'item' : 'items' }})
-          </span>
+          <span>Shopping Cart</span>
+          <Badge v-if="itemCount > 0" variant="secondary" class="ml-2">
+            {{ itemCount }} {{ itemCount === 1 ? 'item' : 'items' }}
+          </Badge>
         </SheetTitle>
+        <SheetDescription> Review your items and proceed to checkout. </SheetDescription>
       </SheetHeader>
 
-      <div class="flex flex-col h-full">
+      <!-- Main Content -->
+      <div class="flex-1 overflow-y-auto mx-2 min-h-0">
         <!-- Loading State -->
-        <div v-if="isLoading && !isInitialized" class="flex-1 flex items-center justify-center">
-          <div class="text-center">
-            <div
-              class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2"
-            ></div>
+        <div v-if="isLoading && !isInitialized" class="flex h-full items-center justify-center">
+          <div class="text-center space-y-2">
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
             <p class="text-muted-foreground">Loading cart...</p>
           </div>
         </div>
 
         <!-- Empty Cart -->
-        <div v-else-if="isEmpty" class="flex-1 flex items-center justify-center">
-          <div class="text-center">
-            <ShoppingCart class="w-16 h-16 mx-auto text-muted-foreground mb-4" />
-            <h3 class="font-medium text-lg mb-2">Your cart is empty</h3>
-            <p class="text-muted-foreground mb-4">Add some products to get started</p>
+        <div v-else-if="isEmpty" class="flex h-full items-center justify-center px-6">
+          <div class="text-center space-y-4">
+            <ShoppingCart class="w-16 h-16 mx-auto text-muted-foreground" />
+            <div>
+              <h3 class="font-medium text-lg">Your cart is empty</h3>
+              <p class="text-muted-foreground text-sm">Add some products to get started.</p>
+            </div>
             <Button @click="continueShopping" class="w-full"> Continue Shopping </Button>
           </div>
         </div>
 
         <!-- Cart Items -->
-        <div v-else class="flex flex-col h-full">
-          <!-- Items List -->
-          <ScrollArea class="flex-1 -mx-6 px-6">
-            <div class="space-y-0">
-              <CartItem v-for="item in items" :key="item.id" :item="item" />
-            </div>
-          </ScrollArea>
-
-          <!-- Cart Summary -->
-          <div class="border-t pt-4 mt-4">
-            <CartSummary />
-          </div>
+        <div v-else class="px-6 divide-y">
+          <CartItem v-for="item in items" :key="item.id" :item="item" />
         </div>
       </div>
+
+      <!-- Footer with Summary -->
+      <SheetFooter v-if="!isEmpty" class="mt-auto border-t pt-6">
+        <CartSummary />
+      </SheetFooter>
     </SheetContent>
   </Sheet>
 </template>
@@ -67,10 +64,17 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+  SheetDescription,
+  SheetFooter,
+} from '@/components/ui/sheet'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { ScrollArea } from '@/components/ui/scroll-area'
 import { ShoppingCart } from 'lucide-vue-next'
 import { useCart } from '@/composables/useCart'
 import CartItem from './CartItem.vue'

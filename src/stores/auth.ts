@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed, readonly } from 'vue'
-import type { User, AuthResponse, LoginCredentials, RegisterData } from '@/types/api'
+import type { User, AuthResponse, LoginCredentials, RegisterData, ApiResponse } from '@/types/api'
 import apiService from '@/lib/api'
 
 export const useAuthStore = defineStore('auth', () => {
@@ -31,8 +31,8 @@ export const useAuthStore = defineStore('auth', () => {
   const login = async (credentials: LoginCredentials): Promise<void> => {
     isLoading.value = true
     try {
-      const response = await apiService.post<AuthResponse>('/login', credentials)
-      setAuth(response)
+      const response = await apiService.post<ApiResponse<AuthResponse>>('/login', credentials)
+      setAuth(response.data)
     } finally {
       isLoading.value = false
     }
@@ -41,8 +41,8 @@ export const useAuthStore = defineStore('auth', () => {
   const register = async (userData: RegisterData): Promise<void> => {
     isLoading.value = true
     try {
-      const response = await apiService.post<AuthResponse>('/register', userData)
-      setAuth(response)
+      const response = await apiService.post<ApiResponse<AuthResponse>>('/register', userData)
+      setAuth(response.data)
     } finally {
       isLoading.value = false
     }
@@ -69,8 +69,8 @@ export const useAuthStore = defineStore('auth', () => {
 
     isLoading.value = true
     try {
-      const userResponse = await apiService.get<User>('/user')
-      user.value = userResponse
+      const response = await apiService.get<ApiResponse<{ user: User }>>('/user')
+      user.value = response.data.user
     } catch (error) {
       // If user fetch fails, clear auth
       clearAuth()
@@ -105,8 +105,8 @@ export const useAuthStore = defineStore('auth', () => {
 
     isLoading.value = true
     try {
-      const response = await apiService.post<AuthResponse>('/refresh')
-      setAuth(response)
+      const response = await apiService.post<ApiResponse<AuthResponse>>('/refresh')
+      setAuth(response.data)
     } catch (error) {
       // If refresh fails, clear auth
       clearAuth()

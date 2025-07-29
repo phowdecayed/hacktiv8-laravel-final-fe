@@ -111,36 +111,6 @@ export const useCart = () => {
     }
   }
 
-  const validateCart = async (): Promise<{ valid: boolean; errors: string[] }> => {
-    try {
-      requireAuth()
-      const result = await cartStore.validateStock()
-
-      if (!result.valid && result.errors.length > 0) {
-        notifications.showBatchError(result.errors, {
-          title: 'Cart validation failed',
-          duration: 8000,
-        })
-      }
-
-      return result
-    } catch (error: any) {
-      const message = error?.message || 'Failed to validate cart'
-      notifications.showError(message)
-      return { valid: false, errors: [message] }
-    }
-  }
-
-  const validateStock = async (): Promise<{ valid: boolean; errors: string[] }> => {
-    try {
-      requireAuth()
-      return await cartStore.validateStock()
-    } catch (error: any) {
-      const message = error?.message || 'Failed to validate stock'
-      return { valid: false, errors: [message] }
-    }
-  }
-
   const refreshCart = async (): Promise<boolean> => {
     try {
       const loadingToast = notifications.showLoading('Refreshing cart...')
@@ -264,8 +234,6 @@ export const useCart = () => {
     updateQuantity,
     removeItem,
     clearCart,
-    validateCart,
-    validateStock,
     refreshCart,
     initializeCart,
 

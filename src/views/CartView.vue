@@ -263,9 +263,8 @@ const {
   updateQuantity,
   removeItem,
   clearCart,
-  validateCart,
-  formatPrice,
   removeMultipleItems,
+  formatPrice,
 } = useCart()
 
 // Local state
@@ -323,23 +322,11 @@ const continueShopping = () => {
 }
 
 const proceedToCheckout = async () => {
-  // Validate cart before checkout
-  const validation = await validateCart()
-
-  if (validation.valid) {
-    router.push('/checkout')
-  } else {
-    validationErrors.value = validation.errors
-  }
-}
-
-const validateCartItems = async () => {
-  const validation = await validateCart()
-  validationErrors.value = validation.errors
+  router.push('/checkout')
 }
 
 // Lifecycle
 onMounted(async () => {
-  await validateCartItems()
+  // No validation on mount
 })
 </script>

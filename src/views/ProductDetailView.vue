@@ -73,6 +73,7 @@ import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { AlertCircle, RefreshCw } from 'lucide-vue-next'
 import { useProducts } from '@/composables/useProducts'
+import { useCart } from '@/composables/useCart'
 import type { Product } from '@/types/api'
 
 const route = useRoute()
@@ -88,6 +89,8 @@ const {
   clearError,
   clearCurrentProduct,
 } = useProducts()
+
+const { addToCart } = useCart()
 
 // Computed properties
 const productId = computed(() => {
@@ -126,9 +129,9 @@ const loadProduct = async () => {
   }
 }
 
-const handleAddToCart = (product: Product, quantity: number) => {
-  // TODO: Implement add to cart functionality in cart task
-  console.log('Add to cart:', product, 'quantity:', quantity)
+const handleAddToCart = async (product: Product, quantity: number) => {
+  if (!product) return
+  await addToCart(product.id, quantity)
 }
 
 const handleAddToWishlist = (product: Product) => {

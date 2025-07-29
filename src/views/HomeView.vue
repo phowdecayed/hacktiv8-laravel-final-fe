@@ -60,7 +60,10 @@ const handleAddToCart = (product: Product) => {
 
 // Initialize data
 onMounted(async () => {
-  await Promise.all([fetchCategories(), fetchProducts({ limit: 100, sort: 'created_at', order: 'desc' })])
+  await Promise.all([
+    fetchCategories(),
+    fetchProducts({ limit: 100, sort: 'created_at', order: 'desc' }),
+  ])
 })
 </script>
 

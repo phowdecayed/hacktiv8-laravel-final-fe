@@ -37,7 +37,7 @@ export const useNotifications = () => {
   // Basic notification methods
   const showSuccess = (message: string, options?: NotificationOptions) => {
     const toastId = toast.success(message, {
-      duration: options?.persistent ? Infinity : options?.duration || 4000,
+      duration: options?.persistent ? Infinity : options?.duration || 1000,
       ...options,
     })
 
@@ -50,7 +50,7 @@ export const useNotifications = () => {
 
   const showError = (message: string, options?: NotificationOptions) => {
     const toastId = toast.error(message, {
-      duration: options?.persistent ? Infinity : options?.duration || 6000,
+      duration: options?.persistent ? Infinity : options?.duration || 1000,
       ...options,
     })
 
@@ -63,7 +63,7 @@ export const useNotifications = () => {
 
   const showWarning = (message: string, options?: NotificationOptions) => {
     const toastId = toast.warning(message, {
-      duration: options?.persistent ? Infinity : options?.duration || 5000,
+      duration: options?.persistent ? Infinity : options?.duration || 1000,
       ...options,
     })
 
@@ -76,7 +76,7 @@ export const useNotifications = () => {
 
   const showInfo = (message: string, options?: NotificationOptions) => {
     const toastId = toast.info(message, {
-      duration: options?.duration || 4000,
+      duration: options?.duration || 1000,
       ...options,
     })
 
@@ -89,7 +89,7 @@ export const useNotifications = () => {
 
   const showCustom = (message: string, options?: NotificationOptions) => {
     const toastId = toast(message, {
-      duration: options?.duration || 4000,
+      duration: options?.duration || 1000,
       ...options,
     })
 
@@ -123,13 +123,13 @@ export const useNotifications = () => {
     if (type === 'success') {
       toast.success(message, {
         id: toastId,
-        duration: options?.duration || 4000,
+        duration: options?.duration || 1000,
         ...options,
       })
     } else {
       toast.error(message, {
         id: toastId,
-        duration: options?.duration || 6000,
+        duration: options?.duration || 1000,
         ...options,
       })
     }
@@ -200,7 +200,7 @@ export const useNotifications = () => {
       description:
         errorMessages.slice(0, 3).join(', ') +
         (errorMessages.length > 3 ? ` and ${errorMessages.length - 3} more...` : ''),
-      duration: 8000,
+      duration: 1000,
     })
   }
 
@@ -212,13 +212,13 @@ export const useNotifications = () => {
             onClick: retryFn,
           }
         : undefined,
-      duration: 8000,
+      duration: 1000,
     })
   }
 
   const showAuthError = () => {
     return showError('Authentication required. Please log in to continue.', {
-      duration: 6000,
+      duration: 1000,
     })
   }
 
@@ -263,7 +263,7 @@ export const useNotifications = () => {
         label: actionLabel,
         onClick: actionFn,
       },
-      duration: options?.duration || 8000,
+      duration: options?.duration || 1000,
     })
   }
 
@@ -283,7 +283,7 @@ export const useNotifications = () => {
         label: 'Cancel',
         onClick: onCancel,
       },
-      duration: options?.duration || 10000,
+      duration: options?.duration || 1000,
     })
   }
 

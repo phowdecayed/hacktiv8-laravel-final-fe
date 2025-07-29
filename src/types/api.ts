@@ -65,16 +65,21 @@ export interface Category {
 }
 
 // Cart related types
+export interface CartProduct {
+  id: number
+  name: string
+  price: string | number
+  stock: number
+  image: string | null
+}
+
 export interface CartItem {
   id: number
-  user_id: number
-  product_id: number
+  product: CartProduct
   quantity: number
-  price: string
-  total: string
+  total_price: string | number
   created_at: string
   updated_at: string
-  product: Product
 }
 
 export interface CartSummary {
@@ -157,22 +162,14 @@ export interface ApiError {
 // Pagination types
 export interface PaginationMeta {
   current_page: number
-  from: number
-  last_page: number
   per_page: number
-  to: number
   total: number
+  last_page: number
 }
 
 export interface PaginatedResponse<T> {
   data: T[]
-  meta: PaginationMeta
-  links: {
-    first: string
-    last: string
-    prev: string | null
-    next: string | null
-  }
+  pagination: PaginationMeta
 }
 
 // Filter and search types
