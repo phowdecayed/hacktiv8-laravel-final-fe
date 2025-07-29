@@ -62,8 +62,11 @@ export const useOrders = () => {
 
       const order = await ordersStore.createOrder(orderData)
 
+      console.log('Cart items before clear in useOrders:', cartStore.items.length)
       // Clear cart after successful order creation
       await cartStore.clearCart()
+      console.log('Cart items after clear in useOrders:', cartStore.items.length)
+      cartStore.resetStockValidationState()
 
       toast.success('Order created successfully!')
 

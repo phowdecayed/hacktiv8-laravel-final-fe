@@ -9,6 +9,7 @@ import type {
 } from '@/types/api'
 import apiService from '@/lib/api'
 import { useCartStore } from '@/stores/cart'
+import { useProductsStore } from '@/stores/products'
 
 export interface CreateOrderRequest {
   notes?: string
@@ -125,7 +126,7 @@ export const useOrdersStore = defineStore('orders', () => {
     }
   }
 
-  const updateOrderStatus = (orderId: number, status: TransactionStatus) => {
+  const updateOrderStatus = async (orderId: number, status: TransactionStatus) => {
     const orderIndex = orders.value.findIndex((order) => order.id === orderId)
     if (orderIndex !== -1) {
       orders.value[orderIndex].status = status
@@ -133,6 +134,20 @@ export const useOrdersStore = defineStore('orders', () => {
 
     if (currentOrder.value && currentOrder.value.id === orderId) {
       currentOrder.value.status = status
+    }
+
+    // If order is cancelled, refresh stock for its products
+    if (status === 'cancelled') {
+      const productsStore = useProductsStore()
+      const order = orders.value.find((o) => o.id === orderId)
+      if (order) {
+        for (const item of order.items) {
+          const updatedProduct = await productsStore.fetchProduct(item.product_id)
+          if (updatedProduct) {
+            productsStore.updateProductStock(updatedProduct.id, updatedProduct.stock)
+          }
+        }
+      }
     }
   }
 

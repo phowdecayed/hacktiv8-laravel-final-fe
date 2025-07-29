@@ -91,9 +91,7 @@ export const useCartStore = defineStore('cart', () => {
         items.value.push(updatedItem)
       }
 
-      // Decrement product stock in products store
-      const productsStore = useProductsStore()
-      productsStore.decrementProductStock(productId, quantity)
+      
     } catch (error) {
       console.error('Failed to add item to cart:', error)
       await fetchCart() // a full refetch on error to ensure consistency
@@ -126,9 +124,7 @@ export const useCartStore = defineStore('cart', () => {
         items.value[itemIndex] = response.data
       }
 
-      // Update product stock in products store
-      const productsStore = useProductsStore()
-      productsStore.updateProductStock(response.data.product.id, response.data.product.stock)
+      
     } catch (error) {
       console.error('Failed to update cart item:', error)
       await fetchCart() // a full refetch on error to ensure consistency
@@ -151,14 +147,7 @@ export const useCartStore = defineStore('cart', () => {
 
       items.value = items.value.filter((item) => item.id !== itemId)
 
-      // Fetch product again to get its latest stock
-      if (removedItem) {
-        const productsStore = useProductsStore()
-        const updatedProduct = await productsStore.fetchProduct(removedItem.product.id)
-        if (updatedProduct) {
-          productsStore.updateProductStock(updatedProduct.id, updatedProduct.stock)
-        }
-      }
+      
     } catch (error) {
       console.error('Failed to remove cart item:', error)
       await fetchCart() // a full refetch on error to ensure consistency
@@ -179,9 +168,11 @@ export const useCartStore = defineStore('cart', () => {
       // Get product IDs before clearing cart to update their stock
       const productIdsInCart = items.value.map(item => item.product.id)
 
+      console.log('Cart items before clear:', items.value.length)
       await apiService.delete('/cart')
 
       items.value = []
+      console.log('Cart items after clear:', items.value.length)
 
       // Fetch each product again to get its latest stock
       const productsStore = useProductsStore()
@@ -224,6 +215,11 @@ export const useCartStore = defineStore('cart', () => {
     hasStockIssues.value = false
   }
 
+  const resetStockValidationState = (): void => {
+    stockValidation.value = []
+    hasStockIssues.value = false
+  }
+
   const validateStock = async (): Promise<void> => {
     const authStore = useAuthStore()
     if (!authStore.isAuthenticated || isEmpty.value) {
@@ -238,9 +234,7 @@ export const useCartStore = defineStore('cart', () => {
       const validationData = response.data
       stockValidation.value = validationData
 
-      hasStockIssues.value = validationData.some(
-        (item) => item.cart_quantity > item.available_stock,
-      )
+      hasStockIssues.value = validationData.some((item) => item.available_stock < 0)
     } catch (error) {
       console.error('Failed to validate stock:', error)
       hasStockIssues.value = true // Assume issues if validation fails
@@ -275,5 +269,6 @@ export const useCartStore = defineStore('cart', () => {
     // Stock Validation
     stockValidation: readonly(stockValidation),
     hasStockIssues: readonly(hasStockIssues),
+    resetStockValidationState,
   }
 })

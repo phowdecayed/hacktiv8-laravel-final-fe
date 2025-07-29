@@ -25,7 +25,7 @@
     <div v-if="showActions" class="space-y-2">
       <Button
         class="w-full"
-        :disabled="isEmpty || isLoading || hasStockIssues"
+        :disabled="isEmpty || isLoading"
         @click="proceedToCheckout"
       >
         <ShoppingCart class="w-4 h-4 mr-2" />
@@ -71,7 +71,7 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const router = useRouter()
-const { isEmpty, isLoading, getFormattedTotal, clearCart, hasStockIssues } = useCart()
+const { isEmpty, isLoading, getFormattedTotal, clearCart } = useCart()
 const isConfirmOpen = ref(false)
 
 const proceedToCheckout = () => {

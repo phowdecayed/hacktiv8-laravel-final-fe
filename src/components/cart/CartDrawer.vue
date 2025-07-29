@@ -25,13 +25,7 @@
         <SheetDescription> Review your items and proceed to checkout. </SheetDescription>
       </SheetHeader>
 
-      <!-- Stock Validation Warning -->
-      <Alert v-if="hasStockIssues" variant="destructive" class="mt-4">
-        <AlertTriangle class="h-4 w-4" />
-        <AlertDescription>
-          Some items in your cart have insufficient stock. Please review your cart before proceeding.
-        </AlertDescription>
-      </Alert>
+      
 
       <!-- Main Content -->
       <div class="flex-1 overflow-y-auto mx-2 min-h-0">
@@ -99,12 +93,11 @@ const {
   isLoading,
   isInitialized,
   validateStock,
-  hasStockIssues,
 } = useCart()
 
 watch(isOpen, (newVal) => {
   if (newVal && !isEmpty.value) {
-    validateStock()
+    // validateStock() // Removed stock validation on cart open
   }
 })
 

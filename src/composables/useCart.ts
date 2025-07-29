@@ -160,7 +160,7 @@ export const useCart = () => {
     availableStock: number,
   ): boolean => {
     const currentQuantity = getProductQuantityInCart(productId)
-    return currentQuantity + requestedQuantity <= availableStock
+    return currentQuantity + requestedQuantity < availableStock
   }
 
   const getTotalItems = (): number => {

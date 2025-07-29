@@ -173,6 +173,9 @@ const validateOrder = async (): Promise<boolean> => {
   validationErrors.value = []
   isValidationLoading.value = true
 
+  console.log('validateOrder: cartItems.value.length =', cartItems.value.length)
+  console.log('validateOrder: hasStockIssues.value (before validation) =', hasStockIssues.value)
+
   // Check if cart is empty
   if (cartItems.value.length === 0) {
     validationErrors.value.push('Your cart is empty')
@@ -183,6 +186,7 @@ const validateOrder = async (): Promise<boolean> => {
   // Validate stock availability
   try {
     await validateStock()
+    console.log('validateOrder: hasStockIssues.value (after validation) =', hasStockIssues.value)
     if (hasStockIssues.value) {
       validationErrors.value.push(
         'Some items in your cart have insufficient stock. Please adjust quantities.',
