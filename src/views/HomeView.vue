@@ -30,7 +30,7 @@ const { addToCart } = useCart()
 // Computed properties
 const featuredProducts = computed(() => {
   // Show latest 8 products as featured, only if in stock
-  return products.value.filter(product => product.stock > 0).slice(0, 8)
+  return products.value.filter((product) => product.stock > 0).slice(0, 8)
 })
 
 const categoryProductCounts = computed(() => {
@@ -78,15 +78,6 @@ onMounted(async () => {
           Welcome to our E-Commerce Store
         </h1>
         <p class="mt-4 text-lg text-muted-foreground">Discover amazing products at great prices</p>
-
-        <template v-if="isAuthenticated">
-          <div class="mt-6 p-4 bg-green-50 dark:bg-green-950 rounded-lg">
-            <p class="text-green-800 dark:text-green-200">
-              Welcome back, <strong>{{ user?.name }}</strong
-              >!
-            </p>
-          </div>
-        </template>
 
         <div class="mt-8">
           <RouterLink to="/products">
