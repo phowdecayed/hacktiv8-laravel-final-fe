@@ -17,8 +17,11 @@
           <h3 class="font-medium text-sm text-foreground leading-tight line-clamp-2">
             {{ item.product.name }}
           </h3>
-          <p v-if="item.product.stock <= 5" class="text-xs text-orange-600 mt-1">
+          <p v-if="!hasStockIssue && item.product.stock <= 5" class="text-xs text-orange-600 mt-1">
             Only {{ item.product.stock }} left in stock
+          </p>
+          <p v-if="hasStockIssue" class="text-xs text-red-600 font-medium mt-1">
+            Only {{ availableStock }} left in stock. Please adjust quantity.
           </p>
         </div>
         <Button
@@ -71,10 +74,11 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { Button } from '@/components/ui/button'
 import { Minus, Plus, X } from 'lucide-vue-next'
 import { useCart } from '@/composables/useCart'
-import type { CartItem } from '@/types/api'
+import type { CartItem, StockValidationItem } from '@/types/api'
 
 interface Props {
   item: CartItem
@@ -82,7 +86,20 @@ interface Props {
 
 const props = defineProps<Props>()
 
-const { updateQuantity, removeItem, isLoading, formatPrice } = useCart()
+const { updateQuantity, removeItem, isLoading, formatPrice, stockValidation } = useCart()
+
+const validationInfo = computed<StockValidationItem | undefined>(
+  () => stockValidation.value.find((v) => v.product_id === props.item.product.id),
+)
+
+const hasStockIssue = computed(() => {
+  if (!validationInfo.value) return false
+  return validationInfo.value.cart_quantity > validationInfo.value.available_stock
+})
+
+const availableStock = computed(() => {
+  return validationInfo.value?.available_stock ?? props.item.product.stock
+})
 
 const incrementQuantity = async () => {
   await updateQuantity(props.item.id, props.item.quantity + 1)

@@ -13,8 +13,8 @@
         >
           <div class="flex-shrink-0 w-16 h-16 bg-gray-100 rounded-md overflow-hidden">
             <img
-              v-if="item.product.images?.[0]"
-              :src="item.product.images[0].image_path"
+              v-if="item.product.image"
+              :src="item.product.image"
               :alt="item.product.name"
               class="w-full h-full object-cover"
             />
@@ -27,11 +27,13 @@
             <h3 class="text-sm font-medium text-gray-900 truncate">
               {{ item.product.name }}
             </h3>
-            <p class="text-sm text-gray-500">{{ formatPrice(item.price) }} × {{ item.quantity }}</p>
+            <p class="text-sm text-gray-500">
+              {{ formatPrice(item.product.price) }} × {{ item.quantity }}
+            </p>
           </div>
 
           <div class="text-sm font-medium text-gray-900">
-            {{ formatPrice(item.total) }}
+            {{ formatPrice(item.total_price) }}
           </div>
         </div>
       </div>
@@ -62,6 +64,29 @@
     </div>
 
     <!-- Stock Validation Errors -->
+    <Alert v-if="isValidationLoading" variant="default">
+      <Loader2 class="h-4 w-4 animate-spin" />
+      <AlertTitle>Validating stock...</AlertTitle>
+      <AlertDescription>We are checking the availability of items in your cart.</AlertDescription>
+    </Alert>
+
+    <Alert v-if="hasStockIssues" variant="destructive">
+      <AlertCircle class="h-4 w-4" />
+      <AlertTitle>Stock Issues Found</AlertTitle>
+      <AlertDescription>
+        <ul class="list-disc list-inside space-y-1">
+          <li
+            v-for="item in stockValidation.filter((v) => v.cart_quantity > v.available_stock)"
+            :key="item.product_id"
+          >
+            {{ item.name }}: Only {{ item.available_stock }} available, you have
+            {{ item.cart_quantity }} in cart.
+          </li>
+        </ul>
+        <p class="mt-2">Please go back to your cart to resolve these issues.</p>
+      </AlertDescription>
+    </Alert>
+
     <Alert v-if="validationErrors.length > 0" variant="destructive">
       <AlertCircle class="h-4 w-4" />
       <AlertTitle>Order Validation Failed</AlertTitle>
@@ -86,7 +111,9 @@
 
       <Button
         @click="handlePlaceOrder"
-        :disabled="isCreatingOrder || cartItems.length === 0"
+        :disabled="
+          isCreatingOrder || cartItems.length === 0 || hasStockIssues || isValidationLoading
+        "
         class="flex-1"
       >
         <Loader2 v-if="isCreatingOrder" class="w-4 h-4 mr-2 animate-spin" />
@@ -98,7 +125,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useCart } from '@/composables/useCart'
 import { useOrders } from '@/composables/useOrders'
 import { Button } from '@/components/ui/button'
@@ -114,16 +141,25 @@ defineEmits<{
 }>()
 
 // Composables
-const { items: cartItems, total: cartTotal, itemCount: cartItemCount, validateStock } = useCart()
+const {
+  items: cartItems,
+  total: cartTotal,
+  itemCount: cartItemCount,
+  validateStock,
+  hasStockIssues,
+  stockValidation,
+  isLoading: isCartLoading,
+} = useCart()
 const { createOrder, isCreatingOrder } = useOrders()
 
 // State
 const notes = ref('')
 const validationErrors = ref<string[]>([])
+const isValidationLoading = ref(false)
 
 // Computed
-const formatPrice = (price: string): string => {
-  const numPrice = parseFloat(price)
+const formatPrice = (price: number | string): string => {
+  const numPrice = typeof price === 'string' ? parseFloat(price) : price
   return new Intl.NumberFormat('id-ID', {
     style: 'currency',
     currency: 'IDR',
@@ -135,30 +171,49 @@ const formatPrice = (price: string): string => {
 // Methods
 const validateOrder = async (): Promise<boolean> => {
   validationErrors.value = []
+  isValidationLoading.value = true
 
   // Check if cart is empty
   if (cartItems.value.length === 0) {
     validationErrors.value.push('Your cart is empty')
+    isValidationLoading.value = false
     return false
   }
 
   // Validate stock availability
   try {
-    const validation = await validateStock()
-    if (!validation.valid) {
-      validationErrors.value = validation.errors
+    await validateStock()
+    if (hasStockIssues.value) {
+      validationErrors.value.push(
+        'Some items in your cart have insufficient stock. Please adjust quantities.',
+      )
+      stockValidation.value.forEach((item) => {
+        if (item.cart_quantity > item.available_stock) {
+          validationErrors.value.push(
+            `${item.name}: Only ${item.available_stock} available, you have ${item.cart_quantity} in cart.`,
+          )
+        }
+      })
       return false
     }
   } catch (error) {
-    validationErrors.value.push('Failed to validate stock availability')
+    console.error('Stock validation failed:', error)
+    validationErrors.value.push('Failed to validate stock availability. Please try again.')
     return false
+  } finally {
+    isValidationLoading.value = false
   }
 
   return true
 }
 
 const handlePlaceOrder = async () => {
-  // Validate order before proceeding
+  if (hasStockIssues.value) {
+    toast.error('Please resolve stock issues before placing an order.')
+    return
+  }
+
+  // Re-validate just before placing the order
   const isValid = await validateOrder()
   if (!isValid) {
     toast.error('Please fix the validation errors before proceeding')
@@ -172,8 +227,7 @@ const handlePlaceOrder = async () => {
 
     if (order) {
       toast.success('Order placed successfully!')
-      // Emit success event with order ID for parent component to handle navigation
-      // The useOrders composable already handles navigation, but we emit for flexibility
+      // The useOrders composable handles navigation and cart clearing
     }
   } catch (error) {
     console.error('Failed to place order:', error)
@@ -181,9 +235,14 @@ const handlePlaceOrder = async () => {
   }
 }
 
+// Watch for changes in cart items and re-validate
+watch(cartItems, () => {
+  validateOrder()
+})
+
 // Lifecycle
 onMounted(() => {
-  // Validate cart on component mount
+  // Initial validation
   validateOrder()
 })
 </script>

@@ -102,6 +102,19 @@ export interface CartValidationResult {
   errors: string[]
 }
 
+export interface StockValidationItem {
+  product_id: number
+  name: string
+  available_stock: number
+  cart_quantity: number
+}
+
+export interface StockValidationResponse {
+  message: string
+  data: StockValidationItem[]
+}
+
+
 // Transaction related types
 export interface Transaction {
   id: number
@@ -137,7 +150,9 @@ export type TransactionStatus =
   | 'refunded'
 
 export interface CreateTransactionRequest {
+  items: Array<{ product_id: number; quantity: number }>
   notes?: string
+  status?: TransactionStatus
 }
 
 export interface TransactionFilters {

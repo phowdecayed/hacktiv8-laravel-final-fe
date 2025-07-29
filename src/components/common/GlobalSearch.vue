@@ -238,7 +238,7 @@ const debouncedSearch = debounce(async (query: string) => {
 
   try {
     // Search products
-    await fetchProducts({ search: query, per_page: 5 })
+    await fetchProducts({ search: query, limit: 5 })
     searchResults.value.products = products.value.slice(0, 5)
 
     // Search categories

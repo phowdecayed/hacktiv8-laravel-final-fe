@@ -16,6 +16,8 @@ export const useCart = () => {
   const hasItems = computed(() => cartStore.hasItems)
   const isLoading = computed(() => cartStore.isLoading)
   const isInitialized = computed(() => cartStore.isInitialized)
+  const stockValidation = computed(() => cartStore.stockValidation)
+  const hasStockIssues = computed(() => cartStore.hasStockIssues)
 
   // Helper functions
   const requireAuth = () => {
@@ -251,5 +253,10 @@ export const useCart = () => {
     // Batch operations
     updateMultipleItems,
     removeMultipleItems,
+
+    // Stock Validation
+    stockValidation,
+    hasStockIssues,
+    validateStock: cartStore.validateStock,
   }
 }

@@ -55,7 +55,6 @@ const handleProductDetails = (product: Product) => {
 
 const handleAddToCart = (product: Product) => {
   // TODO: Implement add to cart functionality in cart task
-  console.log('Add to cart:', product)
 }
 
 // Initialize data

@@ -44,7 +44,7 @@ import { toast } from 'vue-sonner'
 const router = useRouter()
 
 // Composables
-const { items, isEmpty, isLoading, initializeCart } = useCart()
+const { items, isEmpty, isLoading, initializeCart, validateStock } = useCart()
 const authStore = useAuthStore()
 
 // Computed
@@ -57,7 +57,6 @@ const handleBack = () => {
 
 const handleOrderSuccess = (orderId: number) => {
   // Navigation is handled by useOrders composable, but we can add additional logic here if needed
-  console.log('Order created successfully:', orderId)
 }
 
 // Lifecycle
@@ -71,6 +70,11 @@ onMounted(async () => {
 
   // Initialize cart if not already done
   await initializeCart()
+
+  // Validate stock
+  if (hasItems.value) {
+    await validateStock()
+  }
 
   // If cart is empty after initialization, show message
   if (isEmpty.value) {

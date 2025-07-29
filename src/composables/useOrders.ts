@@ -54,8 +54,8 @@ export const useOrders = () => {
       }
 
       // Validate cart items stock before creating order
-      const validationResult = await cartStore.validateStock()
-      if (!validationResult.valid) {
+      await cartStore.validateStock()
+      if (cartStore.hasStockIssues) {
         toast.error('Some items in your cart are no longer available')
         return null
       }

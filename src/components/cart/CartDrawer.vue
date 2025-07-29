@@ -25,6 +25,14 @@
         <SheetDescription> Review your items and proceed to checkout. </SheetDescription>
       </SheetHeader>
 
+      <!-- Stock Validation Warning -->
+      <Alert v-if="hasStockIssues" variant="destructive" class="mt-4">
+        <AlertTriangle class="h-4 w-4" />
+        <AlertDescription>
+          Some items in your cart have insufficient stock. Please review your cart before proceeding.
+        </AlertDescription>
+      </Alert>
+
       <!-- Main Content -->
       <div class="flex-1 overflow-y-auto mx-2 min-h-0">
         <!-- Loading State -->
@@ -62,8 +70,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
+import { Alert, AlertDescription } from '@/components/ui/alert'
 import {
   Sheet,
   SheetContent,
@@ -75,7 +84,7 @@ import {
 } from '@/components/ui/sheet'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { ShoppingCart } from 'lucide-vue-next'
+import { ShoppingCart, AlertTriangle } from 'lucide-vue-next'
 import { useCart } from '@/composables/useCart'
 import CartItem from './CartItem.vue'
 import CartSummary from './CartSummary.vue'
@@ -83,7 +92,21 @@ import CartSummary from './CartSummary.vue'
 const router = useRouter()
 const isOpen = ref(false)
 
-const { items, itemCount, isEmpty, isLoading, isInitialized } = useCart()
+const {
+  items,
+  itemCount,
+  isEmpty,
+  isLoading,
+  isInitialized,
+  validateStock,
+  hasStockIssues,
+} = useCart()
+
+watch(isOpen, (newVal) => {
+  if (newVal && !isEmpty.value) {
+    validateStock()
+  }
+})
 
 const continueShopping = () => {
   isOpen.value = false

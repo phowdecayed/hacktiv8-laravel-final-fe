@@ -5,7 +5,7 @@ import type {
   PaginatedResponse,
   AddToCartRequest,
   UpdateCartItemRequest,
-  CartValidationResult,
+  StockValidationItem,
   ApiResponse,
 } from '@/types/api'
 import apiService from '@/lib/api'
@@ -16,6 +16,8 @@ export const useCartStore = defineStore('cart', () => {
   const items = ref<CartItem[]>([])
   const isLoading = ref(false)
   const isInitialized = ref(false)
+  const stockValidation = ref<StockValidationItem[]>([])
+  const hasStockIssues = ref(false)
 
   // Getters
   const itemCount = computed(() => {
@@ -23,7 +25,7 @@ export const useCartStore = defineStore('cart', () => {
   })
 
   const total = computed(() => {
-    return items.value.reduce((sum, item) => sum + Number(item.total_price), 0).toFixed(2)
+    return items.value.reduce((sum, item) => sum + Number(item.total_price), 0)
   })
 
   const isEmpty = computed(() => items.value.length === 0)
@@ -187,6 +189,31 @@ export const useCartStore = defineStore('cart', () => {
     items.value = []
     isLoading.value = false
     isInitialized.value = false
+    stockValidation.value = []
+    hasStockIssues.value = false
+  }
+
+  const validateStock = async (): Promise<void> => {
+    const authStore = useAuthStore()
+    if (!authStore.isAuthenticated || isEmpty.value) {
+      stockValidation.value = []
+      hasStockIssues.value = false
+      return
+    }
+
+    try {
+      const response =
+        await apiService.get<ApiResponse<StockValidationItem[]>>('/cart/validate-stock')
+      const validationData = response.data
+      stockValidation.value = validationData
+
+      hasStockIssues.value = validationData.some(
+        (item) => item.cart_quantity > item.available_stock,
+      )
+    } catch (error) {
+      console.error('Failed to validate stock:', error)
+      hasStockIssues.value = true // Assume issues if validation fails
+    }
   }
 
   return {
@@ -212,5 +239,10 @@ export const useCartStore = defineStore('cart', () => {
     syncWithBackend,
     initializeCart,
     resetCart,
+    validateStock,
+
+    // Stock Validation
+    stockValidation: readonly(stockValidation),
+    hasStockIssues: readonly(hasStockIssues),
   }
 })

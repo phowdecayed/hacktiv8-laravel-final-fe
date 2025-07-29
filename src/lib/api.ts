@@ -115,6 +115,10 @@ export class ApiService {
 
     return this.handleResponse<T>(response)
   }
+
+  async validateStock(): Promise<StockValidationResponse> {
+    return this.get('/api/cart/validate-stock')
+  }
 }
 
 // Create and export a singleton instance

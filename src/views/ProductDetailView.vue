@@ -136,7 +136,6 @@ const handleAddToCart = async (product: Product, quantity: number) => {
 
 const handleAddToWishlist = (product: Product) => {
   // TODO: Implement wishlist functionality
-  console.log('Add to wishlist:', product)
 }
 
 const handleProductClick = (product: Product) => {

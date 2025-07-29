@@ -1,7 +1,14 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import type { Transaction, TransactionStatus, ApiResponse, PaginatedResponse } from '@/types/api'
+import type {
+  Transaction,
+  TransactionStatus,
+  ApiResponse,
+  PaginatedResponse,
+  CreateTransactionRequest,
+} from '@/types/api'
 import apiService from '@/lib/api'
+import { useCartStore } from '@/stores/cart'
 
 export interface CreateOrderRequest {
   notes?: string
@@ -53,10 +60,10 @@ export const useOrdersStore = defineStore('orders', () => {
 
       orders.value = response.data
       pagination.value = {
-        current_page: response.meta.current_page,
-        last_page: response.meta.last_page,
-        per_page: response.meta.per_page,
-        total: response.meta.total,
+        current_page: response.pagination.current_page,
+        last_page: response.pagination.last_page,
+        per_page: response.pagination.per_page,
+        total: response.pagination.total,
       }
     } catch (err: any) {
       error.value = err.message || 'Failed to fetch orders'
@@ -87,8 +94,22 @@ export const useOrdersStore = defineStore('orders', () => {
     isCreatingOrder.value = true
     error.value = null
 
+    const cartStore = useCartStore()
+
     try {
-      const response = await apiService.post<ApiResponse<Transaction>>('/transactions', orderData)
+      const items = cartStore.items.map((item) => ({
+        product_id: item.product.id,
+        quantity: item.quantity,
+        price: item.product.price, // Add price to the item payload
+      }))
+
+      const payload: CreateTransactionRequest = {
+        items,
+        notes: orderData.notes,
+        status: 'pending', // Default status for new orders
+      }
+
+      const response = await apiService.post<ApiResponse<Transaction>>('/transactions', payload)
       const newOrder = response.data
 
       // Add the new order to the beginning of the orders list
@@ -98,7 +119,6 @@ export const useOrdersStore = defineStore('orders', () => {
       return newOrder
     } catch (err: any) {
       error.value = err.message || 'Failed to create order'
-      console.error('Error creating order:', err)
       throw err
     } finally {
       isCreatingOrder.value = false
