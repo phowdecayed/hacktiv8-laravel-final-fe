@@ -74,7 +74,7 @@
           v-model.number="localFilters.min_price"
           type="number"
           placeholder="Min price"
-          class="w-24"
+          class="w-27"
           @input="debouncedPriceChange"
         />
         <span class="text-muted-foreground">-</span>
@@ -82,7 +82,7 @@
           v-model.number="localFilters.max_price"
           type="number"
           placeholder="Max price"
-          class="w-24"
+          class="w-27"
           @input="debouncedPriceChange"
         />
       </div>
@@ -226,11 +226,11 @@ const debouncedPriceChange = debounce(() => {
 const handleSortChange = (value: any) => {
   if (!value || typeof value !== 'string') return
   const [sort_by, sort_order] = value.split('-') as [string, 'asc' | 'desc']
-  localFilters.value.sort_by = sort_by as 'name' | 'price' | 'created_at'
-  localFilters.value.sort_order = sort_order
+  localFilters.value.sort = sort_by as 'name' | 'price' | 'created_at'
+  localFilters.value.order = sort_order
   emit('update:filters', {
-    sort_by: sort_by as 'name' | 'price' | 'created_at',
-    sort_order,
+    sort: sort_by as 'name' | 'price' | 'created_at',
+    order: sort_order,
     page: 1,
   })
 }
@@ -263,10 +263,10 @@ const clearAllFilters = () => {
     category_id: undefined,
     min_price: undefined,
     max_price: undefined,
-    sort_by: 'created_at',
-    sort_order: 'desc',
+    sort: 'created_at',
+    order: 'desc',
     page: 1,
-    per_page: localFilters.value.per_page,
+    limit: localFilters.value.limit,
   }
   sortValue.value = 'created_at-desc'
   emit('clear-filters')
@@ -302,8 +302,8 @@ watch(
     localFilters.value = { ...newFilters }
 
     // Update sort value
-    if (newFilters.sort_by && newFilters.sort_order) {
-      sortValue.value = `${newFilters.sort_by}-${newFilters.sort_order}`
+    if (newFilters.sort && newFilters.order) {
+      sortValue.value = `${newFilters.sort}-${newFilters.order}`
     }
   },
   { deep: true },
@@ -311,8 +311,8 @@ watch(
 
 // Initialize sort value on mount
 onMounted(() => {
-  if (props.filters.sort_by && props.filters.sort_order) {
-    sortValue.value = `${props.filters.sort_by}-${props.filters.sort_order}`
+  if (props.filters.sort && props.filters.order) {
+    sortValue.value = `${props.filters.sort}-${props.filters.order}`
   } else {
     sortValue.value = 'created_at-desc'
   }
