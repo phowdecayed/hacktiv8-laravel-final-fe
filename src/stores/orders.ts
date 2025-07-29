@@ -17,7 +17,7 @@ export interface CreateOrderRequest {
 }
 
 export interface OrderFilters {
-  status?: TransactionStatus
+  status?: TransactionStatus | 'all'
   sort_by?: 'created_at' | 'total_amount'
   sort_order?: 'asc' | 'desc'
   page?: number
