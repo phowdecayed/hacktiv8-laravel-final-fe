@@ -47,7 +47,7 @@
     <!-- Filters Row -->
     <div class="flex flex-wrap gap-4">
       <!-- Category Filter -->
-      <div class="w-full sm:w-48">
+      <div class="w-full sm:w-65">
         <Select
           :model-value="localFilters.category_id?.toString() || 'all'"
           @update:model-value="handleCategoryChange"
