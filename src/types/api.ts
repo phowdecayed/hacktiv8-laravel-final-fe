@@ -146,6 +146,7 @@ export type TransactionStatus =
   | 'processing'
   | 'shipped'
   | 'delivered'
+  | 'completed'
   | 'cancelled'
   | 'refunded'
 

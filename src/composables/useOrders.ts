@@ -105,6 +105,11 @@ export const useOrders = () => {
         color: 'bg-green-100 text-green-800',
         description: 'Order has been delivered',
       },
+      completed: {
+        label: 'Completed',
+        color: 'bg-green-100 text-green-800',
+        description: 'Order has been completed',
+      },
       cancelled: {
         label: 'Cancelled',
         color: 'bg-red-100 text-red-800',
