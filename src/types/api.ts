@@ -187,6 +187,22 @@ export interface PaginatedResponse<T> {
   pagination: PaginationMeta
 }
 
+export interface MyTransactionsPaginatedResponse {
+  current_page: number
+  data: Transaction[]
+  first_page_url: string
+  from: number
+  last_page: number
+  last_page_url: string
+  links: Array<{ url: string | null; label: string; active: boolean }>
+  next_page_url: string | null
+  path: string
+  per_page: number
+  prev_page_url: string | null
+  to: number
+  total: number
+}
+
 // Filter and search types
 export interface ProductFilters {
   search?: string

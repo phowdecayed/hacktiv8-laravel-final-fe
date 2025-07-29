@@ -29,8 +29,8 @@ const { addToCart } = useCart()
 
 // Computed properties
 const featuredProducts = computed(() => {
-  // Show latest 8 products as featured
-  return products.value.slice(0, 8)
+  // Show latest 8 products as featured, only if in stock
+  return products.value.filter(product => product.stock > 0).slice(0, 8)
 })
 
 const categoryProductCounts = computed(() => {
@@ -110,7 +110,7 @@ onMounted(async () => {
             @click="handleCategoryClick(category.id)"
           >
             <div
-              class="bg-card rounded-lg shadow-md p-6 text-center hover:shadow-lg transition-shadow border"
+              class="bg-card rounded-lg shadow-md p-6 text-center hover:shadow-lg transition-shadow border flex flex-col items-center justify-center h-40"
             >
               <div
                 class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4"

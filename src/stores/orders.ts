@@ -6,6 +6,7 @@ import type {
   ApiResponse,
   PaginatedResponse,
   CreateTransactionRequest,
+  MyTransactionsPaginatedResponse,
 } from '@/types/api'
 import apiService from '@/lib/api'
 import { useCartStore } from '@/stores/cart'
@@ -57,14 +58,17 @@ export const useOrdersStore = defineStore('orders', () => {
         per_page: filters.per_page || 10,
       }
 
-      const response = await apiService.get<PaginatedResponse<Transaction>>('/transactions', params)
+      const response = await apiService.get<ApiResponse<MyTransactionsPaginatedResponse>>(
+        '/my-transactions',
+        params,
+      )
 
-      orders.value = response.data
+      orders.value = response.data.data
       pagination.value = {
-        current_page: response.pagination.current_page,
-        last_page: response.pagination.last_page,
-        per_page: response.pagination.per_page,
-        total: response.pagination.total,
+        current_page: response.data.current_page,
+        last_page: response.data.last_page,
+        per_page: response.data.per_page,
+        total: response.data.total,
       }
     } catch (err: any) {
       error.value = err.message || 'Failed to fetch orders'

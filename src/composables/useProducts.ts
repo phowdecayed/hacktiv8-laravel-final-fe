@@ -6,7 +6,17 @@ export const useProducts = () => {
   const store = useProductsStore()
 
   // Computed properties for reactive access to store state
-  const products = computed(() => store.products)
+  const products = computed(() => {
+    // Sort products to put out-of-stock items at the end
+    return [...store.products].sort((a, b) => {
+      // If a is in stock and b is out of stock, a comes first
+      if (a.stock > 0 && b.stock === 0) return -1
+      // If a is out of stock and b is in stock, b comes first
+      if (a.stock === 0 && b.stock > 0) return 1
+      // Otherwise, maintain original order (or apply other sorting if needed)
+      return 0
+    })
+  })
   const categories = computed(() => store.categories)
   const currentProduct = computed(() => store.currentProduct)
   const isLoading = computed(() => store.isLoading)

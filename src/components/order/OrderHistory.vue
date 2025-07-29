@@ -14,11 +14,11 @@
             <SelectValue placeholder="Filter by status" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">All Orders</SelectItem>
+            <SelectItem value="all">All Orders</SelectItem>
             <SelectItem value="pending">Pending</SelectItem>
             <SelectItem value="processing">Processing</SelectItem>
             <SelectItem value="shipped">Shipped</SelectItem>
-            <SelectItem value="delivered">Delivered</SelectItem>
+            <SelectItem value="delivered">Completed</SelectItem>
             <SelectItem value="cancelled">Cancelled</SelectItem>
             <SelectItem value="refunded">Refunded</SelectItem>
           </SelectContent>
@@ -248,7 +248,7 @@ const {
 
 // Local state
 const filters = reactive<OrderFilters>({
-  status: undefined,
+  status: 'all',
   sort_by: 'created_at',
   sort_order: 'desc',
   page: 1,
@@ -268,11 +268,15 @@ const formatDate = (dateString: string): string => {
 
 const applyFilters = async () => {
   filters.page = 1 // Reset to first page when filtering
-  await fetchOrders(filters)
+  const currentFilters = { ...filters }
+  if (currentFilters.status === 'all') {
+    delete currentFilters.status
+  }
+  await fetchOrders(currentFilters)
 }
 
 const clearFilters = async () => {
-  filters.status = undefined
+  filters.status = 'all'
   filters.sort_by = 'created_at'
   filters.sort_order = 'desc'
   filters.page = 1
