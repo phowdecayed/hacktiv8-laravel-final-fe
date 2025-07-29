@@ -132,7 +132,7 @@
                     <!-- Item Total -->
                     <div class="text-right">
                       <p class="font-semibold text-lg">
-                        {{ formatPrice(item.total) }}
+                        {{ formatPrice(item.total_price) }}
                       </p>
                     </div>
                   </div>
