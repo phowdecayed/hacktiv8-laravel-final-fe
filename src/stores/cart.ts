@@ -10,6 +10,7 @@ import type {
 } from '@/types/api'
 import apiService from '@/lib/api'
 import { useAuthStore } from '@/stores/auth'
+import { useProductsStore } from '@/stores/products'
 
 export const useCartStore = defineStore('cart', () => {
   // State
@@ -89,6 +90,10 @@ export const useCartStore = defineStore('cart', () => {
       } else {
         items.value.push(updatedItem)
       }
+
+      // Decrement product stock in products store
+      const productsStore = useProductsStore()
+      productsStore.decrementProductStock(productId, quantity)
     } catch (error) {
       console.error('Failed to add item to cart:', error)
       await fetchCart() // a full refetch on error to ensure consistency
@@ -120,6 +125,10 @@ export const useCartStore = defineStore('cart', () => {
       if (itemIndex !== -1) {
         items.value[itemIndex] = response.data
       }
+
+      // Update product stock in products store
+      const productsStore = useProductsStore()
+      productsStore.updateProductStock(response.data.product.id, response.data.product.stock)
     } catch (error) {
       console.error('Failed to update cart item:', error)
       await fetchCart() // a full refetch on error to ensure consistency
@@ -137,9 +146,19 @@ export const useCartStore = defineStore('cart', () => {
 
     isLoading.value = true
     try {
+      const removedItem = items.value.find(item => item.id === itemId)
       await apiService.delete(`/cart/${itemId}`)
 
       items.value = items.value.filter((item) => item.id !== itemId)
+
+      // Fetch product again to get its latest stock
+      if (removedItem) {
+        const productsStore = useProductsStore()
+        const updatedProduct = await productsStore.fetchProduct(removedItem.product.id)
+        if (updatedProduct) {
+          productsStore.updateProductStock(updatedProduct.id, updatedProduct.stock)
+        }
+      }
     } catch (error) {
       console.error('Failed to remove cart item:', error)
       await fetchCart() // a full refetch on error to ensure consistency
@@ -157,9 +176,21 @@ export const useCartStore = defineStore('cart', () => {
 
     isLoading.value = true
     try {
+      // Get product IDs before clearing cart to update their stock
+      const productIdsInCart = items.value.map(item => item.product.id)
+
       await apiService.delete('/cart')
 
       items.value = []
+
+      // Fetch each product again to get its latest stock
+      const productsStore = useProductsStore()
+      for (const productId of productIdsInCart) {
+        const updatedProduct = await productsStore.fetchProduct(productId)
+        if (updatedProduct) {
+          productsStore.updateProductStock(updatedProduct.id, updatedProduct.stock)
+        }
+      }
     } catch (error) {
       console.error('Failed to clear cart:', error)
       await fetchCart() // a full refetch on error to ensure consistency

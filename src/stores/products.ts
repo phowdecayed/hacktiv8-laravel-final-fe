@@ -177,6 +177,27 @@ export const useProductsStore = defineStore('products', () => {
     currentProduct.value = null
   }
 
+  const decrementProductStock = (productId: number, quantity: number) => {
+    const product = products.value.find(p => p.id === productId)
+    if (product) {
+      product.stock -= quantity
+      // Also update currentProduct if it's the same product
+      if (currentProduct.value && currentProduct.value.id === productId) {
+        currentProduct.value.stock -= quantity
+      }
+    }
+  }
+
+  const updateProductStock = (productId: number, newStock: number) => {
+    const product = products.value.find(p => p.id === productId)
+    if (product) {
+      product.stock = newStock
+      if (currentProduct.value && currentProduct.value.id === productId) {
+        currentProduct.value.stock = newStock
+      }
+    }
+  }
+
   return {
     // State
     products,
@@ -207,5 +228,7 @@ export const useProductsStore = defineStore('products', () => {
     prevPage,
     clearError,
     clearCurrentProduct,
+    decrementProductStock,
+    updateProductStock,
   }
 })

@@ -120,16 +120,15 @@ export const useNotifications = () => {
     message: string,
     options?: NotificationOptions,
   ) => {
+    toast.dismiss(toastId) // Dismiss the loading toast first
     if (type === 'success') {
       toast.success(message, {
-        id: toastId,
-        duration: options?.duration || 1000,
+        duration: options?.duration || 3000, // Default to 3 seconds for success
         ...options,
       })
     } else {
       toast.error(message, {
-        id: toastId,
-        duration: options?.duration || 1000,
+        duration: options?.duration || 5000, // Default to 5 seconds for error
         ...options,
       })
     }

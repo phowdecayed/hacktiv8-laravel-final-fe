@@ -8,6 +8,7 @@ import PageLayout from '@/components/layout/PageLayout.vue'
 import { Package } from 'lucide-vue-next'
 import { useAuth } from '@/composables/useAuth'
 import { useProducts } from '@/composables/useProducts'
+import { useCart } from '@/composables/useCart'
 import type { Product } from '@/types/api'
 
 const router = useRouter()
@@ -23,6 +24,8 @@ const {
   fetchProducts,
   fetchCategories,
 } = useProducts()
+
+const { addToCart } = useCart()
 
 // Computed properties
 const featuredProducts = computed(() => {
@@ -53,8 +56,8 @@ const handleProductDetails = (product: Product) => {
   router.push(`/products/${product.id}`)
 }
 
-const handleAddToCart = (product: Product) => {
-  // TODO: Implement add to cart functionality in cart task
+const handleAddToCart = async (product: Product) => {
+  await addToCart(product.id)
 }
 
 // Initialize data
