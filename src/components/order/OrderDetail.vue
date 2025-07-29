@@ -260,7 +260,8 @@ const statusTimeline = computed(() => {
     { key: 'pending', label: 'Order Placed' },
     { key: 'processing', label: 'Processing' },
     { key: 'shipped', label: 'Shipped' },
-    { key: 'completed', label: 'Delivered' },
+    { key: 'delivered', label: 'Delivered' },
+    { key: 'completed', label: 'User Review' },
   ]
 
   const currentStatus = order.value.status
