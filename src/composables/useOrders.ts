@@ -171,8 +171,8 @@ export const useOrders = () => {
   const loadMoreOrders = async () => {
     if (pagination.value.current_page < pagination.value.last_page) {
       await fetchOrders({
+        ...filters.value,
         page: pagination.value.current_page + 1,
-        per_page: pagination.value.per_page,
       })
     }
   }

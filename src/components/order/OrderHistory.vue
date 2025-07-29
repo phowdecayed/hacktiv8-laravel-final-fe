@@ -1,55 +1,20 @@
 <template>
-  <div class="space-y-6">
-    <!-- Header with Filters -->
-    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-      <div>
-        <h2 class="text-2xl font-bold">Order History</h2>
-        <p class="text-gray-600">Track and manage your orders</p>
-      </div>
-
-      <!-- Filters -->
-      <div class="flex flex-col sm:flex-row gap-3">
-        <Select v-model="filters.status" @update:model-value="applyFilters">
-          <SelectTrigger class="w-full sm:w-[180px]">
-            <SelectValue placeholder="Filter by status" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Orders</SelectItem>
-            <SelectItem value="pending">Pending</SelectItem>
-            <SelectItem value="processing">Processing</SelectItem>
-            <SelectItem value="shipped">Shipped</SelectItem>
-            <SelectItem value="delivered">Completed</SelectItem>
-            <SelectItem value="cancelled">Cancelled</SelectItem>
-            <SelectItem value="refunded">Refunded</SelectItem>
-          </SelectContent>
-        </Select>
-
-        <Select v-model="filters.sort_by" @update:model-value="applyFilters">
-          <SelectTrigger class="w-full sm:w-[180px]">
-            <SelectValue placeholder="Sort by" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="created_at">Order Date</SelectItem>
-            <SelectItem value="total_amount">Total Amount</SelectItem>
-          </SelectContent>
-        </Select>
-
-        <Select v-model="filters.sort_order" @update:model-value="applyFilters">
-          <SelectTrigger class="w-full sm:w-[120px]">
-            <SelectValue placeholder="Order" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="desc">Newest First</SelectItem>
-            <SelectItem value="asc">Oldest First</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-    </div>
-
+  <div class="space-y-4">
     <!-- Loading State -->
-    <div v-if="isLoading && orders.length === 0" class="flex items-center justify-center py-12">
+    <div v-if="isLoading" class="flex items-center justify-center py-12">
       <Loader2 class="w-8 h-8 animate-spin text-gray-400" />
       <span class="ml-2 text-gray-600">Loading orders...</span>
+    </div>
+
+    <!-- Error State -->
+    <div v-else-if="error" class="text-center py-12">
+      <CircleAlert class="w-16 h-16 text-red-500 mx-auto mb-4" />
+      <h3 class="text-xl font-semibold text-gray-900 mb-2">Error loading orders</h3>
+      <p class="text-gray-600 mb-6">{{ error }}</p>
+      <Button @click="emit('retry')">
+        <RefreshCw class="w-4 h-4 mr-2" />
+        Retry
+      </Button>
     </div>
 
     <!-- Empty State -->
@@ -57,21 +22,12 @@
       <Package class="w-16 h-16 text-gray-400 mx-auto mb-4" />
       <h3 class="text-xl font-semibold text-gray-900 mb-2">No orders found</h3>
       <p class="text-gray-600 mb-6">
-        {{
-          filters.status
-            ? 'No orders match your current filter.'
-            : "You haven't placed any orders yet."
-        }}
+        You haven't placed any orders yet or no orders match your current filter.
       </p>
-      <div class="space-y-3">
-        <Button v-if="filters.status" @click="clearFilters" variant="outline">
-          Clear Filters
-        </Button>
-        <Button @click="$router.push('/products')">
-          <ShoppingBag class="w-4 h-4 mr-2" />
-          Start Shopping
-        </Button>
-      </div>
+      <Button @click="emit('empty-action')">
+        <ShoppingBag class="w-4 h-4 mr-2" />
+        Start Shopping
+      </Button>
     </div>
 
     <!-- Orders List -->
@@ -166,57 +122,15 @@
         </CardContent>
       </Card>
     </div>
-
-    <!-- Pagination -->
-    <div v-if="pagination.last_page > 1" class="flex justify-center">
-      <div class="flex items-center gap-2">
-        <Button
-          variant="outline"
-          size="sm"
-          :disabled="pagination.current_page <= 1 || isLoading"
-          @click="loadPage(pagination.current_page - 1)"
-        >
-          <ChevronLeft class="w-4 h-4" />
-          Previous
-        </Button>
-
-        <span class="text-sm text-gray-600 px-3">
-          Page {{ pagination.current_page }} of {{ pagination.last_page }}
-        </span>
-
-        <Button
-          variant="outline"
-          size="sm"
-          :disabled="pagination.current_page >= pagination.last_page || isLoading"
-          @click="loadPage(pagination.current_page + 1)"
-        >
-          Next
-          <ChevronRight class="w-4 h-4" />
-        </Button>
-      </div>
-    </div>
-
-    <!-- Load More Button (Alternative to pagination) -->
-    <div v-if="canLoadMore && !isLoading" class="flex justify-center">
-      <Button variant="outline" @click="loadMoreOrders"> Load More Orders </Button>
-    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useOrders } from '@/composables/useOrders'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
 import {
   Calendar,
   Package,
@@ -224,36 +138,29 @@ import {
   Eye,
   ShoppingBag,
   Loader2,
-  ChevronLeft,
-  ChevronRight,
+  CircleAlert,
+  RefreshCw,
 } from 'lucide-vue-next'
-import type { OrderFilters } from '@/stores/orders'
-import type { TransactionStatus } from '@/types/api'
+import type { Transaction } from '@/types/api'
+
+interface Props {
+  orders: Transaction[]
+  isLoading: boolean
+  error: string | null
+}
+
+const props = defineProps<Props>()
+const emit = defineEmits(['retry', 'empty-action'])
 
 // Router
 const router = useRouter()
 
 // Composables
 const {
-  orders,
-  isLoading,
-  pagination,
-  canLoadMore,
-  fetchOrders,
-  loadMoreOrders,
   getOrderStatusInfo,
   formatOrderTotal,
   getOrderItemCount,
 } = useOrders()
-
-// Local state
-const filters = reactive<OrderFilters>({
-  status: 'all',
-  sort_by: 'created_at',
-  sort_order: 'desc',
-  page: 1,
-  per_page: 10,
-})
 
 // Methods
 const formatDate = (dateString: string): string => {
@@ -266,34 +173,7 @@ const formatDate = (dateString: string): string => {
   })
 }
 
-const applyFilters = async () => {
-  filters.page = 1 // Reset to first page when filtering
-  const currentFilters = { ...filters }
-  if (currentFilters.status === 'all') {
-    delete currentFilters.status
-  }
-  await fetchOrders(currentFilters)
-}
-
-const clearFilters = async () => {
-  filters.status = 'all'
-  filters.sort_by = 'created_at'
-  filters.sort_order = 'desc'
-  filters.page = 1
-  await fetchOrders(filters)
-}
-
-const loadPage = async (page: number) => {
-  filters.page = page
-  await fetchOrders(filters)
-}
-
 const viewOrderDetails = (orderId: number) => {
   router.push(`/orders/${orderId}`)
 }
-
-// Lifecycle
-onMounted(async () => {
-  await fetchOrders(filters)
-})
 </script>

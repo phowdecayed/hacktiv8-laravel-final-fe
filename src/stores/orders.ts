@@ -58,6 +58,11 @@ export const useOrdersStore = defineStore('orders', () => {
         per_page: filters.per_page || 10,
       }
 
+      if (params.status === 'all') {
+        delete params.status
+      }
+
+      console.log('Fetching orders with params:', params)
       const response = await apiService.get<ApiResponse<MyTransactionsPaginatedResponse>>(
         '/my-transactions',
         params,
