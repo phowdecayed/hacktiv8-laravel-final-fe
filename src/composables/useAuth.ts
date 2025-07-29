@@ -4,6 +4,7 @@ import { useErrorHandler } from '@/composables/useErrorHandler'
 import { useNotifications } from '@/composables/useNotifications'
 import { toast } from 'vue-sonner'
 import type { LoginCredentials, RegisterData } from '@/types/api'
+import apiService from '@/lib/api'
 
 export const useAuth = () => {
   const authStore = useAuthStore()
@@ -90,6 +91,7 @@ export const useAuth = () => {
   const checkAuth = async () => {
     return await errorHandler.withErrorHandling(
       async () => {
+        await apiService.getCsrfCookie() // Fetch CSRF cookie
         await authStore.checkAuth()
       },
       {
