@@ -2,7 +2,10 @@
   <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
     <!-- Filters -->
     <div class="flex flex-col sm:flex-row gap-3">
-      <Select :model-value="filters.status" @update:model-value="(value) => updateFilter('status', value)">
+      <Select
+        :model-value="filters.status"
+        @update:model-value="(value) => updateFilter('status', value)"
+      >
         <SelectTrigger class="w-full sm:w-[180px]">
           <SelectValue placeholder="Filter by status" />
         </SelectTrigger>
@@ -17,7 +20,10 @@
         </SelectContent>
       </Select>
 
-      <Select :model-value="filters.sort_by" @update:model-value="(value) => updateFilter('sort_by', value)">
+      <Select
+        :model-value="filters.sort_by"
+        @update:model-value="(value) => updateFilter('sort_by', value)"
+      >
         <SelectTrigger class="w-full sm:w-[180px]">
           <SelectValue placeholder="Sort by" />
         </SelectTrigger>
@@ -27,8 +33,11 @@
         </SelectContent>
       </Select>
 
-      <Select :model-value="filters.sort_order" @update:model-value="(value) => updateFilter('sort_order', value)">
-        <SelectTrigger class="w-full sm:w-[120px]">
+      <Select
+        :model-value="filters.sort_order"
+        @update:model-value="(value) => updateFilter('sort_order', value)"
+      >
+        <SelectTrigger class="w-full sm:w-[150px]">
           <SelectValue placeholder="Order" />
         </SelectTrigger>
         <SelectContent>
