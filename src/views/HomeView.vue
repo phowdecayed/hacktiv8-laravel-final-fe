@@ -30,6 +30,16 @@ const featuredProducts = computed(() => {
   return products.value.slice(0, 8)
 })
 
+const categoryProductCounts = computed(() => {
+  const counts = new Map<number, number>()
+  for (const product of products.value) {
+    if (product.category_id) {
+      counts.set(product.category_id, (counts.get(product.category_id) || 0) + 1)
+    }
+  }
+  return counts
+})
+
 // Methods
 const handleCategoryClick = (categoryId: number) => {
   router.push(`/products?category=${categoryId}`)
@@ -50,7 +60,7 @@ const handleAddToCart = (product: Product) => {
 
 // Initialize data
 onMounted(async () => {
-  await Promise.all([fetchCategories(), fetchProducts({ per_page: 8 })])
+  await Promise.all([fetchCategories(), fetchProducts({ limit: 100, sort: 'created_at', order: 'desc' })])
 })
 </script>
 
@@ -108,7 +118,7 @@ onMounted(async () => {
                 {{ category.name }}
               </h3>
               <p class="text-sm text-muted-foreground mt-1">
-                {{ category.products?.length || 0 }} products
+                {{ categoryProductCounts.get(category.id) || 0 }} products
               </p>
             </div>
           </div>

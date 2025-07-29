@@ -32,7 +32,7 @@
 
     <!-- Product Detail -->
     <ProductDetail
-      v-else
+      v-if="currentProduct"
       :product="currentProduct"
       :related-products="relatedProducts"
       :is-loading="isLoadingProduct"

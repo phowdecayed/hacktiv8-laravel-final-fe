@@ -14,15 +14,14 @@ import { useAuthStore } from '@/stores/auth'
 export const useCartStore = defineStore('cart', () => {
   // State
   const items = ref<CartItem[]>([])
+  const cartSummary = ref<CartSummary | null>(null)
   const isLoading = ref(false)
   const isInitialized = ref(false)
 
   // Getters
-  const itemCount = computed(() => items.value.reduce((total, item) => total + item.quantity, 0))
+  const itemCount = computed(() => cartSummary.value?.item_count ?? 0)
 
-  const total = computed(() =>
-    items.value.reduce((sum, item) => sum + parseFloat(item.total), 0).toFixed(2),
-  )
+  const total = computed(() => cartSummary.value?.total ?? '0.00')
 
   const isEmpty = computed(() => items.value.length === 0)
 
@@ -39,16 +38,19 @@ export const useCartStore = defineStore('cart', () => {
     const authStore = useAuthStore()
     if (!authStore.isAuthenticated) {
       items.value = []
+      cartSummary.value = null
       return
     }
 
     isLoading.value = true
     try {
-      const response = await apiService.get<CartSummary>('/cart')
-      items.value = response.data
+      const response = await apiService.get<ApiResponse<CartSummary>>('/cart')
+      cartSummary.value = response.data
+      items.value = response.data.data
     } catch (error) {
       console.error('Failed to fetch cart:', error)
       items.value = []
+      cartSummary.value = null
     } finally {
       isLoading.value = false
       isInitialized.value = true

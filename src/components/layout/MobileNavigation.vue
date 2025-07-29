@@ -26,9 +26,6 @@
         </RouterLink>
       </nav>
     </div>
-
-    <!-- Spacer to prevent content from being hidden behind bottom nav -->
-    <div class="h-16"></div>
   </div>
 </template>
 

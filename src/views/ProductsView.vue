@@ -75,8 +75,8 @@
 
     <!-- Results Summary -->
     <div v-if="hasProducts && !isLoading" class="text-center text-sm text-muted-foreground">
-      Showing {{ (currentPage - 1) * (filters.per_page || 12) + 1 }} to
-      {{ Math.min(currentPage * (filters.per_page || 12), totalProducts) }} of
+      Showing {{ (currentPage - 1) * (filters.limit || 12) + 1 }} to
+      {{ Math.min(currentPage * (filters.limit || 12), totalProducts) }} of
       {{ totalProducts }} products
     </div>
   </PageLayout>
@@ -176,11 +176,15 @@ const updateUrlParams = () => {
 
   if (filters.value.search) query.search = filters.value.search
   if (filters.value.category_id) query.category = filters.value.category_id.toString()
+  if (filters.value.status) query.status = filters.value.status
+  if (filters.value.date_from) query.date_from = filters.value.date_from
+  if (filters.value.date_to) query.date_to = filters.value.date_to
   if (filters.value.min_price) query.min_price = filters.value.min_price.toString()
   if (filters.value.max_price) query.max_price = filters.value.max_price.toString()
-  if (filters.value.sort_by) query.sort_by = filters.value.sort_by
-  if (filters.value.sort_order) query.sort_order = filters.value.sort_order
+  if (filters.value.sort) query.sort = filters.value.sort
+  if (filters.value.order) query.order = filters.value.order
   if (filters.value.page && filters.value.page > 1) query.page = filters.value.page.toString()
+  if (filters.value.limit) query.limit = filters.value.limit.toString()
 
   router.replace({ query })
 }
@@ -191,11 +195,15 @@ const loadFiltersFromUrl = () => {
 
   if (query.search) urlFilters.search = query.search as string
   if (query.category) urlFilters.category_id = parseInt(query.category as string)
+  if (query.status) urlFilters.status = query.status as 'available' | 'unavailable'
+  if (query.date_from) urlFilters.date_from = query.date_from as string
+  if (query.date_to) urlFilters.date_to = query.date_to as string
   if (query.min_price) urlFilters.min_price = parseFloat(query.min_price as string)
   if (query.max_price) urlFilters.max_price = parseFloat(query.max_price as string)
-  if (query.sort_by) urlFilters.sort_by = query.sort_by as 'name' | 'price' | 'created_at'
-  if (query.sort_order) urlFilters.sort_order = query.sort_order as 'asc' | 'desc'
+  if (query.sort) urlFilters.sort = query.sort as 'name' | 'price' | 'created_at'
+  if (query.order) urlFilters.order = query.order as 'asc' | 'desc'
   if (query.page) urlFilters.page = parseInt(query.page as string)
+  if (query.limit) urlFilters.limit = parseInt(query.limit as string)
 
   if (Object.keys(urlFilters).length > 0) {
     updateFilters(urlFilters)

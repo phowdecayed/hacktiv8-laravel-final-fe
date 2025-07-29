@@ -12,6 +12,7 @@ import 'vue-sonner/style.css' // vue-sonner v2 requires this import
 // Global loading state
 const isGlobalLoading = ref(false)
 const globalLoadingMessage = ref('Loading...')
+const isMobileSearchOpen = ref(false)
 
 // Expose global loading control
 declare global {
@@ -34,15 +35,18 @@ window.hideGlobalLoading = () => {
 <template>
   <ErrorBoundary>
     <div class="min-h-screen bg-background flex flex-col overflow-x-hidden">
-      <AppHeader />
-      <main class="flex-1 container mx-auto px-4 py-8 pb-20 md:pb-8 min-h-[calc(100vh-theme('spacing.16')-theme('spacing.16'))]">
+      <AppHeader @mobile-search-toggled="isMobileSearchOpen = $event" />
+      <main
+        class="flex-1 container mx-auto px-4 pb-20 md:pb-10"
+        :class="isMobileSearchOpen ? 'pt-32' : 'pt-16'"
+      >
         <ErrorBoundary>
           <RouterView />
         </ErrorBoundary>
       </main>
       <AppFooter class="hidden md:block" />
       <MobileNavigation />
-      <Toaster />
+      <Toaster rich-colors position="top-center" class="w-full" />
       <GlobalLoading :is-visible="isGlobalLoading" :message="globalLoadingMessage" />
     </div>
   </ErrorBoundary>

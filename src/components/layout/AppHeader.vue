@@ -2,7 +2,7 @@
   <header
     class="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
   >
-    <div class="container flex h-16 items-center justify-between">
+    <div class="flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
       <!-- Logo and Brand -->
       <div class="flex items-center gap-6">
         <RouterLink to="/" class="flex items-center gap-2">
@@ -137,7 +137,7 @@
     </div>
 
     <!-- Mobile Search Bar -->
-    <div v-if="showMobileSearch" class="border-t p-4 md:hidden">
+    <div v-if="showMobileSearch" class="border-t p-4">
       <SearchBar />
     </div>
 
@@ -160,6 +160,7 @@ import SearchBar from '@/components/common/SearchBar.vue'
 import GlobalSearch from '@/components/common/GlobalSearch.vue'
 
 const authStore = useAuthStore()
+const emit = defineEmits(['mobile-search-toggled'])
 const isAuthenticated = computed(() => authStore.isAuthenticated)
 const router = useRouter()
 
@@ -168,6 +169,7 @@ const showMobileSearch = ref(false)
 
 const toggleMobileSearch = () => {
   showMobileSearch.value = !showMobileSearch.value
+  emit('mobile-search-toggled', showMobileSearch.value)
 }
 
 const goToLogin = () => {

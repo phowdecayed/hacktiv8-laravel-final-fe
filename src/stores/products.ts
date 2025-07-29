@@ -35,18 +35,18 @@ export const useProductsStore = defineStore('products', () => {
     category_id: undefined,
     min_price: undefined,
     max_price: undefined,
-    sort_by: 'created_at',
-    sort_order: 'desc',
+    sort: 'created_at',
+    order: 'desc',
     page: 1,
-    per_page: 12,
+    limit: 12,
   })
 
   // Getters
   const hasProducts = computed(() => products.value.length > 0)
   const hasCategories = computed(() => categories.value.length > 0)
-  const totalPages = computed(() => pagination.value.last_page)
-  const currentPage = computed(() => pagination.value.current_page)
-  const totalProducts = computed(() => pagination.value.total)
+  const totalPages = computed(() => pagination.value?.last_page ?? 1)
+  const currentPage = computed(() => pagination.value?.current_page ?? 1)
+  const totalProducts = computed(() => pagination.value?.total ?? 0)
 
   // Actions
   const fetchProducts = async (newFilters?: Partial<ProductFilters>) => {
@@ -59,17 +59,24 @@ export const useProductsStore = defineStore('products', () => {
         filters.value = { ...filters.value, ...newFilters }
       }
 
-      // Build query parameters
-      const params: Record<string, any> = {}
+      // Build query parameters from the ref
+      const params: Record<string, any> = {
+        search: filters.value.search,
+        category_id: filters.value.category_id,
+        min_price: filters.value.min_price,
+        max_price: filters.value.max_price,
+        sort: filters.value.sort,
+        order: filters.value.order,
+        page: filters.value.page,
+        limit: filters.value.limit,
+      }
 
-      if (filters.value.search) params.search = filters.value.search
-      if (filters.value.category_id) params.category_id = filters.value.category_id
-      if (filters.value.min_price) params.min_price = filters.value.min_price
-      if (filters.value.max_price) params.max_price = filters.value.max_price
-      if (filters.value.sort_by) params.sort_by = filters.value.sort_by
-      if (filters.value.sort_order) params.sort_order = filters.value.sort_order
-      if (filters.value.page) params.page = filters.value.page
-      if (filters.value.per_page) params.per_page = filters.value.per_page
+      // Remove undefined/null values
+      Object.keys(params).forEach((key) => {
+        if (params[key] === undefined || params[key] === null || params[key] === '') {
+          delete params[key]
+        }
+      })
 
       const response = await apiService.get<PaginatedResponse<Product>>('/products', params)
 
@@ -78,17 +85,26 @@ export const useProductsStore = defineStore('products', () => {
     } catch (err: any) {
       error.value = err.message || 'Failed to fetch products'
       products.value = []
+      // Reset pagination on error to prevent template errors
+      pagination.value = {
+        current_page: 1,
+        from: 0,
+        last_page: 1,
+        per_page: 12,
+        to: 0,
+        total: 0,
+      }
     } finally {
       isLoading.value = false
     }
   }
 
-  const fetchCategories = async () => {
+  const fetchCategories = async (params: { with_products?: boolean } = {}) => {
     try {
       isLoadingCategories.value = true
       error.value = null
 
-      const response = await apiService.get<{ data: Category[] }>('/categories')
+      const response = await apiService.get<{ data: Category[] }>('/categories', params)
       categories.value = response.data
     } catch (err: any) {
       error.value = err.message || 'Failed to fetch categories'
@@ -103,9 +119,9 @@ export const useProductsStore = defineStore('products', () => {
       isLoadingProduct.value = true
       error.value = null
 
-      const response = await apiService.get<{ data: Product }>(`/products/${id}`)
-      currentProduct.value = response.data
-      return response.data
+      const response = await apiService.get<Product>(`/products/${id}`)
+      currentProduct.value = response
+      return response
     } catch (err: any) {
       error.value = err.message || 'Failed to fetch product'
       currentProduct.value = null

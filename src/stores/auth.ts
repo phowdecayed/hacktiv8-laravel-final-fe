@@ -18,18 +18,20 @@ export const useAuthStore = defineStore('auth', () => {
     user.value = authData.user
     token.value = authData.token
     apiService.setToken(authData.token)
+    localStorage.setItem('auth_token', authData.token)
   }
 
   const clearAuth = () => {
     user.value = null
     token.value = null
     apiService.clearToken()
+    localStorage.removeItem('auth_token')
   }
 
   const login = async (credentials: LoginCredentials): Promise<void> => {
     isLoading.value = true
     try {
-      const response = await apiService.post<AuthResponse>('/auth/login', credentials)
+      const response = await apiService.post<AuthResponse>('/login', credentials)
       setAuth(response)
     } finally {
       isLoading.value = false
@@ -39,7 +41,7 @@ export const useAuthStore = defineStore('auth', () => {
   const register = async (userData: RegisterData): Promise<void> => {
     isLoading.value = true
     try {
-      const response = await apiService.post<AuthResponse>('/auth/register', userData)
+      const response = await apiService.post<AuthResponse>('/register', userData)
       setAuth(response)
     } finally {
       isLoading.value = false
@@ -51,7 +53,7 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       // Call logout endpoint if authenticated
       if (isAuthenticated.value) {
-        await apiService.post('/auth/logout')
+        await apiService.post('/logout')
       }
     } catch (error) {
       // Continue with logout even if API call fails
@@ -67,8 +69,8 @@ export const useAuthStore = defineStore('auth', () => {
 
     isLoading.value = true
     try {
-      const response = await apiService.get<{ data: User }>('/auth/user')
-      user.value = response.data
+      const userResponse = await apiService.get<User>('/user')
+      user.value = userResponse
     } catch (error) {
       // If user fetch fails, clear auth
       clearAuth()
@@ -103,7 +105,7 @@ export const useAuthStore = defineStore('auth', () => {
 
     isLoading.value = true
     try {
-      const response = await apiService.post<AuthResponse>('/auth/refresh')
+      const response = await apiService.post<AuthResponse>('/refresh')
       setAuth(response)
     } catch (error) {
       // If refresh fails, clear auth

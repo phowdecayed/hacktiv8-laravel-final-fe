@@ -72,10 +72,10 @@ export const useProducts = () => {
   }
 
   const sortProducts = async (
-    sortBy: 'name' | 'price' | 'created_at',
-    sortOrder: 'asc' | 'desc' = 'asc',
+    sort: 'name' | 'price' | 'created_at',
+    order: 'asc' | 'desc' = 'asc',
   ) => {
-    await fetchProducts({ sort_by: sortBy, sort_order: sortOrder, page: 1 })
+    await fetchProducts({ sort: sort, order: order, page: 1 })
   }
 
   const filterByPriceRange = async (minPrice?: number, maxPrice?: number) => {

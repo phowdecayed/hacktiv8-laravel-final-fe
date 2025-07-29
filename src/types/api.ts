@@ -179,10 +179,13 @@ export interface PaginatedResponse<T> {
 export interface ProductFilters {
   search?: string
   category_id?: number
+  status?: 'available' | 'unavailable'
+  date_from?: string
+  date_to?: string
   min_price?: number
   max_price?: number
-  sort_by?: 'name' | 'price' | 'created_at'
-  sort_order?: 'asc' | 'desc'
+  sort?: 'name' | 'price' | 'created_at'
+  order?: 'asc' | 'desc'
   page?: number
-  per_page?: number
+  limit?: number
 }

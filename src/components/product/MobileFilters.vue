@@ -51,14 +51,14 @@
           <div class="space-y-2">
             <Label class="text-sm font-medium">Category</Label>
             <Select
-              :model-value="localFilters.category_id?.toString() || ''"
+              :model-value="localFilters.category_id?.toString() || 'all'"
               @update:model-value="handleCategoryChange"
             >
               <SelectTrigger>
                 <SelectValue placeholder="All Categories" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Categories</SelectItem>
+                <SelectItem value="all">All Categories</SelectItem>
                 <SelectItem
                   v-for="category in categories"
                   :key="category.id"
@@ -253,7 +253,7 @@ const handleSortChange = (value: any) => {
 }
 
 const handleCategoryChange = (value: any) => {
-  const categoryId = value && typeof value === 'string' ? parseInt(value) : undefined
+  const categoryId = value === 'all' ? undefined : parseInt(value as string)
   localFilters.value.category_id = categoryId
 }
 
