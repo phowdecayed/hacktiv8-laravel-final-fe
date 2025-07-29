@@ -1,0 +1,188 @@
+// User related types
+export interface User {
+  id: number
+  name: string
+  email: string
+  email_verified_at: string | null
+  created_at: string
+  updated_at: string
+}
+
+export interface AuthResponse {
+  user: User
+  token: string
+}
+
+export interface LoginCredentials {
+  email: string
+  password: string
+}
+
+export interface RegisterData {
+  name: string
+  email: string
+  password: string
+  password_confirmation: string
+}
+
+// Product related types
+export interface Product {
+  id: number
+  name: string
+  description: string | null
+  price: string
+  stock: number
+  category_id: number | null
+  user_id: number
+  created_at: string
+  updated_at: string
+  deleted_at: string | null
+  user: User
+  category: Category | null
+  images: ProductImage[]
+}
+
+export interface ProductImage {
+  id: number
+  product_id: number
+  image_path: string
+  user_id: number
+  created_at: string
+  updated_at: string
+  deleted_at: string | null
+}
+
+export interface Category {
+  id: number
+  name: string
+  description: string | null
+  user_id: number
+  created_at: string
+  updated_at: string
+  deleted_at: string | null
+  user: User
+  products?: Product[]
+}
+
+// Cart related types
+export interface CartItem {
+  id: number
+  user_id: number
+  product_id: number
+  quantity: number
+  price: string
+  total: string
+  created_at: string
+  updated_at: string
+  product: Product
+}
+
+export interface CartSummary {
+  data: CartItem[]
+  total: string
+  item_count: number
+}
+
+export interface AddToCartRequest {
+  product_id: number
+  quantity: number
+}
+
+export interface UpdateCartItemRequest {
+  quantity: number
+}
+
+export interface CartValidationResult {
+  valid: boolean
+  errors: string[]
+}
+
+// Transaction related types
+export interface Transaction {
+  id: number
+  user_id: number
+  total_amount: string
+  status: TransactionStatus
+  notes: string | null
+  created_at: string
+  updated_at: string
+  deleted_at: string | null
+  user: User
+  items: TransactionItem[]
+}
+
+export interface TransactionItem {
+  id: number
+  transaction_id: number
+  product_id: number
+  quantity: number
+  price: string
+  total: string
+  created_at: string
+  updated_at: string
+  product: Product
+}
+
+export type TransactionStatus =
+  | 'pending'
+  | 'processing'
+  | 'shipped'
+  | 'delivered'
+  | 'cancelled'
+  | 'refunded'
+
+export interface CreateTransactionRequest {
+  notes?: string
+}
+
+export interface TransactionFilters {
+  status?: TransactionStatus
+  sort_by?: 'created_at' | 'total_amount'
+  sort_order?: 'asc' | 'desc'
+  page?: number
+  per_page?: number
+}
+
+// API response types
+export interface ApiResponse<T> {
+  data: T
+  message?: string
+}
+
+export interface ApiError {
+  message: string
+  errors?: Record<string, string[]>
+}
+
+// Pagination types
+export interface PaginationMeta {
+  current_page: number
+  from: number
+  last_page: number
+  per_page: number
+  to: number
+  total: number
+}
+
+export interface PaginatedResponse<T> {
+  data: T[]
+  meta: PaginationMeta
+  links: {
+    first: string
+    last: string
+    prev: string | null
+    next: string | null
+  }
+}
+
+// Filter and search types
+export interface ProductFilters {
+  search?: string
+  category_id?: number
+  min_price?: number
+  max_price?: number
+  sort_by?: 'name' | 'price' | 'created_at'
+  sort_order?: 'asc' | 'desc'
+  page?: number
+  per_page?: number
+}
