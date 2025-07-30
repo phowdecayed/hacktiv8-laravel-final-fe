@@ -174,7 +174,7 @@ export const useProductsStore = defineStore('products', () => {
   }
 
   const decrementProductStock = (productId: number, quantity: number) => {
-    const product = products.value.find(p => p.id === productId)
+    const product = products.value.find((p) => p.id === productId)
     if (product) {
       product.stock -= quantity
       // Also update currentProduct if it's the same product
@@ -185,12 +185,44 @@ export const useProductsStore = defineStore('products', () => {
   }
 
   const updateProductStock = (productId: number, newStock: number) => {
-    const product = products.value.find(p => p.id === productId)
+    const product = products.value.find((p) => p.id === productId)
     if (product) {
       product.stock = newStock
       if (currentProduct.value && currentProduct.value.id === productId) {
         currentProduct.value.stock = newStock
       }
+    }
+  }
+
+  // Admin-specific methods
+  const addProduct = (product: Product) => {
+    products.value.unshift(product)
+  }
+
+  const updateProduct = (updatedProduct: Product) => {
+    const index = products.value.findIndex((p) => p.id === updatedProduct.id)
+    if (index !== -1) {
+      products.value[index] = updatedProduct
+    }
+    if (currentProduct.value && currentProduct.value.id === updatedProduct.id) {
+      currentProduct.value = updatedProduct
+    }
+  }
+
+  const removeProduct = (productId: number) => {
+    const index = products.value.findIndex((p) => p.id === productId)
+    if (index !== -1) {
+      products.value.splice(index, 1)
+    }
+    if (currentProduct.value && currentProduct.value.id === productId) {
+      currentProduct.value = null
+    }
+  }
+
+  const removeProducts = (productIds: number[]) => {
+    products.value = products.value.filter((p) => !productIds.includes(p.id))
+    if (currentProduct.value && productIds.includes(currentProduct.value.id)) {
+      currentProduct.value = null
     }
   }
 
@@ -226,5 +258,9 @@ export const useProductsStore = defineStore('products', () => {
     clearCurrentProduct,
     decrementProductStock,
     updateProductStock,
+    addProduct,
+    updateProduct,
+    removeProduct,
+    removeProducts,
   }
 })

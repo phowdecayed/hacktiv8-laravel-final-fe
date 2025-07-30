@@ -16,6 +16,6 @@
     "module": "ESNext",
     "moduleResolution": "Bundler",
     "types": ["node"],
-    "lib": ["es2024", "esnext"]
+    "lib": ["es2020", "esnext"]
   }
 }

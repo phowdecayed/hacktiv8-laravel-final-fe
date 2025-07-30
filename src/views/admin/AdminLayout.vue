@@ -1,39 +1,47 @@
 <template>
-  <div class="min-h-screen bg-gray-50">
+  <div class="admin-layout bg-gray-50">
     <!-- Mobile sidebar overlay -->
     <div
       v-if="isMobile() && !sidebarCollapsed"
-      class="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+      class="mobile-sidebar-overlay lg:hidden"
       @click="closeMobileSidebar"
     />
 
     <!-- Sidebar -->
-    <AdminSidebar
-      :collapsed="sidebarCollapsed"
-      :is-mobile="isMobile()"
-      @toggle-collapse="toggleSidebar"
-      @nav-click="handleNavClick"
-      :class="[
-        'fixed inset-y-0 left-0 z-50 transition-transform duration-300',
-        isMobile() && sidebarCollapsed ? '-translate-x-full' : 'translate-x-0',
-      ]"
-    />
+    <div 
+      class="admin-sidebar-container"
+      :class="{
+        'admin-sidebar-expanded': !sidebarCollapsed || !isMobile(),
+        'admin-sidebar-collapsed': sidebarCollapsed && isMobile()
+      }"
+    >
+      <AdminSidebar
+        :collapsed="sidebarCollapsed"
+        :is-mobile="isMobile()"
+        @toggle-collapse="toggleSidebar"
+        @nav-click="handleNavClick"
+      />
+    </div>
 
-    <!-- Main content -->
+    <!-- Main content wrapper -->
     <div
-      class="transition-all duration-300"
-      :class="[isMobile() ? 'ml-0' : sidebarCollapsed ? 'ml-16' : 'ml-64']"
+      class="admin-main-content"
+      :class="{
+        'admin-main-content-mobile': isMobile(),
+        'admin-main-content-collapsed': !isMobile() && sidebarCollapsed,
+        'admin-main-content-expanded': !isMobile() && !sidebarCollapsed
+      }"
     >
       <!-- Header -->
       <AdminHeader
         @toggle-sidebar="toggleSidebar"
         @logout="handleLogout"
         :is-mobile="isMobile()"
-        class="sticky top-0 z-40"
+        class="admin-header"
       />
 
       <!-- Page content -->
-      <main class="p-4 sm:p-6">
+      <main class="admin-content-area p-4 sm:p-6">
         <!-- Breadcrumb -->
         <AdminBreadcrumb v-if="showBreadcrumb" class="mb-4 sm:mb-6" />
 

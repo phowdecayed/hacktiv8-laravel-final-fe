@@ -32,6 +32,14 @@ export interface TableColumn {
   sortable?: boolean
   width?: string
   align?: 'left' | 'center' | 'right'
+  formatter?: (value: any, item: any) => string
+}
+
+export interface TableAction {
+  key: string
+  label: string
+  icon: any
+  variant?: 'default' | 'destructive'
 }
 
 export interface PaginationConfig {
@@ -48,9 +56,24 @@ export interface FormSchema {
 export interface FormField {
   name: string
   label: string
-  type: 'text' | 'email' | 'password' | 'number' | 'textarea' | 'select' | 'file' | 'checkbox'
+  type:
+    | 'input'
+    | 'textarea'
+    | 'select'
+    | 'multiselect'
+    | 'checkbox'
+    | 'radio'
+    | 'switch'
+    | 'number'
+    | 'date'
+    | 'file'
+    | 'custom'
   required?: boolean
   placeholder?: string
   options?: Array<{ label: string; value: any }>
   validation?: any
+  rows?: number
+  min?: number
+  max?: number
+  step?: number
 }

@@ -141,7 +141,12 @@ router.beforeEach(async (to, from, next) => {
 
   // Set document title
   if (to.meta.title) {
-    document.title = `${to.meta.title} - Admin Panel`
+    const isAdminRoute = to.path.startsWith('/admin')
+    if (isAdminRoute) {
+      document.title = `${to.meta.title} - Admin Panel`
+    } else {
+      document.title = `${to.meta.title} - Shop`
+    }
   }
 
   next()

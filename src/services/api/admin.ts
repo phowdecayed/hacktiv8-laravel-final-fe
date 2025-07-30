@@ -108,6 +108,22 @@ export class AdminApiService {
     return apiService.post('/api/admin/products/bulk-delete', { ids })
   }
 
+  async bulkUpdateProductStock(
+    updates: Array<{ id: number; stock: number }>,
+  ): Promise<ApiResponse<void>> {
+    return apiService.post('/api/admin/products/bulk-update-stock', { updates })
+  }
+
+  async bulkUpdateProductCategory(
+    productIds: number[],
+    categoryId: number | null,
+  ): Promise<ApiResponse<void>> {
+    return apiService.post('/api/admin/products/bulk-update-category', {
+      product_ids: productIds,
+      category_id: categoryId,
+    })
+  }
+
   // Category Management
   async getCategories(filters?: CategoryFilters): Promise<ApiResponseWithPagination<Category>> {
     return apiService.get('/api/admin/categories', filters)

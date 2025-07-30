@@ -22,7 +22,7 @@ export const useCart = () => {
   // Helper functions
   const requireAuth = () => {
     if (!authStore.isAuthenticated) {
-      notifications.showAuthError()
+      notifications.error('Please log in to add items to cart')
       throw new Error('Authentication required')
     }
   }
@@ -42,15 +42,16 @@ export const useCart = () => {
     try {
       requireAuth()
 
-      const loadingToast = notifications.showLoading('Adding item to cart...')
+      const loadingToast = notifications.loading('Adding item to cart...')
 
       await cartStore.addToCart(productId, quantity)
 
-      notifications.updateLoadingToast(loadingToast, 'success', 'Item added to cart')
+      notifications.dismiss(loadingToast)
+      notifications.success('Item added to cart')
       return true
     } catch (error: any) {
       const message = error?.message || 'Failed to add item to cart'
-      notifications.showError(message)
+      notifications.error(message)
       return false
     }
   }
@@ -60,21 +61,22 @@ export const useCart = () => {
       requireAuth()
 
       if (quantity < 0) {
-        notifications.showError('Quantity cannot be negative')
+        notifications.error('Quantity cannot be negative')
         return false
       }
 
-      const loadingToast = notifications.showLoading('Updating cart...')
+      const loadingToast = notifications.loading('Updating cart...')
 
       await cartStore.updateQuantity(itemId, quantity)
 
       const successMessage = quantity === 0 ? 'Item removed from cart' : 'Cart updated'
-      notifications.updateLoadingToast(loadingToast, 'success', successMessage)
+      notifications.dismiss(loadingToast)
+      notifications.success(successMessage)
 
       return true
     } catch (error: any) {
       const message = error?.message || 'Failed to update cart'
-      notifications.showError(message)
+      notifications.error(message)
       return false
     }
   }
@@ -83,15 +85,16 @@ export const useCart = () => {
     try {
       requireAuth()
 
-      const loadingToast = notifications.showLoading('Removing item...')
+      const loadingToast = notifications.loading('Removing item...')
 
       await cartStore.removeItem(itemId)
 
-      notifications.updateLoadingToast(loadingToast, 'success', 'Item removed from cart')
+      notifications.dismiss(loadingToast)
+      notifications.success('Item removed from cart')
       return true
     } catch (error: any) {
       const message = error?.message || 'Failed to remove item'
-      notifications.showError(message)
+      notifications.error(message)
       return false
     }
   }
@@ -100,30 +103,32 @@ export const useCart = () => {
     try {
       requireAuth()
 
-      const loadingToast = notifications.showLoading('Clearing cart...')
+      const loadingToast = notifications.loading('Clearing cart...')
 
       await cartStore.clearCart()
 
-      notifications.updateLoadingToast(loadingToast, 'success', 'Cart cleared')
+      notifications.dismiss(loadingToast)
+      notifications.success('Cart cleared')
       return true
     } catch (error: any) {
       const message = error?.message || 'Failed to clear cart'
-      notifications.showError(message)
+      notifications.error(message)
       return false
     }
   }
 
   const refreshCart = async (): Promise<boolean> => {
     try {
-      const loadingToast = notifications.showLoading('Refreshing cart...')
+      const loadingToast = notifications.loading('Refreshing cart...')
 
       await cartStore.syncWithBackend()
 
-      notifications.updateLoadingToast(loadingToast, 'success', 'Cart refreshed')
+      notifications.dismiss(loadingToast)
+      notifications.success('Cart refreshed')
       return true
     } catch (error: any) {
       const message = error?.message || 'Failed to refresh cart'
-      notifications.showError(message)
+      notifications.error(message)
       return false
     }
   }
@@ -176,7 +181,7 @@ export const useCart = () => {
   }
 
   const getStockValidationStatus = (productId: number) => {
-    const validation = stockValidation.value.find(item => item.product_id === productId)
+    const validation = stockValidation.value.find((item) => item.product_id === productId)
     if (!validation) return 'valid'
     if (validation.available_stock === 0) return 'unavailable'
     if (validation.available_stock < validation.cart_quantity) return 'insufficient'
@@ -190,7 +195,7 @@ export const useCart = () => {
     try {
       requireAuth()
 
-      const loadingToast = notifications.showLoading(`Updating ${updates.length} items...`)
+      const loadingToast = notifications.loading(`Updating ${updates.length} items...`)
 
       const promises = updates.map(({ itemId, quantity }) =>
         cartStore.updateQuantity(itemId, quantity),
@@ -198,11 +203,12 @@ export const useCart = () => {
 
       await Promise.all(promises)
 
-      notifications.updateLoadingToast(loadingToast, 'success', 'Cart updated')
+      notifications.dismiss(loadingToast)
+      notifications.success('Cart updated')
       return true
     } catch (error: any) {
       const message = error?.message || 'Failed to update cart items'
-      notifications.showError(message)
+      notifications.error(message)
       return false
     }
   }
@@ -211,20 +217,17 @@ export const useCart = () => {
     try {
       requireAuth()
 
-      const loadingToast = notifications.showLoading(`Removing ${itemIds.length} items...`)
+      const loadingToast = notifications.loading(`Removing ${itemIds.length} items...`)
 
       const promises = itemIds.map((itemId) => cartStore.removeItem(itemId))
       await Promise.all(promises)
 
-      notifications.updateLoadingToast(
-        loadingToast,
-        'success',
-        `${itemIds.length} item(s) removed from cart`,
-      )
+      notifications.dismiss(loadingToast)
+      notifications.success(`${itemIds.length} item(s) removed from cart`)
       return true
     } catch (error: any) {
       const message = error?.message || 'Failed to remove items'
-      notifications.showError(message)
+      notifications.error(message)
       return false
     }
   }
