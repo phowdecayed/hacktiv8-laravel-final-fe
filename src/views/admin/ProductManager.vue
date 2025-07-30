@@ -38,7 +38,7 @@
                 <SelectValue placeholder="All Categories" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Categories</SelectItem>
+                <SelectItem value="all">All Categories</SelectItem>
                 <SelectItem
                   v-for="category in categories"
                   :key="category.id"
@@ -58,7 +58,7 @@
                 <SelectValue placeholder="All Products" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Products</SelectItem>
+                <SelectItem value="all">All Products</SelectItem>
                 <SelectItem value="in_stock">In Stock</SelectItem>
                 <SelectItem value="low_stock">Low Stock (≤10)</SelectItem>
                 <SelectItem value="out_of_stock">Out of Stock</SelectItem>
@@ -251,7 +251,7 @@
                 <SelectValue placeholder="Select category" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">No Category</SelectItem>
+                <SelectItem value="none">No Category</SelectItem>
                 <SelectItem
                   v-for="category in categories"
                   :key="category.id"
@@ -328,8 +328,8 @@ const { success, error: showError } = useNotifications()
 
 // State
 const searchQuery = ref('')
-const selectedCategory = ref('')
-const stockFilter = ref('')
+const selectedCategory = ref('all')
+const stockFilter = ref('all')
 const sortBy = ref('created_at_desc')
 
 // Dialog states
@@ -421,7 +421,7 @@ const productFormSchema = computed(
         label: 'Category',
         placeholder: 'Select a category',
         options: [
-          { label: 'No Category', value: '' },
+          { label: 'No Category', value: 'none' },
           ...categories.value.map((cat) => ({ label: cat.name, value: cat.id.toString() })),
         ],
       },
@@ -466,11 +466,11 @@ const applyFilters = async () => {
     filters.search = searchQuery.value
   }
 
-  if (selectedCategory.value) {
+  if (selectedCategory.value && selectedCategory.value !== 'all') {
     filters.category_id = parseInt(selectedCategory.value)
   }
 
-  if (stockFilter.value) {
+  if (stockFilter.value && stockFilter.value !== 'all') {
     switch (stockFilter.value) {
       case 'in_stock':
         filters.min_stock = 1
@@ -507,18 +507,27 @@ const openCreateDialog = () => {
   showProductDialog.value = true
 }
 
-const openEditDialog = (product: Product) => {
-  editingProduct.value = product
-  productFormData.value = {
-    name: product.name,
-    description: product.description || '',
-    price: parseFloat(product.price),
-    stock: product.stock,
-    category_id: product.category_id?.toString() || '',
-    images: [],
+  if (editingProduct.value) {
+    editingProduct.value = product
+    productFormData.value = {
+      name: product.name,
+      description: product.description || '',
+      price: parseFloat(product.price),
+      stock: product.stock,
+      category_id: product.category_id ? product.category_id.toString() : 'none',
+      images: [],
+    }
+  } else {
+    editingProduct.value = null
+    productFormData.value = {
+      name: '',
+      description: '',
+      price: 0,
+      stock: 0,
+      category_id: 'none',
+      images: [],
+    }
   }
-  showProductDialog.value = true
-}
 
 const closeProductDialog = () => {
   showProductDialog.value = false
@@ -535,7 +544,7 @@ const handleProductSubmit = async (formData: any) => {
       description: formData.description || undefined,
       price: formData.price,
       stock: formData.stock,
-      category_id: formData.category_id ? parseInt(formData.category_id) : undefined,
+      category_id: formData.category_id && formData.category_id !== 'none' ? parseInt(formData.category_id) : undefined,
       images: formData.images || [],
     }
 
@@ -657,7 +666,7 @@ const closeBulkCategoryDialog = () => {
 
 const handleBulkCategoryUpdate = async () => {
   try {
-    const categoryId = bulkCategoryId.value ? parseInt(bulkCategoryId.value) : undefined
+    const categoryId = bulkCategoryId.value && bulkCategoryId.value !== 'none' ? parseInt(bulkCategoryId.value) : undefined
 
     for (const product of selectedProducts.value) {
       await adminApiService.updateProduct(product.id, { category_id: categoryId })

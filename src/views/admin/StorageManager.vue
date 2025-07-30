@@ -37,7 +37,7 @@
                 <SelectValue placeholder="All types" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All types</SelectItem>
+                <SelectItem value="all">All types</SelectItem>
                 <SelectItem value="image">Images</SelectItem>
                 <SelectItem value="document">Documents</SelectItem>
                 <SelectItem value="archive">Archives</SelectItem>
@@ -54,7 +54,7 @@
                 <SelectValue placeholder="All users" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All users</SelectItem>
+                <SelectItem value="all">All users</SelectItem>
                 <SelectItem v-for="user in users" :key="user.id" :value="user.id.toString()">
                   {{ user.name }}
                 </SelectItem>
@@ -469,7 +469,7 @@ const applyFilters = async () => {
     // Clean up empty string values
     const cleanFilters = Object.fromEntries(
       Object.entries(filters).filter(
-        ([_, value]) => value !== '' && value !== null && value !== undefined,
+        ([_, value]) => value !== 'all' && value !== null && value !== undefined,
       ),
     )
     await fetchFiles(cleanFilters)
@@ -508,7 +508,7 @@ const changePage = async (page: number) => {
   try {
     const cleanFilters = Object.fromEntries(
       Object.entries(filters).filter(
-        ([_, value]) => value !== '' && value !== null && value !== undefined,
+        ([_, value]) => value !== 'all' && value !== null && value !== undefined,
       ),
     )
     await fetchFiles({ ...cleanFilters, page })

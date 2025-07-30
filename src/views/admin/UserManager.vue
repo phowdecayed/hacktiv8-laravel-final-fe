@@ -33,7 +33,7 @@
               <SelectValue placeholder="All Roles" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All Roles</SelectItem>
+              <SelectItem value="all">All Roles</SelectItem>
               <SelectItem value="admin">Admin</SelectItem>
               <SelectItem value="editor">Editor</SelectItem>
               <SelectItem value="moderator">Moderator</SelectItem>
@@ -46,7 +46,7 @@
               <SelectValue placeholder="All Users" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All Users</SelectItem>
+              <SelectItem value="all">All Users</SelectItem>
               <SelectItem value="true">Verified</SelectItem>
               <SelectItem value="false">Unverified</SelectItem>
             </SelectContent>
@@ -295,8 +295,8 @@ const { success: showSuccess, error: showError } = useNotifications()
 
 // Reactive state
 const searchQuery = ref('')
-const selectedRole = ref<string>('')
-const verifiedFilter = ref<string>('')
+const selectedRole = ref<string>('all')
+const verifiedFilter = ref<string>('all')
 const showUserDialog = ref(false)
 const showDetailsDialog = ref(false)
 const showConfirmDialog = ref(false)
@@ -498,8 +498,8 @@ const handleVerifiedFilter = () => {
 
 const clearFilters = () => {
   searchQuery.value = ''
-  selectedRole.value = ''
-  verifiedFilter.value = ''
+  selectedRole.value = 'all'
+  verifiedFilter.value = 'all'
   fetchUsers()
 }
 
@@ -511,11 +511,11 @@ const fetchUsers = async () => {
       filters.search = searchQuery.value
     }
 
-    if (selectedRole.value) {
+    if (selectedRole.value && selectedRole.value !== 'all') {
       filters.role = selectedRole.value
     }
 
-    if (verifiedFilter.value) {
+    if (verifiedFilter.value && verifiedFilter.value !== 'all') {
       filters.verified = verifiedFilter.value === 'true'
     }
 

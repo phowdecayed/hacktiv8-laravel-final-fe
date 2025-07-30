@@ -32,8 +32,8 @@
                 <SelectValue placeholder="All users" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All users</SelectItem>
-                <SelectItem v-for="user in users" :key="user.id" :value="user.id">
+                <SelectItem value="all">All users</SelectItem>
+                <SelectItem v-for="user in users" :key="user.id" :value="user.id.toString()">
                   {{ user.name }}
                 </SelectItem>
               </SelectContent>
@@ -48,7 +48,7 @@
                 <SelectValue placeholder="All models" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All models</SelectItem>
+                <SelectItem value="all">All models</SelectItem>
                 <SelectItem value="User">User</SelectItem>
                 <SelectItem value="Product">Product</SelectItem>
                 <SelectItem value="Category">Category</SelectItem>
@@ -66,7 +66,7 @@
                 <SelectValue placeholder="All actions" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All actions</SelectItem>
+                <SelectItem value="all">All actions</SelectItem>
                 <SelectItem value="created">Created</SelectItem>
                 <SelectItem value="updated">Updated</SelectItem>
                 <SelectItem value="deleted">Deleted</SelectItem>
@@ -303,7 +303,7 @@ const applyFilters = async () => {
     // Clean up empty string values
     const cleanFilters = Object.fromEntries(
       Object.entries(filters.value).filter(
-        ([_, value]) => value !== '' && value !== null && value !== undefined,
+        ([_, value]) => value !== 'all' && value !== null && value !== undefined,
       ),
     )
     await auditStore.fetchAuditTrail(cleanFilters)
@@ -341,7 +341,7 @@ const changePage = async (page: number) => {
   try {
     const cleanFilters = Object.fromEntries(
       Object.entries(filters.value).filter(
-        ([_, value]) => value !== '' && value !== null && value !== undefined,
+        ([_, value]) => value !== 'all' && value !== null && value !== undefined,
       ),
     )
     await auditStore.fetchAuditTrail({ ...cleanFilters, page })
@@ -358,7 +358,7 @@ const exportAuditTrail = async () => {
   try {
     const cleanFilters = Object.fromEntries(
       Object.entries(filters.value).filter(
-        ([_, value]) => value !== '' && value !== null && value !== undefined,
+        ([_, value]) => value !== 'all' && value !== null && value !== undefined,
       ),
     )
     await auditStore.exportAuditTrail(cleanFilters)

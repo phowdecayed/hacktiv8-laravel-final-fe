@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { adminApiService } from '@/services/api/admin'
-import type { AuditTrail, AuditTrailFilters, ApiResponseWithPagination } from '@/types'
+import type { AuditTrail, AuditTrailFilters, ApiResponseWithPagination, ApiResponseWrapper } from '@/types'
 
 export const useAuditTrailStore = defineStore('auditTrail', () => {
   // State
@@ -32,9 +32,8 @@ export const useAuditTrailStore = defineStore('auditTrail', () => {
     }
 
     try {
-      const response: ApiResponseWithPagination<AuditTrail> = await adminApiService.getAuditTrail(
-        filters.value,
-      )
+      const responseWrapper = await adminApiService.getAuditTrail(filters.value)
+      const response = responseWrapper.data
       auditEntries.value = response.data
       pagination.value = {
         current_page: response.current_page,

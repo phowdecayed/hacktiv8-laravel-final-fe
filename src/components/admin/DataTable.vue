@@ -284,6 +284,7 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
+  data: () => [],
   loading: false,
   selectable: false,
   actions: () => [],
@@ -313,7 +314,10 @@ const currentPage = ref(1)
 
 // Computed properties
 const filteredData = computed(() => {
-  let filtered = [...props.data]
+  // Ensure props.data is an array
+  const dataArray = Array.isArray(props.data) ? props.data : []
+  
+  let filtered = [...dataArray]
 
   // Apply search filter
   if (searchQuery.value) {
@@ -348,7 +352,12 @@ const endIndex = computed(() =>
   Math.min(startIndex.value + props.pageSize, filteredData.value.length),
 )
 
-const paginatedData = computed(() => filteredData.value.slice(startIndex.value, endIndex.value))
+const paginatedData = computed(() => {
+  if (!Array.isArray(filteredData.value)) {
+    return []
+  }
+  return filteredData.value.slice(startIndex.value, endIndex.value)
+})
 
 const visiblePages = computed(() => {
   const pages = []
@@ -370,6 +379,9 @@ const totalColumns = computed(() => {
 })
 
 const isAllSelected = computed(() => {
+  if (!Array.isArray(paginatedData.value) || paginatedData.value.length === 0) {
+    return false
+  }
   const currentPageKeys = paginatedData.value.map((item, index) => getRowKey(item, index))
   return (
     currentPageKeys.length > 0 && currentPageKeys.every((key) => selectedRows.value.includes(key))
@@ -377,6 +389,9 @@ const isAllSelected = computed(() => {
 })
 
 const isIndeterminate = computed(() => {
+  if (!Array.isArray(paginatedData.value) || paginatedData.value.length === 0) {
+    return false
+  }
   const currentPageKeys = paginatedData.value.map((item, index) => getRowKey(item, index))
   const selectedCount = currentPageKeys.filter((key) => selectedRows.value.includes(key)).length
   return selectedCount > 0 && selectedCount < currentPageKeys.length

@@ -26,6 +26,11 @@ export interface ApiResponseWithPagination<T> {
   total: number
 }
 
+export interface ApiResponseWrapper<T> {
+  data: T
+  message?: string
+}
+
 export interface TableColumn {
   key: string
   label: string

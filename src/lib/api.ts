@@ -107,7 +107,7 @@ export class ApiService {
   }
 
   async validateStock(): Promise<StockValidationResponse> {
-    return this.get('/api/cart/validate-stock')
+    return this.get('/cart/validate-stock')
   }
 }
 

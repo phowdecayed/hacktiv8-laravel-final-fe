@@ -21,16 +21,17 @@ import type {
   FileUploadRequest,
   ApiResponseWithPagination,
   ApiResponse,
+  ApiResponseWrapper,
 } from '@/types'
 
 export class AdminApiService {
   // User Management
-  async getUsers(filters?: UserFilters): Promise<ApiResponseWithPagination<User>> {
-    return apiService.get('/api/admin/users', filters)
+  async getUsers(filters?: UserFilters): Promise<ApiResponseWrapper<ApiResponseWithPagination<User>>> {
+    return apiService.get('/users', filters)
   }
 
-  async getUser(id: number): Promise<ApiResponse<User>> {
-    return apiService.get(`/api/admin/users/${id}`)
+  async getUser(id: number): Promise<ApiResponseWrapper<User>> {
+    return apiService.get(`/users/${id}`)
   }
 
   async createUser(data: CreateUserRequest): Promise<ApiResponse<User>> {
@@ -50,12 +51,12 @@ export class AdminApiService {
   }
 
   // Product Management
-  async getProducts(filters?: any): Promise<ApiResponseWithPagination<Product>> {
-    return apiService.get('/api/admin/products', filters)
+  async getProducts(filters?: any): Promise<ApiResponseWrapper<ApiResponseWithPagination<Product>>> {
+    return apiService.get('/products', filters)
   }
 
-  async getProduct(id: number): Promise<ApiResponse<Product>> {
-    return apiService.get(`/api/admin/products/${id}`)
+  async getProduct(id: number): Promise<ApiResponseWrapper<Product>> {
+    return apiService.get(`/products/${id}`)
   }
 
   async createProduct(data: CreateProductRequest): Promise<ApiResponse<Product>> {
@@ -125,12 +126,12 @@ export class AdminApiService {
   }
 
   // Category Management
-  async getCategories(filters?: CategoryFilters): Promise<ApiResponseWithPagination<Category>> {
-    return apiService.get('/api/admin/categories', filters)
+  async getCategories(filters?: CategoryFilters): Promise<ApiResponseWrapper<ApiResponseWithPagination<Category>>> {
+    return apiService.get('/categories', filters)
   }
 
-  async getCategory(id: number): Promise<ApiResponse<Category>> {
-    return apiService.get(`/api/admin/categories/${id}`)
+  async getCategory(id: number): Promise<ApiResponseWrapper<Category>> {
+    return apiService.get(`/categories/${id}`)
   }
 
   async createCategory(data: CreateCategoryRequest): Promise<ApiResponse<Category>> {
@@ -152,12 +153,12 @@ export class AdminApiService {
   // Transaction Management
   async getTransactions(
     filters?: TransactionFilters,
-  ): Promise<ApiResponseWithPagination<Transaction>> {
-    return apiService.get('/api/admin/transactions', filters)
+  ): Promise<ApiResponseWrapper<ApiResponseWithPagination<Transaction>>> {
+    return apiService.get('/transactions', filters)
   }
 
-  async getTransaction(id: number): Promise<ApiResponse<Transaction>> {
-    return apiService.get(`/api/admin/transactions/${id}`)
+  async getTransaction(id: number): Promise<ApiResponseWrapper<Transaction>> {
+    return apiService.get(`/transactions/${id}`)
   }
 
   async updateTransaction(
@@ -176,12 +177,12 @@ export class AdminApiService {
   }
 
   // Audit Trail
-  async getAuditTrail(filters?: AuditTrailFilters): Promise<ApiResponseWithPagination<AuditTrail>> {
-    return apiService.get('/api/admin/audit-trail', filters)
+  async getAuditTrail(filters?: AuditTrailFilters): Promise<ApiResponseWrapper<ApiResponseWithPagination<AuditTrail>>> {
+    return apiService.get('/audit-trails', filters)
   }
 
-  async getAuditTrailEntry(id: number): Promise<ApiResponse<AuditTrail>> {
-    return apiService.get(`/api/admin/audit-trail/${id}`)
+  async getAuditTrailEntry(id: number): Promise<ApiResponseWrapper<AuditTrail>> {
+    return apiService.get(`/audit-trails/${id}`)
   }
 
   async exportAuditTrail(filters?: AuditTrailFilters): Promise<Blob> {
@@ -192,12 +193,12 @@ export class AdminApiService {
   }
 
   // Storage Management
-  async getStorageFiles(filters?: StorageFilters): Promise<ApiResponseWithPagination<StorageFile>> {
-    return apiService.get('/api/admin/storage', filters)
+  async getStorageFiles(filters?: StorageFilters): Promise<ApiResponseWrapper<ApiResponseWithPagination<StorageFile>>> {
+    return apiService.get('/storage', filters)
   }
 
-  async getStorageFile(id: number): Promise<ApiResponse<StorageFile>> {
-    return apiService.get(`/api/admin/storage/${id}`)
+  async getStorageFile(id: number): Promise<ApiResponseWrapper<StorageFile>> {
+    return apiService.get(`/storage/${id}`)
   }
 
   async uploadFile(data: FileUploadRequest): Promise<ApiResponse<StorageFile>> {
@@ -219,20 +220,20 @@ export class AdminApiService {
   }
 
   // Dashboard Analytics
-  async getDashboardStats(): Promise<ApiResponse<any>> {
-    return apiService.get('/api/admin/dashboard/stats')
+  async getDashboardStats(): Promise<ApiResponseWrapper<any>> {
+    return apiService.get('/admin/dashboard/stats')
   }
 
-  async getSalesAnalytics(dateRange?: { from: string; to: string }): Promise<ApiResponse<any>> {
-    return apiService.get('/api/admin/analytics/sales', dateRange)
+  async getSalesAnalytics(dateRange?: { from: string; to: string }): Promise<ApiResponseWrapper<any>> {
+    return apiService.get('/admin/analytics/sales', dateRange)
   }
 
-  async getInventoryAnalytics(): Promise<ApiResponse<any>> {
-    return apiService.get('/api/admin/analytics/inventory')
+  async getInventoryAnalytics(): Promise<ApiResponseWrapper<any>> {
+    return apiService.get('/admin/analytics/inventory')
   }
 
-  async getUserAnalytics(): Promise<ApiResponse<any>> {
-    return apiService.get('/api/admin/analytics/users')
+  async getUserAnalytics(): Promise<ApiResponseWrapper<any>> {
+    return apiService.get('/admin/analytics/users')
   }
 }
 

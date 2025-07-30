@@ -7,6 +7,7 @@ import type {
   CreateUserRequest,
   UpdateUserRequest,
   ApiResponseWithPagination,
+  ApiResponseWrapper,
 } from '@/types'
 
 export const useUsersStore = defineStore('users', () => {
@@ -37,9 +38,8 @@ export const useUsersStore = defineStore('users', () => {
     }
 
     try {
-      const response: ApiResponseWithPagination<User> = await adminApiService.getUsers(
-        filters.value,
-      )
+      const responseWrapper = await adminApiService.getUsers(filters.value)
+      const response = responseWrapper.data
       users.value = response.data
       pagination.value = {
         current_page: response.current_page,

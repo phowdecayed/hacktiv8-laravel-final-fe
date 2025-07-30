@@ -11,7 +11,7 @@ export function useCategories() {
   const store = useCategoriesStore()
 
   // State
-  const categories = computed(() => store.categories)
+  const categories = computed(() => store.categories || [])
   const currentCategory = computed(() => store.currentCategory)
   const pagination = computed(() => store.pagination)
   const filters = computed(() => store.filters)
@@ -25,11 +25,11 @@ export function useCategories() {
 
   // Statistics
   const categoriesWithProducts = computed(
-    () => categories.value.filter((cat) => cat.products && cat.products.length > 0).length,
+    () => (categories.value || []).filter((cat) => cat.products && cat.products.length > 0).length,
   )
 
   const emptyCategories = computed(
-    () => categories.value.filter((cat) => !cat.products || cat.products.length === 0).length,
+    () => (categories.value || []).filter((cat) => !cat.products || cat.products.length === 0).length,
   )
 
   const categoryStats = computed(() => ({
@@ -91,15 +91,15 @@ export function useCategories() {
 
   // Utility functions
   const getCategoryById = (id: number): Category | undefined => {
-    return categories.value.find((cat) => cat.id === id)
+    return (categories.value || []).find((cat) => cat.id === id)
   }
 
   const getCategoriesByIds = (ids: number[]): Category[] => {
-    return categories.value.filter((cat) => ids.includes(cat.id))
+    return (categories.value || []).filter((cat) => ids.includes(cat.id))
   }
 
   const validateCategoryName = (name: string, excludeId?: number): boolean => {
-    return !categories.value.some(
+    return !(categories.value || []).some(
       (cat) => cat.name.toLowerCase() === name.toLowerCase() && cat.id !== excludeId,
     )
   }
@@ -110,11 +110,11 @@ export function useCategories() {
   }
 
   const getActiveCategories = (): Category[] => {
-    return categories.value.filter((cat) => !cat.deleted_at)
+    return (categories.value || []).filter((cat) => !cat.deleted_at)
   }
 
   const getDeletedCategories = (): Category[] => {
-    return categories.value.filter((cat) => cat.deleted_at)
+    return (categories.value || []).filter((cat) => cat.deleted_at)
   }
 
   return {

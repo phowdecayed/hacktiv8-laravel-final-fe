@@ -7,6 +7,7 @@ import type {
   CreateCategoryRequest,
   UpdateCategoryRequest,
   ApiResponseWithPagination,
+  ApiResponseWrapper,
 } from '@/types'
 
 export const useCategoriesStore = defineStore('categories', () => {
@@ -43,9 +44,8 @@ export const useCategoriesStore = defineStore('categories', () => {
     }
 
     try {
-      const response: ApiResponseWithPagination<Category> = await adminApiService.getCategories(
-        filters.value,
-      )
+      const responseWrapper = await adminApiService.getCategories(filters.value)
+      const response = responseWrapper.data
       categories.value = response.data
       pagination.value = {
         current_page: response.current_page,
