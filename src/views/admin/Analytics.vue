@@ -95,7 +95,7 @@
                 </div>
               </div>
               <div class="text-right">
-                <p class="font-medium text-gray-900">${{ product.price }}</p>
+                <p class="font-medium text-gray-900">{{ formatCurrency(product.price) }}</p>
                 <p class="text-sm text-gray-500">{{ product.sales_count || 0 }} sold</p>
               </div>
             </div>
@@ -137,7 +137,7 @@
               </div>
               <div class="text-right">
                 <p class="font-medium text-red-600">{{ product.stock }} in stock</p>
-                <p class="text-sm text-gray-500">Threshold: {{ product.min_stock || 10 }}</p>
+                <p class="text-sm text-gray-500">Threshold: {{ product.min_stock ?? 10 }}</p>
               </div>
             </div>
           </div>
@@ -198,7 +198,7 @@
               </div>
             </div>
             <div class="text-right">
-              <p class="font-medium text-gray-900">${{ transaction.total_amount }}</p>
+              <p class="font-medium text-gray-900">{{ formatCurrency(transaction.total_amount) }}</p>
               <p class="text-sm text-gray-500">{{ formatDate(transaction.created_at) }}</p>
             </div>
           </div>
@@ -231,41 +231,46 @@ import {
 } from 'lucide-vue-next'
 
 // Composables
-const { stats, salesData, userData, isLoading, fetchDashboardStats } = useAnalytics()
+const { stats, salesData, userData, isLoading, fetchDashboardStats, formatCurrency } = useAnalytics()
 
 // Reactive state
 const currentDate = new Date()
 
 // Computed properties
 const statsCards = computed(() => {
-  if (!stats.value) return []
+  if (!stats.value) {
+    console.warn('Stats data is null, returning empty array for statsCards.')
+    return []
+  }
+
+  const defaultChange = 0 // Or any other default value you deem appropriate
 
   return [
     {
       title: 'Total Revenue',
-      value: `${stats.value.totalRevenue.toLocaleString()}`,
+      value: formatCurrency(stats.value.totalRevenue || 0),
       change: 12.5,
       icon: DollarSign,
       bgColor: 'bg-green-500',
     },
     {
       title: 'Total Users',
-      value: stats.value.totalUsers.toLocaleString(),
+      value: (stats.value.totalUsers || 0).toLocaleString(),
       change: 8.2,
       icon: Users,
       bgColor: 'bg-blue-500',
     },
     {
       title: 'Total Products',
-      value: stats.value.totalProducts.toLocaleString(),
+      value: (stats.value.totalProducts || 0).toLocaleString(),
       change: 5.7,
       icon: Package,
       bgColor: 'bg-purple-500',
     },
     {
       title: 'Total Transactions',
-      value: stats.value.totalTransactions.toLocaleString(),
-      change: -2.3,
+      value: (stats.value.totalTransactions || 0).toLocaleString(),
+      change: -2.3 || defaultChange,
       icon: ShoppingCart,
       bgColor: 'bg-orange-500',
     },

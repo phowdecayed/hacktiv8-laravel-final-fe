@@ -53,6 +53,8 @@ export interface Product {
   user: User
   category: Category | null
   images: ProductImage[]
+  sales_count?: number
+  min_stock?: number
 }
 
 export interface ProductImage {
@@ -91,6 +93,7 @@ export interface CategoryFilters {
   search?: string
   page?: number
   per_page?: number
+  with_products?: boolean
 }
 
 // Cart related types
@@ -198,6 +201,27 @@ export interface ApiResponse<T> {
   message?: string
 }
 
+export interface Pagination {
+  current_page: number
+  first_page_url: string | null
+  from: number
+  last_page: number
+  last_page_url: string | null
+  links: Array<{ url: string | null; label: string; active: boolean }>
+  next_page_url: string | null
+  path: string
+  per_page: number
+  prev_page_url: string | null
+  to: number
+  total: number
+}
+
+export interface ApiResponseWithPagination<T> {
+  data: T[]
+  message?: string
+  pagination: Pagination
+}
+
 export interface ApiError {
   message: string
   errors?: Record<string, string[]>
@@ -286,6 +310,9 @@ export interface StorageFilters {
   search?: string
   page?: number
   per_page?: number
+  date_to?: string
+  date_from?: string
+  limit?: number
 }
 
 // Filter and search types
@@ -331,6 +358,7 @@ export interface CreateProductRequest {
   description?: string
   price: number
   stock: number
+  min_stock?: number
   category_id?: number
   images?: File[]
 }
@@ -340,6 +368,7 @@ export interface UpdateProductRequest {
   description?: string
   price?: number
   stock?: number
+  min_stock?: number
   category_id?: number
   images?: File[]
 }

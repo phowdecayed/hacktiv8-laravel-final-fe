@@ -36,7 +36,7 @@ export function useAnalytics() {
       stats.value = response.data
     } catch (err: any) {
       error.value = err.message || 'Failed to fetch dashboard stats'
-      showError(error.value)
+      showError(error.value || 'An unknown error occurred')
       throw err
     } finally {
       isLoading.value = false
@@ -53,7 +53,7 @@ export function useAnalytics() {
       return response.data
     } catch (err: any) {
       error.value = err.message || 'Failed to fetch sales analytics'
-      showError(error.value)
+      showError(error.value || 'An unknown error occurred')
       throw err
     } finally {
       isLoading.value = false
@@ -70,7 +70,7 @@ export function useAnalytics() {
       return response.data
     } catch (err: any) {
       error.value = err.message || 'Failed to fetch inventory analytics'
-      showError(error.value)
+      showError(error.value || 'An unknown error occurred')
       throw err
     } finally {
       isLoading.value = false
@@ -87,7 +87,7 @@ export function useAnalytics() {
       return response.data
     } catch (err: any) {
       error.value = err.message || 'Failed to fetch user analytics'
-      showError(error.value)
+      showError(error.value || 'An unknown error occurred')
       throw err
     } finally {
       isLoading.value = false
@@ -96,6 +96,16 @@ export function useAnalytics() {
 
   const clearError = () => {
     error.value = null
+  }
+
+  const formatCurrency = (amount: string | number): string => {
+    const numAmount = typeof amount === 'string' ? parseFloat(amount) : amount
+    return new Intl.NumberFormat('id-ID', {
+      style: 'currency',
+      currency: 'IDR',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(numAmount)
   }
 
   return {
@@ -116,5 +126,8 @@ export function useAnalytics() {
     fetchInventoryAnalytics,
     fetchUserAnalytics,
     clearError,
+    
+    // Utilities
+    formatCurrency,
   }
 }

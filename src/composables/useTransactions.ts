@@ -69,16 +69,10 @@ export const useTransactions = () => {
         Object.entries(mergedFilters).filter(([_, value]) => value !== '' && value !== undefined),
       )
 
-      const response: ApiResponseWithPagination<Transaction> =
-        await adminApiService.getTransactions(cleanFilters)
+      const response = await adminApiService.getTransactions(cleanFilters)
 
-      transactions.value = response.data
-      pagination.value = {
-        current_page: response.current_page,
-        last_page: response.last_page,
-        per_page: response.per_page,
-        total: response.total,
-      }
+      transactions.value = response.data.data
+      pagination.value = response.data.pagination
     } catch (err: any) {
       error.value = err.message || 'Failed to fetch transactions'
       toast.error('Failed to load transactions')

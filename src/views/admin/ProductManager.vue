@@ -128,7 +128,7 @@
           </template>
 
           <template #cell-price="{ item }">
-            <span class="font-medium">${{ parseFloat(item.price).toFixed(2) }}</span>
+            <span class="font-medium">{{ formatPrice(item.price) }}</span>
           </template>
 
           <template #cell-stock="{ item }">
@@ -288,6 +288,7 @@ import { debounce } from 'lodash-es'
 import { format } from 'date-fns'
 import { useProducts } from '@/composables/useProducts'
 import { useNotifications } from '@/composables/useNotifications'
+import { useCart } from '@/composables/useCart'
 import { adminApiService } from '@/services/api/admin'
 import type {
   Product,
@@ -325,6 +326,7 @@ import { Plus, Search, Edit, Trash2, Eye, Package, ImageIcon, Copy } from 'lucid
 // Composables
 const { products, categories, isLoading, fetchProducts, fetchCategories } = useProducts()
 const { success, error: showError } = useNotifications()
+const { formatPrice } = useCart()
 
 // State
 const searchQuery = ref('')
@@ -414,6 +416,14 @@ const productFormSchema = computed(
         placeholder: '0',
         required: true,
         min: 0,
+      },
+      {
+        name: 'min_stock',
+        type: 'number' as const,
+        label: 'Minimum Stock Alert',
+        placeholder: '0',
+        min: 0,
+        optional: true,
       },
       {
         name: 'category_id',
@@ -507,27 +517,21 @@ const openCreateDialog = () => {
   showProductDialog.value = true
 }
 
-  if (editingProduct.value) {
-    editingProduct.value = product
-    productFormData.value = {
-      name: product.name,
-      description: product.description || '',
-      price: parseFloat(product.price),
-      stock: product.stock,
-      category_id: product.category_id ? product.category_id.toString() : 'none',
-      images: [],
-    }
-  } else {
-    editingProduct.value = null
-    productFormData.value = {
-      name: '',
-      description: '',
-      price: 0,
-      stock: 0,
-      category_id: 'none',
-      images: [],
-    }
+const openEditDialog = (product: Product) => {
+  editingProduct.value = product
+  productFormData.value = {
+    name: product.name,
+    description: product.description || '',
+    price: parseFloat(product.price),
+    stock: product.stock,
+    min_stock: product.min_stock || undefined,
+    category_id: product.category_id ? product.category_id.toString() : 'none',
+    images: [],
   }
+  showProductDialog.value = true
+}
+
+
 
 const closeProductDialog = () => {
   showProductDialog.value = false
@@ -544,6 +548,7 @@ const handleProductSubmit = async (formData: any) => {
       description: formData.description || undefined,
       price: formData.price,
       stock: formData.stock,
+      min_stock: formData.min_stock || undefined,
       category_id: formData.category_id && formData.category_id !== 'none' ? parseInt(formData.category_id) : undefined,
       images: formData.images || [],
     }

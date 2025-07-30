@@ -1,7 +1,7 @@
 import { ref, computed } from 'vue'
 import { useNotifications } from './useNotifications'
 import { adminApiService } from '@/services/api/admin'
-import type { AuditTrail, AuditTrailFilters } from '@/types'
+import type { AuditTrail, AuditTrailFilters, ApiResponseWithPagination } from '@/types'
 
 export interface AuditTrailState {
   entries: AuditTrail[]
@@ -50,16 +50,11 @@ export function useAuditTrail() {
       }
 
       const response = await adminApiService.getAuditTrail(filters.value)
-      entries.value = response.data
-      pagination.value = {
-        current_page: response.current_page,
-        per_page: response.per_page,
-        total: response.total,
-        last_page: response.last_page,
-      }
+      entries.value = response.data.data
+      pagination.value = response.data.pagination
     } catch (err: any) {
       error.value = err.message || 'Failed to fetch audit trail'
-      showError(error.value)
+      if (error.value) showError(error.value)
       throw err
     } finally {
       isLoading.value = false
@@ -76,7 +71,7 @@ export function useAuditTrail() {
       return response.data
     } catch (err: any) {
       error.value = err.message || 'Failed to fetch audit entry'
-      showError(error.value)
+      if (error.value) showError(error.value)
       throw err
     } finally {
       isLoading.value = false
@@ -103,8 +98,7 @@ export function useAuditTrail() {
       showSuccess('Audit trail exported successfully')
       return true
     } catch (err: any) {
-      error.value = err.message || 'Failed to export audit trail'
-      showError(error.value)
+      showError(err.message || 'Failed to export audit trail')
       throw err
     } finally {
       isExporting.value = false

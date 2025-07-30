@@ -144,7 +144,7 @@ const stats = ref([
   },
   {
     title: 'Revenue',
-    value: '$12,345',
+    value: 'Rp12.345',
     change: 15,
     icon: DollarSign,
     bgColor: 'bg-purple-500',

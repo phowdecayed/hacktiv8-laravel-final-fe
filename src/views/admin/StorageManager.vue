@@ -122,7 +122,9 @@
         </div>
 
         <div v-else>
-          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+          <div
+            class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4"
+          >
             <div
               v-for="file in files"
               :key="file.id"
@@ -171,12 +173,7 @@
                     >
                       <Trash2 class="h-3 w-3" />
                     </Button>
-                    <Button
-                      v-else
-                      variant="ghost"
-                      size="sm"
-                      @click="restoreFile(file.id)"
-                    >
+                    <Button v-else variant="ghost" size="sm" @click="restoreFile(file.id)">
                       <RotateCcw class="h-3 w-3" />
                     </Button>
                   </div>
@@ -224,9 +221,7 @@
       <DialogContent class="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Upload Files</DialogTitle>
-          <DialogDescription>
-            Select files to upload to the storage system
-          </DialogDescription>
+          <DialogDescription> Select files to upload to the storage system </DialogDescription>
         </DialogHeader>
 
         <div class="space-y-4">
@@ -239,13 +234,7 @@
             <Upload class="h-8 w-8 mx-auto text-gray-400 mb-2" />
             <p class="text-sm font-medium text-gray-900">Drag and drop files here</p>
             <p class="text-xs text-gray-500 mt-1">or click to browse</p>
-            <input
-              ref="fileInput"
-              type="file"
-              multiple
-              class="hidden"
-              @change="handleFileSelect"
-            />
+            <input ref="fileInput" type="file" multiple class="hidden" @change="handleFileSelect" />
           </div>
 
           <div v-if="selectedFiles.length > 0" class="space-y-2">
@@ -261,11 +250,7 @@
                   <p class="text-xs text-gray-500">{{ formatFileSize(file.size) }}</p>
                 </div>
               </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                @click="removeSelectedFile(index)"
-              >
+              <Button variant="ghost" size="sm" @click="removeSelectedFile(index)">
                 <X class="h-4 w-4" />
               </Button>
             </div>

@@ -172,7 +172,7 @@
                 <div>
                   <p class="font-medium">{{ product.name }}</p>
                   <p class="text-sm text-muted-foreground">
-                    ${{ product.price }} • Stock: {{ product.stock }}
+                    {{ formatPrice(product.price) }} • Stock: {{ product.stock }}
                   </p>
                 </div>
               </div>
@@ -222,6 +222,7 @@ import { computed, onMounted, ref } from 'vue'
 import { format } from 'date-fns'
 import { useCategories } from '@/composables/useCategories'
 import { useNotifications } from '@/composables/useNotifications'
+import { useCart } from '@/composables/useCart'
 import { adminApiService } from '@/services/api/admin'
 import type { Category, TableColumn, TableAction, FormSchema } from '@/types'
 import { categorySchema, type CategoryFormData } from '@/lib/validationSchemas'
@@ -270,6 +271,7 @@ const {
   setFilters,
 } = useCategories()
 const { success: showSuccess, error: showError } = useNotifications()
+const { formatPrice } = useCart()
 
 // Reactive state
 const showCategoryDialog = ref(false)
@@ -402,11 +404,8 @@ const bulkActions: TableAction[] = [
 // Methods
 const loadCategories = async () => {
   try {
-    console.log('Loading categories...')
-    await fetchCategories()
-    console.log('Categories loaded:', categories.value)
+    await fetchCategories({ with_products: true })
   } catch (error) {
-    console.error('Error loading categories:', error)
     showError('Failed to load categories')
   }
 }
@@ -571,7 +570,7 @@ const restoreSelectedCategories = async () => {
 }
 
 const handleSearch = (query: string) => {
-  setFilters({ search: query })
+  setFilters({ search: query, with_products: true })
   loadCategories()
 }
 
