@@ -32,7 +32,7 @@
           <!-- Type Filter -->
           <div class="space-y-2">
             <Label for="type-filter">File Type</Label>
-            <Select v-model="filters.type">
+            <Select v-model="fileTypeFilter">
               <SelectTrigger>
                 <SelectValue placeholder="All types" />
               </SelectTrigger>
@@ -49,7 +49,7 @@
           <!-- User Filter -->
           <div class="space-y-2">
             <Label for="user-filter">User</Label>
-            <Select v-model="filters.user_id">
+            <Select v-model="userIdFilter">
               <SelectTrigger>
                 <SelectValue placeholder="All users" />
               </SelectTrigger>
@@ -341,6 +341,8 @@ const showUploadDialog = ref(false)
 const selectedFiles = ref<File[]>([])
 const fileInput = ref<HTMLInputElement | null>(null)
 const dateRange = ref<any>(null)
+const fileTypeFilter = ref('all')
+const userIdFilter = ref('all')
 
 // Computed properties
 const dateRangeText = computed(() => {
@@ -358,7 +360,7 @@ const dateRangeText = computed(() => {
 const loadUsers = async () => {
   try {
     const response = await adminApiService.getUsers({ per_page: 100 })
-    users.value = response.data
+    users.value = response.data.data
   } catch (error) {
     console.error('Failed to load users:', error)
   }
@@ -451,22 +453,38 @@ const refreshData = async () => {
 
 const applyFilters = async () => {
   try {
-    // Clean up empty string values
-    const cleanFilters = Object.fromEntries(
-      Object.entries(filters).filter(
-        ([_, value]) => value !== 'all' && value !== null && value !== undefined,
-      ),
-    )
-    await fetchFiles(cleanFilters)
+    const newFilters: any = {}
+
+    if (filters.value.search) {
+      newFilters.search = filters.value.search
+    }
+
+    if (fileTypeFilter.value !== 'all') {
+      newFilters.mime_type = fileTypeFilter.value
+    }
+
+    if (userIdFilter.value !== 'all') {
+      newFilters.user_id = parseInt(userIdFilter.value, 10)
+    }
+
+    if (filters.value.date_from) {
+      newFilters.date_from = filters.value.date_from
+    }
+
+    if (filters.value.date_to) {
+      newFilters.date_to = filters.value.date_to
+    }
+
+    await fetchFiles(newFilters)
   } catch (error) {
     showError('Failed to apply filters')
   }
 }
 
 const clearFilters = async () => {
-  filters.search = ''
-  filters.type = ''
-  filters.user_id = ''
+  filters.value = {}
+  fileTypeFilter.value = 'all'
+  userIdFilter.value = 'all'
   dateRange.value = null
   try {
     await fetchFiles()
@@ -477,25 +495,35 @@ const clearFilters = async () => {
 
 const updateDateRange = (range: any) => {
   if (range?.start) {
-    filters.date_from = new Date(range.start.toString()).toISOString().split('T')[0]
+    filters.value.date_from = new Date(range.start.toString()).toISOString().split('T')[0]
   } else {
-    delete filters.date_from
+    delete filters.value.date_from
   }
 
   if (range?.end) {
-    filters.date_to = new Date(range.end.toString()).toISOString().split('T')[0]
+    filters.value.date_to = new Date(range.end.toString()).toISOString().split('T')[0]
   } else {
-    delete filters.date_to
+    delete filters.value.date_to
   }
 }
 
 const changePage = async (page: number) => {
   try {
-    const cleanFilters = Object.fromEntries(
-      Object.entries(filters).filter(
+    const cleanFilters: any = Object.fromEntries(
+      Object.entries(filters.value).filter(
         ([_, value]) => value !== 'all' && value !== null && value !== undefined,
       ),
     )
+
+    if (cleanFilters.type) {
+      cleanFilters.mime_type = cleanFilters.type
+      delete cleanFilters.type
+    }
+
+    if (cleanFilters.user_id) {
+      cleanFilters.user_id = parseInt(cleanFilters.user_id, 10)
+    }
+
     await fetchFiles({ ...cleanFilters, page })
   } catch (error) {
     showError('Failed to load page')

@@ -130,13 +130,13 @@ export function useStorage() {
 
   return {
     // State
-    files: files.value,
-    currentFile: currentFile.value,
-    pagination: pagination.value,
-    filters: filters.value,
-    isLoading: isLoading.value,
-    isUploading: isUploading.value,
-    error: error.value,
+    files,
+    currentFile,
+    pagination,
+    filters,
+    isLoading,
+    isUploading,
+    error,
 
     // Getters
     hasFiles,

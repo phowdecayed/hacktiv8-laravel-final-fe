@@ -423,7 +423,6 @@ const productFormSchema = computed(
         label: 'Minimum Stock Alert',
         placeholder: '0',
         min: 0,
-        optional: true,
       },
       {
         name: 'category_id',

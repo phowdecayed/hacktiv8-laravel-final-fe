@@ -110,12 +110,12 @@ export function useAnalytics() {
 
   return {
     // State
-    stats: stats.value,
-    salesData: salesData.value,
-    inventoryData: inventoryData.value,
-    userData: userData.value,
-    isLoading: isLoading.value,
-    error: error.value,
+    stats,
+    salesData,
+    inventoryData,
+    userData,
+    isLoading,
+    error,
 
     // Getters
     hasStats,

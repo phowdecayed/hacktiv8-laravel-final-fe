@@ -12,6 +12,9 @@ export interface ValidationError {
 }
 
 export interface ApiResponseWithPagination<T> {
+  pagination:
+    | { current_page: number; per_page: number; total: number; last_page: number }
+    | { current_page: number; per_page: number; total: number; last_page: number }
   current_page: number
   data: T[]
   first_page_url: string

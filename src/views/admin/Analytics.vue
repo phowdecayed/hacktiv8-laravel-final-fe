@@ -52,7 +52,10 @@
           <div class="h-80 flex items-center justify-center" v-if="isLoading">
             <RefreshCw class="h-6 w-6 animate-spin text-gray-400" />
           </div>
-          <div v-else-if="salesData.length === 0" class="h-80 flex flex-col items-center justify-center text-gray-500">
+          <div
+            v-else-if="salesData.length === 0"
+            class="h-80 flex flex-col items-center justify-center text-gray-500"
+          >
             <BarChart class="h-12 w-12 mb-2" />
             <p>No sales data available</p>
           </div>
@@ -75,7 +78,10 @@
           <div class="h-80 flex items-center justify-center" v-if="isLoading">
             <RefreshCw class="h-6 w-6 animate-spin text-gray-400" />
           </div>
-          <div v-else-if="!stats?.topProducts || stats.topProducts.length === 0" class="h-80 flex flex-col items-center justify-center text-gray-500">
+          <div
+            v-else-if="!stats?.topProducts || stats.topProducts.length === 0"
+            class="h-80 flex flex-col items-center justify-center text-gray-500"
+          >
             <Package class="h-12 w-12 mb-2" />
             <p>No product data available</p>
           </div>
@@ -116,7 +122,10 @@
           <div class="h-80 flex items-center justify-center" v-if="isLoading">
             <RefreshCw class="h-6 w-6 animate-spin text-gray-400" />
           </div>
-          <div v-else-if="!stats?.lowStockProducts || stats.lowStockProducts.length === 0" class="h-80 flex flex-col items-center justify-center text-gray-500">
+          <div
+            v-else-if="!stats?.lowStockProducts || stats.lowStockProducts.length === 0"
+            class="h-80 flex flex-col items-center justify-center text-gray-500"
+          >
             <Package class="h-12 w-12 mb-2" />
             <p>All products are well stocked</p>
           </div>
@@ -154,7 +163,10 @@
           <div class="h-80 flex items-center justify-center" v-if="isLoading">
             <RefreshCw class="h-6 w-6 animate-spin text-gray-400" />
           </div>
-          <div v-else-if="userData.length === 0" class="h-80 flex flex-col items-center justify-center text-gray-500">
+          <div
+            v-else-if="userData.length === 0"
+            class="h-80 flex flex-col items-center justify-center text-gray-500"
+          >
             <Users class="h-12 w-12 mb-2" />
             <p>No user data available</p>
           </div>
@@ -178,7 +190,10 @@
         <div class="h-80 flex items-center justify-center" v-if="isLoading">
           <RefreshCw class="h-6 w-6 animate-spin text-gray-400" />
         </div>
-        <div v-else-if="!stats?.recentTransactions || stats.recentTransactions.length === 0" class="h-80 flex flex-col items-center justify-center text-gray-500">
+        <div
+          v-else-if="!stats?.recentTransactions || stats.recentTransactions.length === 0"
+          class="h-80 flex flex-col items-center justify-center text-gray-500"
+        >
           <ShoppingCart class="h-12 w-12 mb-2" />
           <p>No recent transactions</p>
         </div>
@@ -198,7 +213,9 @@
               </div>
             </div>
             <div class="text-right">
-              <p class="font-medium text-gray-900">{{ formatCurrency(transaction.total_amount) }}</p>
+              <p class="font-medium text-gray-900">
+                {{ formatCurrency(transaction.total_amount) }}
+              </p>
               <p class="text-sm text-gray-500">{{ formatDate(transaction.created_at) }}</p>
             </div>
           </div>
@@ -231,14 +248,15 @@ import {
 } from 'lucide-vue-next'
 
 // Composables
-const { stats, salesData, userData, isLoading, fetchDashboardStats, formatCurrency } = useAnalytics()
+const { stats, salesData, userData, isLoading, fetchDashboardStats, formatCurrency } =
+  useAnalytics()
 
 // Reactive state
 const currentDate = new Date()
 
 // Computed properties
 const statsCards = computed(() => {
-  if (!stats.value) {
+  if (!stats?.value) {
     console.warn('Stats data is null, returning empty array for statsCards.')
     return []
   }

@@ -32,7 +32,7 @@ export function useAuditTrail() {
   const isLoading = ref(false)
   const isExporting = ref(false)
   const error = ref<string | null>(null)
-  
+
   const { showError, showSuccess } = useNotifications()
 
   // Getters
@@ -50,8 +50,9 @@ export function useAuditTrail() {
       }
 
       const response = await adminApiService.getAuditTrail(filters.value)
-      entries.value = response.data.data
-      pagination.value = response.data.pagination
+      const auditResponse = response.data as ApiResponseWithPagination<AuditTrail>
+      entries.value = auditResponse.data
+      pagination.value = auditResponse.pagination
     } catch (err: any) {
       error.value = err.message || 'Failed to fetch audit trail'
       if (error.value) showError(error.value)
