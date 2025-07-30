@@ -55,6 +55,7 @@ export interface Product {
   images: ProductImage[]
   sales_count?: number
   min_stock?: number
+  total_quantity_sold?: number
 }
 
 export interface ProductImage {
