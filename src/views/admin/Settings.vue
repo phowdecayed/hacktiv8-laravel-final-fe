@@ -22,11 +22,7 @@
           <div class="space-y-4">
             <div>
               <Label for="site-name">Site Name</Label>
-              <Input
-                id="site-name"
-                v-model="settings.siteName"
-                placeholder="Enter site name"
-              />
+              <Input id="site-name" v-model="settings.siteName" placeholder="Enter site name" />
             </div>
 
             <div>
@@ -121,11 +117,7 @@
                   />
                 </div>
                 <div v-if="settings.logoUrl" class="mt-2 relative">
-                  <img
-                    :src="settings.logoUrl"
-                    alt="Current logo"
-                    class="h-12 w-auto"
-                  />
+                  <img :src="settings.logoUrl" alt="Current logo" class="h-12 w-auto" />
                   <Button
                     variant="ghost"
                     size="sm"
@@ -154,10 +146,7 @@
                 <p class="font-medium">Email Notifications</p>
                 <p class="text-sm text-gray-500">Receive email alerts</p>
               </div>
-              <Switch
-                v-model="settings.emailNotifications"
-                aria-readonly="false"
-              />
+              <Switch v-model="settings.emailNotifications" aria-readonly="false" />
             </div>
 
             <div class="flex items-center justify-between p-4 border rounded-lg">
@@ -165,10 +154,7 @@
                 <p class="font-medium">Slack Integration</p>
                 <p class="text-sm text-gray-500">Send alerts to Slack</p>
               </div>
-              <Switch
-                v-model="settings.slackNotifications"
-                aria-readonly="false"
-              />
+              <Switch v-model="settings.slackNotifications" aria-readonly="false" />
             </div>
 
             <div class="flex items-center justify-between p-4 border rounded-lg">
@@ -176,10 +162,7 @@
                 <p class="font-medium">Low Stock Alerts</p>
                 <p class="text-sm text-gray-500">Notify when stock is low</p>
               </div>
-              <Switch
-                v-model="settings.lowStockAlerts"
-                aria-readonly="false"
-              />
+              <Switch v-model="settings.lowStockAlerts" aria-readonly="false" />
             </div>
           </div>
         </CardContent>
@@ -208,13 +191,7 @@ import {
 } from '@/components/ui/select'
 
 // Icons
-import {
-  Save,
-  Sun,
-  Moon,
-  Image,
-  X,
-} from 'lucide-vue-next'
+import { Save, Sun, Moon, Image, X } from 'lucide-vue-next'
 
 // Reactive state
 const settings = ref({
@@ -238,7 +215,7 @@ const saveSettings = async () => {
   isSaving.value = true
   try {
     // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000))
+    await new Promise((resolve) => setTimeout(resolve, 1000))
     showSuccess('Settings saved successfully')
   } catch (error) {
     showError('Failed to save settings')

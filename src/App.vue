@@ -55,7 +55,7 @@ window.hideGlobalLoading = () => {
           'container mx-auto px-4 pb-20 md:pb-10': !isAdminRoute,
           'pt-16': !isAdminRoute && !isMobileSearchOpen,
           'pt-32': !isAdminRoute && isMobileSearchOpen,
-          'p-0': isAdminRoute
+          'p-0': isAdminRoute,
         }"
       >
         <ErrorBoundary>

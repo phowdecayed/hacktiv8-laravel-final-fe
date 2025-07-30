@@ -1,7 +1,12 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { adminApiService } from '@/services/api/admin'
-import type { AuditTrail, AuditTrailFilters, ApiResponseWithPagination, ApiResponseWrapper } from '@/types'
+import type {
+  AuditTrail,
+  AuditTrailFilters,
+  ApiResponseWithPagination,
+  ApiResponseWrapper,
+} from '@/types'
 
 export const useAuditTrailStore = defineStore('auditTrail', () => {
   // State
@@ -32,10 +37,16 @@ export const useAuditTrailStore = defineStore('auditTrail', () => {
     }
 
     try {
-      const response = await adminApiService.getAuditTrail(filters.value)
-      const auditResponse = response.data as ApiResponseWithPagination<AuditTrail>
-      auditEntries.value = auditResponse.data
-      pagination.value = auditResponse.pagination
+      const response = (await adminApiService.getAuditTrail(
+        filters.value,
+      )) as unknown as ApiResponseWithPagination<AuditTrail>
+      auditEntries.value = response.data || []
+      pagination.value = {
+        current_page: response.current_page,
+        per_page: response.per_page,
+        total: response.total,
+        last_page: response.last_page,
+      }
     } catch (err: any) {
       error.value = err.message || 'Failed to fetch audit trail'
       throw err

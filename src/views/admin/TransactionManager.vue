@@ -83,7 +83,9 @@
             <Select
               v-model="filters.status"
               @update:model-value="
-                updateFilters({ status: $event === 'all' ? undefined : ($event as TransactionStatus) })
+                updateFilters({
+                  status: $event === 'all' ? undefined : ($event as TransactionStatus),
+                })
               "
             >
               <SelectTrigger>

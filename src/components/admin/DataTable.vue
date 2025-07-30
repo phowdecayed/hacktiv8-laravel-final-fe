@@ -318,7 +318,7 @@ const currentPage = ref(1)
 const filteredData = computed(() => {
   // Ensure props.data is an array
   const dataArray = Array.isArray(props.data) ? props.data : []
-  
+
   let filtered = [...dataArray]
 
   // Apply search filter

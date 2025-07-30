@@ -5,7 +5,12 @@
       <PopoverTrigger as-child>
         <Button
           variant="outline"
-          :class="cn('w-full justify-start text-left font-normal', !modelValue?.start && 'text-muted-foreground')"
+          :class="
+            cn(
+              'w-full justify-start text-left font-normal',
+              !modelValue?.start && 'text-muted-foreground',
+            )
+          "
         >
           <CalendarIcon class="mr-2 h-4 w-4" />
           <span>

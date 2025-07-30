@@ -530,8 +530,6 @@ const openEditDialog = (product: Product) => {
   showProductDialog.value = true
 }
 
-
-
 const closeProductDialog = () => {
   showProductDialog.value = false
   editingProduct.value = null
@@ -548,7 +546,10 @@ const handleProductSubmit = async (formData: any) => {
       price: formData.price,
       stock: formData.stock,
       min_stock: formData.min_stock || undefined,
-      category_id: formData.category_id && formData.category_id !== 'none' ? parseInt(formData.category_id) : undefined,
+      category_id:
+        formData.category_id && formData.category_id !== 'none'
+          ? parseInt(formData.category_id)
+          : undefined,
       images: formData.images || [],
     }
 
@@ -670,7 +671,10 @@ const closeBulkCategoryDialog = () => {
 
 const handleBulkCategoryUpdate = async () => {
   try {
-    const categoryId = bulkCategoryId.value && bulkCategoryId.value !== 'none' ? parseInt(bulkCategoryId.value) : undefined
+    const categoryId =
+      bulkCategoryId.value && bulkCategoryId.value !== 'none'
+        ? parseInt(bulkCategoryId.value)
+        : undefined
 
     for (const product of selectedProducts.value) {
       await adminApiService.updateProduct(product.id, { category_id: categoryId })

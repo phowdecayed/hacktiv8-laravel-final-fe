@@ -190,7 +190,9 @@
             <RefreshCw class="h-6 w-6 animate-spin text-gray-400" />
           </div>
           <div
-            v-else-if="!stats?.recent_user_registrations || stats.recent_user_registrations.length === 0"
+            v-else-if="
+              !stats?.recent_user_registrations || stats.recent_user_registrations.length === 0
+            "
             class="h-80 flex flex-col items-center justify-center text-gray-500"
           >
             <Users class="h-12 w-12 mb-2" />

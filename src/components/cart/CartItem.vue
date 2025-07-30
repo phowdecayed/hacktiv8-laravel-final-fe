@@ -29,7 +29,6 @@
           >
             Only {{ item.product.stock }} left in stock
           </p>
-          
         </div>
         <Button
           variant="ghost"

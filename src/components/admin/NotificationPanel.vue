@@ -18,22 +18,14 @@
       <div class="p-4 border-b">
         <div class="flex items-center justify-between">
           <h3 class="font-medium">Notifications</h3>
-          <Button
-            v-if="unreadCount > 0"
-            variant="ghost"
-            size="sm"
-            @click="markAllAsRead"
-          >
+          <Button v-if="unreadCount > 0" variant="ghost" size="sm" @click="markAllAsRead">
             Mark all as read
           </Button>
         </div>
       </div>
 
       <div class="max-h-96 overflow-y-auto">
-        <div
-          v-if="notifications.length === 0"
-          class="p-8 text-center text-gray-500"
-        >
+        <div v-if="notifications.length === 0" class="p-8 text-center text-gray-500">
           <Bell class="h-8 w-8 mx-auto mb-2" />
           <p>No notifications</p>
         </div>
@@ -80,10 +72,7 @@
         </div>
       </div>
 
-      <div
-        v-if="notifications.length > 0"
-        class="p-2 border-t text-center"
-      >
+      <div v-if="notifications.length > 0" class="p-2 border-t text-center">
         <Button variant="ghost" size="sm" class="w-full" @click="viewAll">
           View all notifications
         </Button>
@@ -96,15 +85,7 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { Button } from '@/components/ui/button'
-import {
-  Bell,
-  Check,
-  AlertCircle,
-  ShoppingCart,
-  Package,
-  User,
-  FileText,
-} from 'lucide-vue-next'
+import { Bell, Check, AlertCircle, ShoppingCart, Package, User, FileText } from 'lucide-vue-next'
 
 // Define notification types
 interface Notification {
@@ -153,7 +134,7 @@ const router = useRouter()
 
 // Computed properties
 const unreadCount = computed(() => {
-  return notifications.value.filter(n => !n.read).length
+  return notifications.value.filter((n) => !n.read).length
 })
 
 // Methods
@@ -166,14 +147,14 @@ const closePanel = () => {
 }
 
 const markAsRead = (id: number) => {
-  const notification = notifications.value.find(n => n.id === id)
+  const notification = notifications.value.find((n) => n.id === id)
   if (notification) {
     notification.read = true
   }
 }
 
 const markAllAsRead = () => {
-  notifications.value.forEach(n => {
+  notifications.value.forEach((n) => {
     n.read = true
   })
 }
@@ -193,21 +174,31 @@ const viewAll = () => {
 
 const getNotificationColor = (type: string) => {
   switch (type) {
-    case 'info': return 'bg-blue-500'
-    case 'warning': return 'bg-yellow-500'
-    case 'success': return 'bg-green-500'
-    case 'error': return 'bg-red-500'
-    default: return 'bg-gray-500'
+    case 'info':
+      return 'bg-blue-500'
+    case 'warning':
+      return 'bg-yellow-500'
+    case 'success':
+      return 'bg-green-500'
+    case 'error':
+      return 'bg-red-500'
+    default:
+      return 'bg-gray-500'
   }
 }
 
 const getNotificationIcon = (type: string) => {
   switch (type) {
-    case 'info': return ShoppingCart
-    case 'warning': return AlertCircle
-    case 'success': return User
-    case 'error': return AlertCircle
-    default: return Bell
+    case 'info':
+      return ShoppingCart
+    case 'warning':
+      return AlertCircle
+    case 'success':
+      return User
+    case 'error':
+      return AlertCircle
+    default:
+      return Bell
   }
 }
 
@@ -255,7 +246,7 @@ onMounted(() => {
         created_at: new Date().toISOString(),
       }
       notifications.value.unshift(newNotification)
-      
+
       // Keep only the last 20 notifications
       if (notifications.value.length > 20) {
         notifications.value.pop()

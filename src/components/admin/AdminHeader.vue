@@ -78,10 +78,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import NotificationPanel from '@/components/admin/NotificationPanel.vue'
 import UserMenu from '@/components/admin/UserMenu.vue'
-import {
-  Menu,
-  Search,
-} from 'lucide-vue-next'
+import { Menu, Search } from 'lucide-vue-next'
 
 interface Props {
   isMobile?: boolean

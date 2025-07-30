@@ -23,11 +23,7 @@
 
     <!-- Action Buttons -->
     <div v-if="showActions" class="space-y-2">
-      <Button
-        class="w-full"
-        :disabled="isEmpty || isLoading"
-        @click="proceedToCheckout"
-      >
+      <Button class="w-full" :disabled="isEmpty || isLoading" @click="proceedToCheckout">
         <ShoppingCart class="w-4 h-4 mr-2" />
         Proceed to Checkout
       </Button>

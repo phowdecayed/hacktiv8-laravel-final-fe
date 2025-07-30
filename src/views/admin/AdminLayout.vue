@@ -8,11 +8,11 @@
     />
 
     <!-- Sidebar -->
-    <div 
+    <div
       class="admin-sidebar-container"
       :class="{
         'admin-sidebar-expanded': !sidebarCollapsed || !isMobile(),
-        'admin-sidebar-collapsed': sidebarCollapsed && isMobile()
+        'admin-sidebar-collapsed': sidebarCollapsed && isMobile(),
       }"
     >
       <AdminSidebar
@@ -29,7 +29,7 @@
       :class="{
         'admin-main-content-mobile': isMobile(),
         'admin-main-content-collapsed': !isMobile() && sidebarCollapsed,
-        'admin-main-content-expanded': !isMobile() && !sidebarCollapsed
+        'admin-main-content-expanded': !isMobile() && !sidebarCollapsed,
       }"
     >
       <!-- Header -->

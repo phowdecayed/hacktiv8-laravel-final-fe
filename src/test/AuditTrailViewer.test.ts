@@ -8,11 +8,14 @@ import { useAuditTrailStore } from '@/stores/auditTrail'
 vi.mock('@/services/api/admin', () => ({
   adminApiService: {
     getUsers: vi.fn().mockResolvedValue({
-      data: [
-        { id: 1, name: 'Admin User', email: 'admin@test.com' },
-        { id: 2, name: 'Editor User', email: 'editor@test.com' },
-      ],
+      data: {
+        data: [
+          { id: 1, name: 'Admin User', email: 'admin@test.com' },
+          { id: 2, name: 'Editor User', email: 'editor@test.com' },
+        ],
+      },
     }),
+    getAuditTrail: vi.fn().mockResolvedValue({ data: { data: [], pagination: {} } }),
   },
 }))
 

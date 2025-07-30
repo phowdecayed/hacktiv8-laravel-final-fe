@@ -20,7 +20,7 @@ export function useAnalytics() {
   const userData = ref<any[]>([])
   const isLoading = ref(false)
   const error = ref<string | null>(null)
-  
+
   const { showError } = useNotifications()
 
   // Getters
@@ -126,7 +126,7 @@ export function useAnalytics() {
     fetchInventoryAnalytics,
     fetchUserAnalytics,
     clearError,
-    
+
     // Utilities
     formatCurrency,
   }

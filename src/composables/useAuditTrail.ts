@@ -49,10 +49,17 @@ export function useAuditTrail() {
         filters.value = { ...filters.value, ...newFilters }
       }
 
-      const response = await adminApiService.getAuditTrail(filters.value)
-      const auditResponse = response.data as ApiResponseWithPagination<AuditTrail>
-      entries.value = auditResponse.data
-      pagination.value = auditResponse.pagination
+      const response = (await adminApiService.getAuditTrail(
+        filters.value,
+      )) as unknown as ApiResponseWithPagination<AuditTrail>
+      entries.value = response.data
+      // Ensure pagination is always an object, even if response.data.pagination is undefined
+      pagination.value = {
+        current_page: response.current_page,
+        per_page: response.per_page,
+        total: response.total,
+        last_page: response.last_page,
+      }
     } catch (err: any) {
       error.value = err.message || 'Failed to fetch audit trail'
       if (error.value) showError(error.value)
@@ -124,13 +131,13 @@ export function useAuditTrail() {
 
   return {
     // State
-    entries: entries.value,
-    currentEntry: currentEntry.value,
-    pagination: pagination.value,
-    filters: filters.value,
-    isLoading: isLoading.value,
-    isExporting: isExporting.value,
-    error: error.value,
+    entries,
+    currentEntry,
+    pagination,
+    filters,
+    isLoading,
+    isExporting,
+    error,
 
     // Getters
     hasEntries,

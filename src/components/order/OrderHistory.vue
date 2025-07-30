@@ -156,11 +156,7 @@ const emit = defineEmits(['retry', 'empty-action'])
 const router = useRouter()
 
 // Composables
-const {
-  getOrderStatusInfo,
-  formatOrderTotal,
-  getOrderItemCount,
-} = useOrders()
+const { getOrderStatusInfo, formatOrderTotal, getOrderItemCount } = useOrders()
 
 // Methods
 const formatDate = (dateString: string): string => {

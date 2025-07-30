@@ -1,20 +1,19 @@
 <template>
-  <div v-if="selectedItems.length > 0" class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+  <div
+    v-if="selectedItems.length > 0"
+    class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6"
+  >
     <div class="flex items-center justify-between">
       <div class="flex items-center gap-2">
-        <Checkbox
-          :checked="true"
-          @update:checked="toggleSelectAll"
-          class="border-blue-300"
-        />
+        <Checkbox :checked="true" @update:checked="toggleSelectAll" class="border-blue-300" />
         <span class="text-sm font-medium text-blue-800">
           {{ selectedItems.length }} item{{ selectedItems.length !== 1 ? 's' : '' }} selected
         </span>
       </div>
-      
+
       <div class="flex items-center gap-2">
         <slot name="actions" :selectedItems="selectedItems" />
-        
+
         <Button
           v-if="showExport"
           variant="outline"
@@ -25,7 +24,7 @@
           <Download class="h-4 w-4 mr-2" />
           Export
         </Button>
-        
+
         <Button
           v-if="showDelete"
           variant="outline"
@@ -36,7 +35,7 @@
           <Trash2 class="h-4 w-4 mr-2" />
           Delete
         </Button>
-        
+
         <Button
           variant="ghost"
           size="sm"
@@ -47,14 +46,9 @@
         </Button>
       </div>
     </div>
-    
+
     <div v-if="showSelectAll && totalItems > selectedItems.length" class="mt-2 text-sm">
-      <Button
-        variant="link"
-        size="sm"
-        @click="selectAll"
-        class="text-blue-700 p-0 h-auto"
-      >
+      <Button variant="link" size="sm" @click="selectAll" class="text-blue-700 p-0 h-auto">
         Select all {{ totalItems }} items
       </Button>
     </div>
@@ -78,13 +72,13 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {
   showExport: false,
   showDelete: false,
-  showSelectAll: false
+  showSelectAll: false,
 })
 
 const emit = defineEmits<{
   'update:selectedItems': [items: any[]]
-  'export': [items: any[]]
-  'delete': [items: any[]]
+  export: [items: any[]]
+  delete: [items: any[]]
 }>()
 
 // Computed properties

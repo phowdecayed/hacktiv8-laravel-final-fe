@@ -258,7 +258,10 @@ const handleGoHome = () => {
 
 const handleReport = () => {
   if (currentError.value) {
-    const errorToReport = currentError.value instanceof Error ? currentError.value : new Error(JSON.stringify(currentError.value));
+    const errorToReport =
+      currentError.value instanceof Error
+        ? currentError.value
+        : new Error(JSON.stringify(currentError.value))
     emit('report', errorToReport)
 
     // You could integrate with error reporting services here

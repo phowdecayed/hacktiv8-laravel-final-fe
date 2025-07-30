@@ -25,8 +25,6 @@
         <SheetDescription> Review your items and proceed to checkout. </SheetDescription>
       </SheetHeader>
 
-      
-
       <!-- Main Content -->
       <div class="flex-1 overflow-y-auto mx-2 min-h-0">
         <!-- Loading State -->
@@ -86,14 +84,7 @@ import CartSummary from './CartSummary.vue'
 const router = useRouter()
 const isOpen = ref(false)
 
-const {
-  items,
-  itemCount,
-  isEmpty,
-  isLoading,
-  isInitialized,
-  validateStock,
-} = useCart()
+const { items, itemCount, isEmpty, isLoading, isInitialized, validateStock } = useCart()
 
 watch(isOpen, (newVal) => {
   if (newVal && !isEmpty.value) {

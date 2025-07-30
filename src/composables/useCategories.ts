@@ -33,7 +33,8 @@ export function useCategories() {
   )
 
   const emptyCategories = computed(
-    () => (categories.value || []).filter((cat) => !cat.products || cat.products.length === 0).length,
+    () =>
+      (categories.value || []).filter((cat) => !cat.products || cat.products.length === 0).length,
   )
 
   const categoryStats = computed(() => ({

@@ -165,8 +165,7 @@ const updateUrlParams = () => {
   if (filters.sort_by) query.sort_by = filters.sort_by
   if (filters.sort_order) query.sort_order = filters.sort_order
   if (filters.page && filters.page > 1) query.page = filters.page.toString()
-  if (filters.per_page && filters.per_page !== 10)
-    query.per_page = filters.per_page.toString()
+  if (filters.per_page && filters.per_page !== 10) query.per_page = filters.per_page.toString()
 
   router.replace({ query })
 }
@@ -177,8 +176,7 @@ const loadFiltersFromUrl = () => {
 
   if (query.status) urlFilters.status = query.status as OrderFiltersType['status']
   if (query.sort_by) urlFilters.sort_by = query.sort_by as OrderFiltersType['sort_by']
-  if (query.sort_order)
-    urlFilters.sort_order = query.sort_order as OrderFiltersType['sort_order']
+  if (query.sort_order) urlFilters.sort_order = query.sort_order as OrderFiltersType['sort_order']
   if (query.page) urlFilters.page = parseInt(query.page as string)
   if (query.per_page) urlFilters.per_page = parseInt(query.per_page as string)
 

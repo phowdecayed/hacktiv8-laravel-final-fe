@@ -43,7 +43,7 @@ describe('CategoryManager', () => {
     mockCategoriesData.totalCategories = 0
     mockCategoriesData.categoriesWithProducts = 0
     mockCategoriesData.emptyCategories = 0
-    
+
     setActivePinia(createPinia())
   })
 
@@ -75,15 +75,15 @@ describe('CategoryManager', () => {
 
   it('displays category statistics', () => {
     // Set up the mock data to return specific values
-    const mockUser: User = { 
-      id: 1, 
-      name: 'Admin', 
+    const mockUser: User = {
+      id: 1,
+      name: 'Admin',
       email: 'admin@test.com',
       email_verified_at: null,
       created_at: '2024-01-01',
-      updated_at: '2024-01-01'
+      updated_at: '2024-01-01',
     }
-    
+
     const mockProduct: Product = {
       id: 1,
       name: 'Phone',
@@ -97,9 +97,9 @@ describe('CategoryManager', () => {
       deleted_at: null,
       user: mockUser,
       category: null,
-      images: []
+      images: [],
     }
-    
+
     mockCategoriesData.categories = [
       {
         id: 1,
@@ -192,9 +192,9 @@ describe('CategoryManager', () => {
     // Find the "Add Category" button using test id
     const addButton = wrapper.find('[data-testid="add-button"]')
     expect(addButton.exists()).toBe(true)
-    
+
     await addButton.trigger('click')
-    
+
     // Check that the dialog content is rendered
     const dialogContent = wrapper.find('[data-testid="dialog-content"]')
     expect(dialogContent.exists()).toBe(true)

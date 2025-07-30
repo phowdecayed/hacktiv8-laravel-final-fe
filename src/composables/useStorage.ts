@@ -1,7 +1,12 @@
 import { ref, computed } from 'vue'
 import { useNotifications } from './useNotifications'
 import { adminApiService } from '@/services/api/admin'
-import type { StorageFile, StorageFilters, FileUploadRequest, ApiResponseWithPagination } from '@/types'
+import type {
+  StorageFile,
+  StorageFilters,
+  FileUploadRequest,
+  ApiResponseWithPagination,
+} from '@/types'
 
 export interface StorageState {
   files: StorageFile[]
@@ -32,7 +37,7 @@ export function useStorage() {
   const isLoading = ref(false)
   const isUploading = ref(false)
   const error = ref<string | null>(null)
-  
+
   const { showError, showSuccess } = useNotifications()
 
   // Getters
@@ -83,7 +88,7 @@ export function useStorage() {
     try {
       await adminApiService.deleteStorageFile(id)
       // Remove file from local state
-      files.value = files.value.filter(file => file.id !== id)
+      files.value = files.value.filter((file) => file.id !== id)
       showSuccess('File deleted successfully')
     } catch (err: any) {
       const errorMessage = err.message || 'Failed to delete file'
@@ -102,7 +107,7 @@ export function useStorage() {
     try {
       const response = await adminApiService.restoreStorageFile(id)
       // Update file in local state
-      const index = files.value.findIndex(file => file.id === id)
+      const index = files.value.findIndex((file) => file.id === id)
       if (index !== -1) {
         files.value[index] = response.data
       }

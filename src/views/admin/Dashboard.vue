@@ -111,6 +111,8 @@ import {
   BarChart3,
   UserPlus,
   PackagePlus,
+  X,
+  RefreshCw,
 } from 'lucide-vue-next'
 
 const router = useRouter()
@@ -154,13 +156,47 @@ const statsCards = computed(() => {
 })
 
 const recentActivity = computed(() => {
-  return auditEntries.slice(0, 5).map((entry: any) => ({
-    id: entry.id,
-    description: entry.description,
-    time: new Date(entry.created_at).toLocaleString(),
-    icon: UserPlus, // Placeholder
-    bgColor: 'bg-blue-500', // Placeholder
-  }))
+  // Memastikan auditEntries.value adalah array sebelum memanggil slice
+  return (auditEntries.value || []).slice(0, 5).map((entry: any) => {
+    let description = ''
+    let icon = UserPlus
+    let bgColor = 'bg-blue-500'
+
+    switch (entry.action) {
+      case 'created':
+        description = `New ${entry.model_type.toLowerCase()} created by ${entry.user.name}`
+        icon = Plus
+        bgColor = 'bg-green-500'
+        break
+      case 'updated':
+        description = `${entry.model_type} updated by ${entry.user.name}`
+        icon = FileText
+        bgColor = 'bg-blue-500'
+        break
+      case 'deleted':
+        description = `${entry.model_type} deleted by ${entry.user.name}`
+        icon = X
+        bgColor = 'bg-red-500'
+        break
+      case 'restored':
+        description = `${entry.model_type} restored by ${entry.user.name}`
+        icon = RefreshCw
+        bgColor = 'bg-yellow-500'
+        break
+      default:
+        description = `Activity on ${entry.model_type} by ${entry.user.name}`
+        icon = FileText
+        bgColor = 'bg-gray-500'
+    }
+
+    return {
+      id: entry.id,
+      description,
+      time: new Date(entry.created_at).toLocaleString(),
+      icon,
+      bgColor,
+    }
+  })
 })
 
 // Computed properties

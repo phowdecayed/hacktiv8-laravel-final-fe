@@ -90,8 +90,6 @@ export const useCartStore = defineStore('cart', () => {
       } else {
         items.value.push(updatedItem)
       }
-
-      
     } catch (error) {
       console.error('Failed to add item to cart:', error)
       await fetchCart() // a full refetch on error to ensure consistency
@@ -123,8 +121,6 @@ export const useCartStore = defineStore('cart', () => {
       if (itemIndex !== -1) {
         items.value[itemIndex] = response.data
       }
-
-      
     } catch (error) {
       console.error('Failed to update cart item:', error)
       await fetchCart() // a full refetch on error to ensure consistency
@@ -142,12 +138,10 @@ export const useCartStore = defineStore('cart', () => {
 
     isLoading.value = true
     try {
-      const removedItem = items.value.find(item => item.id === itemId)
+      const removedItem = items.value.find((item) => item.id === itemId)
       await apiService.delete(`/cart/${itemId}`)
 
       items.value = items.value.filter((item) => item.id !== itemId)
-
-      
     } catch (error) {
       console.error('Failed to remove cart item:', error)
       await fetchCart() // a full refetch on error to ensure consistency
@@ -166,7 +160,7 @@ export const useCartStore = defineStore('cart', () => {
     isLoading.value = true
     try {
       // Get product IDs before clearing cart to update their stock
-      const productIdsInCart = items.value.map(item => item.product.id)
+      const productIdsInCart = items.value.map((item) => item.product.id)
 
       console.log('Cart items before clear:', items.value.length)
       await apiService.delete('/cart')
