@@ -84,22 +84,25 @@ export class AdminApiService {
   }
 
   async updateProduct(id: number, data: UpdateProductRequest): Promise<ApiResponse<Product>> {
-    const formData = new FormData()
-    if (data.name) formData.append('name', data.name)
-    if (data.description) formData.append('description', data.description)
-    if (data.price) formData.append('price', data.price.toString())
-    if (data.stock) formData.append('stock', data.stock.toString())
-    if (data.category_id) formData.append('category_id', data.category_id.toString())
+    if (data.images && data.images.length > 0) {
+      const formData = new FormData()
+      if (data.name) formData.append('name', data.name)
+      if (data.description) formData.append('description', data.description)
+      if (data.price) formData.append('price', data.price.toString())
+      if (data.stock) formData.append('stock', data.stock.toString())
+      if (data.category_id) formData.append('category_id', data.category_id.toString())
 
-    if (data.images) {
       data.images.forEach((image, index) => {
         formData.append(`images[${index}]`, image)
       })
-    }
 
-    return apiService.put(`/products/${id}`, formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    })
+      return apiService.post(`/products/${id}?_method=PUT`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      })
+    } else {
+      // Send as JSON for partial updates without images
+      return apiService.put(`/products/${id}`, data)
+    }
   }
 
   async deleteProduct(id: number): Promise<ApiResponse<void>> {
