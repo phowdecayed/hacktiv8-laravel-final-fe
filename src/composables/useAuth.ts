@@ -3,7 +3,8 @@ import { useRouter } from 'vue-router'
 import { useErrorHandler } from '@/composables/useErrorHandler'
 import { useNotifications } from '@/composables/useNotifications'
 import { toast } from 'vue-sonner'
-import type { LoginCredentials, RegisterData } from '@/types/api'
+import { computed } from 'vue'
+import type { LoginCredentials, RegisterData, UserRole } from '@/types/api'
 import apiService from '@/lib/api'
 
 export const useAuth = () => {
@@ -101,6 +102,76 @@ export const useAuth = () => {
     )
   }
 
+  // Role-based access control
+  const hasRole = (role: UserRole): boolean => {
+    return authStore.user?.role === role
+  }
+
+  const hasAnyRole = (roles: UserRole[]): boolean => {
+    return roles.some((role) => hasRole(role))
+  }
+
+  const hasPermission = (permission: string): boolean => {
+    return authStore.user?.permissions?.includes(permission) ?? false
+  }
+
+  const hasAnyPermission = (permissions: string[]): boolean => {
+    return permissions.some((permission) => hasPermission(permission))
+  }
+
+  const isAdmin = computed(() => hasRole('admin'))
+  const isEditor = computed(() => hasRole('editor'))
+  const isModerator = computed(() => hasRole('moderator'))
+  const isCustomer = computed(() => hasRole('customer'))
+
+  const isBackendUser = computed(() => hasAnyRole(['admin', 'editor', 'moderator']))
+
+  const canManageUsers = computed(() => hasRole('admin'))
+
+  const canManageProducts = computed(() => hasAnyRole(['admin', 'editor']))
+
+  const canManageCategories = computed(() => hasAnyRole(['admin', 'editor']))
+
+  const canManageTransactions = computed(() => hasAnyRole(['admin', 'moderator']))
+
+  const canViewAuditTrail = computed(() => hasAnyRole(['admin', 'moderator']))
+
+  const canManageStorage = computed(() => hasAnyRole(['admin', 'editor']))
+
+  const requireAuth = () => {
+    if (!authStore.isAuthenticated) {
+      router.push('/login')
+      return false
+    }
+    return true
+  }
+
+  const requireRole = (role: UserRole) => {
+    if (!requireAuth()) return false
+
+    if (!hasRole(role)) {
+      toast.error('You do not have permission to access this page')
+      router.push('/')
+      return false
+    }
+    return true
+  }
+
+  const requireAnyRole = (roles: UserRole[]) => {
+    if (!requireAuth()) return false
+
+    if (!hasAnyRole(roles)) {
+      toast.error('You do not have permission to access this page')
+      router.push('/')
+      return false
+    }
+    return true
+  }
+
+  const requireBackendAccess = () => {
+    return requireAnyRole(['admin', 'editor', 'moderator'])
+  }
+
   return {
     // Store state (reactive)
     user: authStore.user,
@@ -115,6 +186,27 @@ export const useAuth = () => {
     refreshUser,
     refreshToken,
     checkAuth,
+
+    // Role-based access control
+    hasRole,
+    hasAnyRole,
+    hasPermission,
+    hasAnyPermission,
+    isAdmin,
+    isEditor,
+    isModerator,
+    isCustomer,
+    isBackendUser,
+    canManageUsers,
+    canManageProducts,
+    canManageCategories,
+    canManageTransactions,
+    canViewAuditTrail,
+    canManageStorage,
+    requireAuth,
+    requireRole,
+    requireAnyRole,
+    requireBackendAccess,
 
     // Error handling
     hasError: errorHandler.hasError,

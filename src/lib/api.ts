@@ -78,28 +78,31 @@ export class ApiService {
     await this.axiosInstance.get('/sanctum/csrf-cookie')
   }
 
-  async get<T>(endpoint: string, params?: Record<string, any>): Promise<T> {
-    const response: AxiosResponse<T> = await this.axiosInstance.get(endpoint, { params })
+  async get<T>(endpoint: string, params?: Record<string, any>, options?: any): Promise<T> {
+    const response: AxiosResponse<T> = await this.axiosInstance.get(endpoint, {
+      params,
+      ...options,
+    })
     return response.data
   }
 
-  async post<T>(endpoint: string, data?: any): Promise<T> {
-    const response: AxiosResponse<T> = await this.axiosInstance.post(endpoint, data)
+  async post<T>(endpoint: string, data?: any, options?: any): Promise<T> {
+    const response: AxiosResponse<T> = await this.axiosInstance.post(endpoint, data, options)
     return response.data
   }
 
-  async put<T>(endpoint: string, data?: any): Promise<T> {
-    const response: AxiosResponse<T> = await this.axiosInstance.put(endpoint, data)
+  async put<T>(endpoint: string, data?: any, options?: any): Promise<T> {
+    const response: AxiosResponse<T> = await this.axiosInstance.put(endpoint, data, options)
     return response.data
   }
 
-  async patch<T>(endpoint: string, data?: any): Promise<T> {
-    const response: AxiosResponse<T> = await this.axiosInstance.patch(endpoint, data)
+  async patch<T>(endpoint: string, data?: any, options?: any): Promise<T> {
+    const response: AxiosResponse<T> = await this.axiosInstance.patch(endpoint, data, options)
     return response.data
   }
 
-  async delete<T>(endpoint: string): Promise<T> {
-    const response: AxiosResponse<T> = await this.axiosInstance.delete(endpoint)
+  async delete<T>(endpoint: string, options?: any): Promise<T> {
+    const response: AxiosResponse<T> = await this.axiosInstance.delete(endpoint, options)
     return response.data
   }
 

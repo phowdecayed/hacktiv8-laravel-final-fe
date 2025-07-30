@@ -122,7 +122,7 @@ const loadProduct = async () => {
 
     // Load related products if we don't have any products loaded
     if (products.value.length === 0) {
-      await fetchProducts({ per_page: 20 })
+      await fetchProducts({ limit: 20 })
     }
   } catch (err) {
     console.error('Failed to load product:', err)

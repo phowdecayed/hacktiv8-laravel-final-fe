@@ -3,10 +3,23 @@ export interface User {
   id: number
   name: string
   email: string
+  role?: UserRole
   email_verified_at: string | null
   created_at: string
   updated_at: string
+  deleted_at?: string | null
+  permissions?: string[]
+  statistics?: UserStatistics
 }
+
+export interface UserStatistics {
+  total_products: number
+  total_categories: number
+  total_transactions: number
+  total_revenue: number
+}
+
+export type UserRole = 'admin' | 'editor' | 'moderator' | 'customer'
 
 export interface AuthResponse {
   user: User
@@ -64,6 +77,22 @@ export interface Category {
   products?: Product[]
 }
 
+export interface CreateCategoryRequest {
+  name: string
+  description?: string
+}
+
+export interface UpdateCategoryRequest {
+  name?: string
+  description?: string
+}
+
+export interface CategoryFilters {
+  search?: string
+  page?: number
+  per_page?: number
+}
+
 // Cart related types
 export interface CartProduct {
   id: number
@@ -113,7 +142,6 @@ export interface StockValidationResponse {
   message: string
   data: StockValidationItem[]
 }
-
 
 // Transaction related types
 export interface Transaction {
@@ -204,6 +232,62 @@ export interface MyTransactionsPaginatedResponse {
   total: number
 }
 
+// Audit Trail types
+export interface AuditTrail {
+  id: number
+  user_id: number
+  model_type: string
+  model_id: number
+  action: AuditAction
+  old_values: Record<string, any> | null
+  new_values: Record<string, any> | null
+  ip_address: string
+  user_agent: string
+  created_at: string
+  updated_at: string
+  user: User
+}
+
+export type AuditAction = 'created' | 'updated' | 'deleted' | 'restored'
+
+export interface AuditTrailFilters {
+  user_id?: number
+  model_type?: string
+  action?: AuditAction
+  date_from?: string
+  date_to?: string
+  page?: number
+  per_page?: number
+}
+
+// Storage File types
+export interface StorageFile {
+  id: number
+  filename: string
+  original_name: string
+  mime_type: string
+  size: number
+  user_id: number
+  created_at: string
+  updated_at: string
+  deleted_at: string | null
+  user: User
+  file_url: string
+}
+
+export interface FileUploadRequest {
+  file: File
+  category?: string
+}
+
+export interface StorageFilters {
+  mime_type?: string
+  user_id?: number
+  search?: string
+  page?: number
+  per_page?: number
+}
+
 // Filter and search types
 export interface ProductFilters {
   search?: string
@@ -217,4 +301,50 @@ export interface ProductFilters {
   order?: 'asc' | 'desc'
   page?: number
   limit?: number
+}
+
+// Admin-specific request types
+export interface CreateUserRequest {
+  name: string
+  email: string
+  password: string
+  role: UserRole
+}
+
+export interface UpdateUserRequest {
+  name?: string
+  email?: string
+  password?: string
+  role?: UserRole
+}
+
+export interface UserFilters {
+  role?: UserRole
+  search?: string
+  verified?: boolean
+  page?: number
+  per_page?: number
+}
+
+export interface CreateProductRequest {
+  name: string
+  description?: string
+  price: number
+  stock: number
+  category_id?: number
+  images?: File[]
+}
+
+export interface UpdateProductRequest {
+  name?: string
+  description?: string
+  price?: number
+  stock?: number
+  category_id?: number
+  images?: File[]
+}
+
+export interface UpdateTransactionRequest {
+  status?: TransactionStatus
+  notes?: string
 }
