@@ -22,6 +22,7 @@ import type {
   ApiResponseWithPagination,
   ApiResponse,
   ApiResponseWrapper,
+  AuditTrailResponse,
 } from '@/types'
 
 export class AdminApiService {
@@ -181,9 +182,7 @@ export class AdminApiService {
   }
 
   // Audit Trail
-  async getAuditTrail(
-    filters?: AuditTrailFilters,
-  ): Promise<ApiResponseWrapper<ApiResponseWithPagination<AuditTrail>>> {
+  async getAuditTrail(filters?: AuditTrailFilters): Promise<AuditTrailResponse> {
     return apiService.get('/audit-trails', filters)
   }
 

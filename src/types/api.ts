@@ -223,6 +223,10 @@ export interface ApiResponseWithPagination<T> {
   pagination: Pagination
 }
 
+export interface AuditTrailResponse extends Pagination {
+  data: AuditTrail[]
+}
+
 export interface ApiError {
   message: string
   errors?: Record<string, string[]>
