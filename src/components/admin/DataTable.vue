@@ -65,6 +65,7 @@
               v-for="column in columns"
               :key="column.key"
               :class="[
+                column.class,
                 column.sortable ? 'cursor-pointer hover:bg-muted/50' : '',
                 column.align === 'center' ? 'text-center' : '',
                 column.align === 'right' ? 'text-right' : '',
@@ -124,7 +125,10 @@
             v-else
             v-for="(item, index) in paginatedData"
             :key="getRowKey(item, index)"
-            :class="selectedRows.includes(getRowKey(item, index)) ? 'bg-muted/50' : ''"
+            :class="[
+              'hover:bg-muted/50',
+              selectedRows.includes(getRowKey(item, index)) ? 'bg-muted/50' : '',
+            ]"
           >
             <!-- Select Checkbox -->
             <TableCell v-if="selectable">
@@ -139,6 +143,7 @@
               v-for="column in columns"
               :key="column.key"
               :class="[
+                column.class,
                 column.align === 'center' ? 'text-center' : '',
                 column.align === 'right' ? 'text-right' : '',
               ]"
@@ -184,7 +189,7 @@
     <!-- Pagination -->
     <div class="flex items-center justify-between">
       <div class="text-sm text-muted-foreground">
-        Showing {{ startIndex + 1 }} to {{ endIndex }} of {{ filteredData.length }} results
+        Page {{ currentPage }} of {{ totalPages }}
       </div>
 
       <div class="flex items-center space-x-2">
@@ -262,6 +267,7 @@ export interface TableColumn {
   label: string
   sortable?: boolean
   align?: 'left' | 'center' | 'right'
+  class?: string
   formatter?: (value: any, item: any) => string
 }
 

@@ -38,19 +38,19 @@ export class AdminApiService {
   }
 
   async createUser(data: CreateUserRequest): Promise<ApiResponse<User>> {
-    return apiService.post('/api/admin/users', data)
+    return apiService.post('/users', data)
   }
 
   async updateUser(id: number, data: UpdateUserRequest): Promise<ApiResponse<User>> {
-    return apiService.put(`/api/admin/users/${id}`, data)
+    return apiService.put(`/users/${id}`, data)
   }
 
   async deleteUser(id: number): Promise<ApiResponse<void>> {
-    return apiService.delete(`/api/admin/users/${id}`)
+    return apiService.delete(`/users/${id}`)
   }
 
   async restoreUser(id: number): Promise<ApiResponse<User>> {
-    return apiService.post(`/api/admin/users/${id}/restore`)
+    return apiService.post(`/users/${id}/restore`)
   }
 
   // Product Management
@@ -78,7 +78,7 @@ export class AdminApiService {
       })
     }
 
-    return apiService.post('/api/admin/products', formData, {
+    return apiService.post('/products', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     })
   }
@@ -97,34 +97,34 @@ export class AdminApiService {
       })
     }
 
-    return apiService.post(`/api/admin/products/${id}`, formData, {
+    return apiService.put(`/products/${id}`, formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     })
   }
 
   async deleteProduct(id: number): Promise<ApiResponse<void>> {
-    return apiService.delete(`/api/admin/products/${id}`)
+    return apiService.delete(`/products/${id}`)
   }
 
   async restoreProduct(id: number): Promise<ApiResponse<Product>> {
-    return apiService.post(`/api/admin/products/${id}/restore`)
+    return apiService.post(`/products/${id}/restore`)
   }
 
   async bulkDeleteProducts(ids: number[]): Promise<ApiResponse<void>> {
-    return apiService.post('/api/admin/products/bulk-delete', { ids })
+    return apiService.post('/products/bulk-delete', { ids })
   }
 
   async bulkUpdateProductStock(
     updates: Array<{ id: number; stock: number }>,
   ): Promise<ApiResponse<void>> {
-    return apiService.post('/api/admin/products/bulk-update-stock', { updates })
+    return apiService.post('/products/bulk-update-stock', { updates })
   }
 
   async bulkUpdateProductCategory(
     productIds: number[],
     categoryId: number | null,
   ): Promise<ApiResponse<void>> {
-    return apiService.post('/api/admin/products/bulk-update-category', {
+    return apiService.post('/products/bulk-update-category', {
       product_ids: productIds,
       category_id: categoryId,
     })

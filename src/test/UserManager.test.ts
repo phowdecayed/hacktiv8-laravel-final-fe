@@ -101,10 +101,9 @@ describe('UserManager', () => {
     })
 
     const vm = wrapper.vm as any
-    expect(vm.tableColumns).toHaveLength(6)
+    expect(vm.tableColumns).toHaveLength(5)
     expect(vm.tableColumns[0].key).toBe('name')
-    expect(vm.tableColumns[1].key).toBe('email')
-    expect(vm.tableColumns[2].key).toBe('role')
+    expect(vm.tableColumns[1].key).toBe('role')
   })
 
   it('has correct form schema for user creation', () => {
@@ -137,10 +136,11 @@ describe('UserManager', () => {
     })
 
     const vm = wrapper.vm as any
-    expect(vm.userFormSchema.fields).toHaveLength(4)
+    expect(vm.userFormSchema.fields).toHaveLength(5)
     expect(vm.userFormSchema.fields[0].name).toBe('name')
     expect(vm.userFormSchema.fields[1].name).toBe('email')
     expect(vm.userFormSchema.fields[2].name).toBe('password')
-    expect(vm.userFormSchema.fields[3].name).toBe('role')
+    expect(vm.userFormSchema.fields[3].name).toBe('password_confirmation')
+    expect(vm.userFormSchema.fields[4].name).toBe('role')
   })
 })

@@ -62,7 +62,7 @@
 
     <!-- Users Table -->
     <Card>
-      <CardContent class="p-0">
+      <CardContent class="p-6">
         <DataTable
           :data="users"
           :columns="tableColumns"
@@ -75,6 +75,20 @@
           @export="handleExport"
         >
           <!-- Custom cell renderers -->
+          <template #cell-name="{ item }">
+            <div class="flex items-center space-x-3">
+              <img
+                :src="`https://i.pravatar.cc/40?u=${item.email}`"
+                alt="User avatar"
+                class="w-10 h-10 rounded-full"
+              />
+              <div>
+                <div class="font-medium">{{ item.name }}</div>
+                <div class="text-sm text-muted-foreground">{{ item.email }}</div>
+              </div>
+            </div>
+          </template>
+
           <template #cell-role="{ value }">
             <Badge :variant="getRoleVariant(value)">
               {{ getRoleLabel(value) }}
@@ -83,17 +97,23 @@
 
           <template #cell-email_verified_at="{ value }">
             <div class="flex items-center space-x-2">
-              <div :class="['w-2 h-2 rounded-full', value ? 'bg-green-500' : 'bg-red-500']" />
-              <span class="text-sm">
+              <Badge :variant="value ? 'success' : 'destructive'" class="capitalize">
+                <component :is="value ? UserCheck : UserX" class="w-3.5 h-3.5 mr-1.5" />
                 {{ value ? 'Verified' : 'Unverified' }}
-              </span>
+              </Badge>
             </div>
           </template>
 
           <template #cell-statistics="{ item }">
-            <div class="text-sm space-y-1">
-              <div>Products: {{ item.statistics?.total_products || 0 }}</div>
-              <div>Transactions: {{ item.statistics?.total_transactions || 0 }}</div>
+            <div class="flex space-x-4 text-sm text-muted-foreground">
+              <div class="flex items-center">
+                <Briefcase class="w-4 h-4 mr-1.5" />
+                {{ item.statistics?.total_products || 0 }}
+              </div>
+              <div class="flex items-center">
+                <Repeat class="w-4 h-4 mr-1.5" />
+                {{ item.statistics?.total_transactions || 0 }}
+              </div>
             </div>
           </template>
 
@@ -188,7 +208,9 @@
                 <p class="text-sm text-muted-foreground">Categories Created</p>
               </div>
               <div class="bg-muted/50 p-3 rounded-lg">
-                <p class="text-2xl font-bold">${{ selectedUser.statistics.total_revenue || 0 }}</p>
+                <p class="text-2xl font-bold">
+                  Rp.{{ selectedUser.statistics.total_revenue || 0 }}
+                </p>
                 <p class="text-sm text-muted-foreground">Total Revenue</p>
               </div>
             </div>
@@ -287,6 +309,8 @@ import {
   UserCheck,
   UserX,
   Download,
+  Briefcase,
+  Repeat,
 } from 'lucide-vue-next'
 
 // Store and composables
@@ -329,13 +353,9 @@ const userFormData = computed(() => {
 const tableColumns: TableColumn[] = [
   {
     key: 'name',
-    label: 'Name',
+    label: 'User',
     sortable: true,
-  },
-  {
-    key: 'email',
-    label: 'Email',
-    sortable: true,
+    class: 'w-1/4',
   },
   {
     key: 'role',
@@ -426,6 +446,16 @@ const userFormSchema: FormSchema = {
       label: editingUser.value ? 'New Password (leave blank to keep current)' : 'Password',
       placeholder: 'Enter password',
       required: !editingUser.value,
+    },
+    {
+      name: 'password_confirmation',
+      type: 'input',
+      inputType: 'password',
+      label: 'Confirm Password',
+      placeholder: 'Confirm new password',
+      required: !editingUser.value,
+      condition: (formData) =>
+        (formData.password && formData.password.length > 0),
     },
     {
       name: 'role',
@@ -567,8 +597,9 @@ const handleUserSubmit = async (formData: any) => {
         role: formData.role,
       }
 
-      if (formData.password) {
+      if (formData.password && formData.password.length > 0) {
         updateData.password = formData.password
+        updateData.password_confirmation = formData.password_confirmation
       }
 
       await usersStore.updateUser(editingUser.value.id, updateData)

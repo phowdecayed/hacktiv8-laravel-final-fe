@@ -91,7 +91,7 @@
 
     <!-- Products Table -->
     <Card>
-      <CardContent class="p-0">
+      <CardContent class="p-6">
         <DataTable
           :data="products"
           :columns="tableColumns"
@@ -540,23 +540,20 @@ const handleProductSubmit = async (formData: any) => {
   try {
     submitting.value = true
 
-    const productData: CreateProductRequest | UpdateProductRequest = {
-      name: formData.name,
-      description: formData.description || undefined,
-      price: formData.price,
-      stock: formData.stock,
-      min_stock: formData.min_stock || undefined,
-      category_id:
-        formData.category_id && formData.category_id !== 'none'
-          ? parseInt(formData.category_id)
-          : undefined,
-      images: formData.images || [],
-    }
+    const productData: UpdateProductRequest = {}
+
+    if (formData.name !== editingProduct.value?.name) productData.name = formData.name
+    if (formData.description !== editingProduct.value?.description) productData.description = formData.description
+    if (formData.price !== editingProduct.value?.price) productData.price = formData.price
+    if (formData.stock !== editingProduct.value?.stock) productData.stock = formData.stock
+    if (formData.min_stock !== editingProduct.value?.min_stock) productData.min_stock = formData.min_stock
+    if (formData.category_id !== editingProduct.value?.category_id) productData.category_id = formData.category_id
+    if (formData.images) productData.images = formData.images
 
     if (editingProduct.value) {
       await adminApiService.updateProduct(
         editingProduct.value.id,
-        productData as UpdateProductRequest,
+        productData,
       )
       success('Product updated successfully')
     } else {
