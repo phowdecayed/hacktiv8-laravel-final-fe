@@ -283,7 +283,7 @@ const dateRangeText = computed(() => {
 const loadUsers = async () => {
   try {
     const response = await adminApiService.getUsers({ per_page: 100 })
-    users.value = response.data
+    users.value = response.data.data
   } catch (error) {
     console.error('Failed to load users:', error)
   }
