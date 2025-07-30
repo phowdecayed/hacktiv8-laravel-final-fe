@@ -143,19 +143,19 @@ export class AdminApiService {
   }
 
   async createCategory(data: CreateCategoryRequest): Promise<ApiResponse<Category>> {
-    return apiService.post('/api/admin/categories', data)
+    return apiService.post('/categories', data)
   }
 
   async updateCategory(id: number, data: UpdateCategoryRequest): Promise<ApiResponse<Category>> {
-    return apiService.put(`/api/admin/categories/${id}`, data)
+    return apiService.put(`/categories/${id}`, data)
   }
 
   async deleteCategory(id: number): Promise<ApiResponse<void>> {
-    return apiService.delete(`/api/admin/categories/${id}`)
+    return apiService.delete(`/categories/${id}`)
   }
 
   async restoreCategory(id: number): Promise<ApiResponse<Category>> {
-    return apiService.post(`/api/admin/categories/${id}/restore`)
+    return apiService.post(`/categories/${id}/restore`)
   }
 
   // Transaction Management
@@ -173,15 +173,15 @@ export class AdminApiService {
     id: number,
     data: UpdateTransactionRequest,
   ): Promise<ApiResponse<Transaction>> {
-    return apiService.put(`/api/admin/transactions/${id}`, data)
+    return apiService.put(`/transactions/${id}`, data)
   }
 
   async cancelTransaction(id: number, reason?: string): Promise<ApiResponse<Transaction>> {
-    return apiService.post(`/api/admin/transactions/${id}/cancel`, { reason })
+    return apiService.post(`/transactions/${id}/cancel`, { reason })
   }
 
   async refundTransaction(id: number, reason?: string): Promise<ApiResponse<Transaction>> {
-    return apiService.post(`/api/admin/transactions/${id}/refund`, { reason })
+    return apiService.post(`/transactions/${id}/refund`, { reason })
   }
 
   // Audit Trail

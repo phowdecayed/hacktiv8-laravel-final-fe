@@ -261,7 +261,7 @@ const statusTimeline = computed(() => {
     { key: 'processing', label: 'Processing' },
     { key: 'shipped', label: 'Shipped' },
     { key: 'delivered', label: 'Delivered' },
-    { key: 'completed', label: 'User Review' },
+    { key: 'completed', label: 'Completed' },
   ]
 
   const currentStatus = order.value.status
@@ -282,7 +282,7 @@ const statusTimeline = computed(() => {
 
   return allStatuses.map((status, index) => ({
     ...status,
-    completed: index < currentIndex,
+    completed: index <= currentIndex,
     current: index === currentIndex,
   }))
 })

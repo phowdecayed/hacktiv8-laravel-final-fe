@@ -13,7 +13,7 @@
         <BreadcrumbSeparator v-if="product.category" />
         <BreadcrumbItem v-if="product.category">
           <BreadcrumbLink :href="`/products?category=${product.category.id}`">
-            {{ product.category.name }}
+            {{ product.category?.name }}
           </BreadcrumbLink>
         </BreadcrumbItem>
         <BreadcrumbSeparator />
@@ -65,7 +65,7 @@
         <!-- Title and Category -->
         <div class="space-y-2">
           <div v-if="product.category" class="flex items-center gap-2">
-            <Badge variant="outline">{{ product.category.name }}</Badge>
+            <Badge variant="outline">{{ product.category?.name }}</Badge>
           </div>
           <h1 class="text-3xl font-bold">{{ product.name }}</h1>
         </div>
@@ -163,11 +163,11 @@
             </div>
             <div v-if="product.category">
               <span class="text-muted-foreground">Category:</span>
-              <span class="ml-2 font-medium">{{ product.category.name }}</span>
+              <span class="ml-2 font-medium">{{ product.category?.name }}</span>
             </div>
             <div>
               <span class="text-muted-foreground">Seller:</span>
-              <span class="ml-2 font-medium">{{ product.user.name }}</span>
+              <span class="ml-2 font-medium">{{ product.user?.name }}</span>
             </div>
           </div>
         </div>
