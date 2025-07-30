@@ -1,3 +1,4 @@
+import type { App } from 'vue'
 import type { Router } from 'vue-router'
 import { toast } from 'vue-sonner'
 import ApiErrorHandler, { type ApiException } from '@/lib/errors'
@@ -100,7 +101,7 @@ class GlobalErrorHandler {
         await this.handleAuthError(error as ApiException)
         break
       case 'network':
-        this.handleNetworkError(error)
+        this.handleNetworkError(error as Error)
         break
       case 'validation':
         this.handleValidationError(error as ApiException)
@@ -109,7 +110,7 @@ class GlobalErrorHandler {
         this.handleApiError(error as ApiException)
         break
       default:
-        this.handleGenericError(error)
+        this.handleGenericError(error as Error)
     }
 
     // Report error if enabled
@@ -201,7 +202,7 @@ class GlobalErrorHandler {
     try {
       const errorReport = {
         message: error.message,
-        stack: error.stack,
+        stack: 'stack' in error ? error.stack : undefined,
         timestamp: new Date().toISOString(),
         url: window.location.href,
         userAgent: navigator.userAgent,

@@ -222,7 +222,7 @@ onErrorCaptured((error: Error) => {
 const triggerError = (error: Error | ApiException) => {
   hasError.value = true
   currentError.value = error
-  errorDetails.value = error.stack || error.message
+  errorDetails.value = 'stack' in error ? error.stack || error.message : error.message
   errorType.value = errorHandler.classifyError(error)
 }
 
@@ -258,7 +258,8 @@ const handleGoHome = () => {
 
 const handleReport = () => {
   if (currentError.value) {
-    emit('report', currentError.value)
+    const errorToReport = currentError.value instanceof Error ? currentError.value : new Error(JSON.stringify(currentError.value));
+    emit('report', errorToReport)
 
     // You could integrate with error reporting services here
     // For now, just show a toast

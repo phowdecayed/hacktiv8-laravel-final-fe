@@ -44,7 +44,7 @@
 
     <!-- Confirmation Dialog for Clearing Cart -->
     <ConfirmationDialog
-      v-model:open="isConfirmOpen"
+      v-model:is-open="isConfirmOpen"
       title="Are you absolutely sure?"
       description="This action cannot be undone. This will permanently remove all items from your cart."
       confirm-text="Yes, clear cart"

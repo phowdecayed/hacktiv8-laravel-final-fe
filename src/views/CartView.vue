@@ -91,7 +91,7 @@
                 <!-- Product Image -->
                 <div class="flex-shrink-0">
                   <img
-                    :src="item.product.images?.[0]?.image_path || '/placeholder-product.jpg'"
+                    :src="item.product.image || '/placeholder-product.jpg'"
                     :alt="item.product.name"
                     class="w-20 h-20 object-cover rounded-lg"
                   />
@@ -111,7 +111,7 @@
                       </h3>
 
                       <p class="text-muted-foreground text-sm mb-2">
-                        {{ formatPrice(item.price) }} each
+                        {{ formatPrice(item.product.price) }} each
                       </p>
 
                       <!-- Stock Warning -->

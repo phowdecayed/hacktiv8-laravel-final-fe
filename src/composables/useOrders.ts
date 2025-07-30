@@ -1,4 +1,4 @@
-import { computed } from 'vue'
+import { ref, computed, reactive } from 'vue'
 import { useOrdersStore, type CreateOrderRequest, type OrderFilters } from '@/stores/orders'
 import { useCartStore } from '@/stores/cart'
 import { useRouter } from 'vue-router'
@@ -9,6 +9,15 @@ export const useOrders = () => {
   const ordersStore = useOrdersStore()
   const cartStore = useCartStore()
   const router = useRouter()
+
+  // Local reactive state for filters
+  const filters = reactive<OrderFilters>({
+    status: 'all',
+    sort_by: 'created_at',
+    sort_order: 'desc',
+    page: 1,
+    per_page: 10,
+  })
 
   // Computed properties from store
   const orders = computed(() => ordersStore.orders)
@@ -23,7 +32,8 @@ export const useOrders = () => {
   const completedOrders = computed(() => ordersStore.completedOrders)
 
   // Fetch orders with optional filters
-  const fetchOrders = async (filters: OrderFilters = {}) => {
+  const fetchOrders = async (customFilters: OrderFilters = {}) => {
+    Object.assign(filters, customFilters)
     try {
       await ordersStore.fetchOrders(filters)
     } catch (err: any) {
@@ -80,6 +90,32 @@ export const useOrders = () => {
       console.error('Error in useOrders.createOrder:', err)
       return null
     }
+  }
+
+  // Filter and pagination actions
+  const updateFilters = (newFilters: Partial<OrderFilters>) => {
+    Object.assign(filters, newFilters, { page: 1 })
+    fetchOrders(filters)
+  }
+
+  const clearFilters = () => {
+    Object.assign(filters, {
+      status: 'all',
+      sort_by: 'created_at',
+      sort_order: 'desc',
+      page: 1,
+      per_page: 10,
+    })
+    fetchOrders(filters)
+  }
+
+  const goToPage = (page: number) => {
+    filters.page = page
+    fetchOrders(filters)
+  }
+
+  const clearError = () => {
+    ordersStore.clearError()
   }
 
   // Get order status display information
@@ -160,7 +196,7 @@ export const useOrders = () => {
   // Refresh orders list
   const refreshOrders = async () => {
     try {
-      await ordersStore.refreshOrders()
+      await ordersStore.fetchOrders(filters) // Use local filters
     } catch (err: any) {
       toast.error('Failed to refresh orders')
       console.error('Error in useOrders.refreshOrders:', err)
@@ -175,10 +211,8 @@ export const useOrders = () => {
   // Load more orders (pagination)
   const loadMoreOrders = async () => {
     if (pagination.value.current_page < pagination.value.last_page) {
-      await fetchOrders({
-        ...filters.value,
-        page: pagination.value.current_page + 1,
-      })
+      filters.page = (filters.page || 1) + 1
+      await fetchOrders(filters)
     }
   }
 
@@ -193,6 +227,7 @@ export const useOrders = () => {
     isCreatingOrder,
     error,
     pagination,
+    filters, // Expose filters
 
     // Computed
     orderCount,
@@ -208,6 +243,10 @@ export const useOrders = () => {
     refreshOrders,
     clearCurrentOrder,
     loadMoreOrders,
+    updateFilters,
+    clearFilters,
+    goToPage,
+    clearError,
 
     // Utilities
     getOrderStatusInfo,

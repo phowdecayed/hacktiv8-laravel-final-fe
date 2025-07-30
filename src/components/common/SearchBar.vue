@@ -100,7 +100,7 @@ const handleSearch = debounce(async () => {
     try {
       await fetchProducts({
         search: searchQuery.value.trim(),
-        per_page: props.maxSuggestions,
+        limit: props.maxSuggestions,
       })
       suggestions.value = products.value.slice(0, props.maxSuggestions)
       showSuggestions.value = props.showSuggestions && suggestions.value.length > 0

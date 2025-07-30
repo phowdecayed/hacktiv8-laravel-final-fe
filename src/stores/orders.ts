@@ -175,6 +175,10 @@ export const useOrdersStore = defineStore('orders', () => {
     }
   }
 
+  const clearError = () => {
+    error.value = null
+  }
+
   const refreshOrders = async () => {
     await fetchOrders({
       page: pagination.value.current_page,
@@ -204,6 +208,7 @@ export const useOrdersStore = defineStore('orders', () => {
     updateOrderStatus,
     clearCurrentOrder,
     clearOrders,
+    clearError,
     refreshOrders,
   }
 })

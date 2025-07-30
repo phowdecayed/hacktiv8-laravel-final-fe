@@ -1,5 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { authGuard, guestGuard } from './guards'
+import { adminRoutes } from './admin'
 import HomeView from '../views/HomeView.vue'
 
 const router = createRouter({
@@ -22,64 +24,113 @@ const router = createRouter({
       path: '/login',
       name: 'login',
       component: () => import('../views/LoginView.vue'),
-      meta: { requiresGuest: true },
+      beforeEnter: guestGuard,
+      meta: {
+        requiresGuest: true,
+        title: 'Login',
+      },
     },
     {
       path: '/register',
       name: 'register',
       component: () => import('../views/RegisterView.vue'),
-      meta: { requiresGuest: true },
+      beforeEnter: guestGuard,
+      meta: {
+        requiresGuest: true,
+        title: 'Register',
+      },
     },
-    // Protected routes (will be added in future tasks)
+    // Protected customer routes
     {
       path: '/profile',
       name: 'profile',
       component: () => import('../views/ProfileView.vue'),
-      meta: { requiresAuth: true },
+      beforeEnter: authGuard,
+      meta: {
+        requiresAuth: true,
+        title: 'Profile',
+      },
     },
     {
       path: '/cart',
       name: 'cart',
       component: () => import('../views/CartView.vue'),
-      meta: { requiresAuth: true },
+      beforeEnter: authGuard,
+      meta: {
+        requiresAuth: true,
+        title: 'Shopping Cart',
+      },
     },
     {
       path: '/orders',
       name: 'orders',
       component: () => import('../views/OrdersView.vue'),
-      meta: { requiresAuth: true },
+      beforeEnter: authGuard,
+      meta: {
+        requiresAuth: true,
+        title: 'My Orders',
+      },
     },
     {
       path: '/orders/:id',
       name: 'order-detail',
       component: () => import('../views/OrderDetailView.vue'),
-      meta: { requiresAuth: true },
+      beforeEnter: authGuard,
+      meta: {
+        requiresAuth: true,
+        title: 'Order Detail',
+      },
     },
     {
       path: '/checkout',
       name: 'checkout',
       component: () => import('../views/CheckoutView.vue'),
-      meta: { requiresAuth: true },
+      beforeEnter: authGuard,
+      meta: {
+        requiresAuth: true,
+        title: 'Checkout',
+      },
     },
+    // Public routes
     {
       path: '/products',
       name: 'products',
       component: () => import('../views/ProductsView.vue'),
+      meta: {
+        title: 'Products',
+      },
     },
     {
       path: '/products/:id',
       name: 'product-detail',
       component: () => import('../views/ProductDetailView.vue'),
+      meta: {
+        title: 'Product Detail',
+      },
     },
     {
       path: '/contact',
       name: 'contact',
       component: () => import('../views/ContactView.vue'),
+      meta: {
+        title: 'Contact Us',
+      },
+    },
+    // Admin routes
+    ...adminRoutes,
+    // 404 catch-all route
+    {
+      path: '/:pathMatch(.*)*',
+      name: 'not-found',
+      component: () => import('../views/NotFoundView.vue'),
+      meta: {
+        title: 'Page Not Found',
+      },
     },
   ],
 })
 
-// Route guards
+// Global route guards
 router.beforeEach(async (to, from, next) => {
   const authStore = useAuthStore()
 
@@ -88,21 +139,18 @@ router.beforeEach(async (to, from, next) => {
     await authStore.checkAuth()
   }
 
-  const requiresAuth = to.matched.some((record) => record.meta.requiresAuth)
-  const requiresGuest = to.matched.some((record) => record.meta.requiresGuest)
-
-  if (requiresAuth && !authStore.isAuthenticated) {
-    // Redirect to login with return URL
-    next({
-      name: 'login',
-      query: { redirect: to.fullPath },
-    })
-  } else if (requiresGuest && authStore.isAuthenticated) {
-    // Redirect authenticated users away from guest-only pages
-    next({ name: 'home' })
-  } else {
-    next()
+  // Set document title
+  if (to.meta.title) {
+    document.title = `${to.meta.title} - Admin Panel`
   }
+
+  next()
+})
+
+// After each route change
+router.afterEach((to, from) => {
+  // You can add analytics tracking here
+  // Example: gtag('config', 'GA_MEASUREMENT_ID', { page_path: to.path })
 })
 
 export default router

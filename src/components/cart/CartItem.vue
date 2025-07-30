@@ -14,10 +14,19 @@
       <!-- Top Row: Title and Remove Button -->
       <div class="flex justify-between items-start">
         <div class="flex-1 min-w-0 pr-2">
-          <h3 class="font-medium text-sm text-foreground leading-tight line-clamp-2">
+          <h3
+            class="font-medium text-sm leading-tight line-clamp-2"
+            :class="{ 'text-destructive': hasStockIssue, 'text-foreground': !hasStockIssue }"
+          >
             {{ item.product.name }}
           </h3>
-          <p v-if="!hasStockIssue && item.product.stock <= 5" class="text-xs text-orange-600 mt-1">
+          <p v-if="hasStockIssue" class="text-xs text-destructive mt-1">
+            {{ stockIssueMessage }}
+          </p>
+          <p
+            v-else-if="!hasStockIssue && item.product.stock > 0 && item.product.stock <= 5"
+            class="text-xs text-orange-600 mt-1"
+          >
             Only {{ item.product.stock }} left in stock
           </p>
           
@@ -85,12 +94,19 @@ interface Props {
 const props = defineProps<Props>()
 
 const { updateQuantity, removeItem, isLoading, formatPrice } = useCart()
+const { getStockValidationStatus } = useCart()
 
+const hasStockIssue = computed(() => {
+  const status = getStockValidationStatus(props.item.product.id)
+  return status === 'unavailable' || status === 'insufficient'
+})
 
-
-
-
-
+const stockIssueMessage = computed(() => {
+  const status = getStockValidationStatus(props.item.product.id)
+  if (status === 'unavailable') return 'This item is no longer available.'
+  if (status === 'insufficient') return `Only ${props.item.product.stock} left in stock.`
+  return ''
+})
 
 const incrementQuantity = async () => {
   await updateQuantity(props.item.id, props.item.quantity + 1)

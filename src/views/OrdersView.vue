@@ -89,11 +89,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch, reactive } from 'vue'
+import { computed, onMounted, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import PageLayout from '@/components/layout/PageLayout.vue'
 import OrderHistory from '@/components/order/OrderHistory.vue'
-import OrderFilters from '@/components/order/OrderFilters.vue' // New component
+import OrderFilters from '@/components/order/OrderFilters.vue'
 import { Button } from '@/components/ui/button'
 import { Lock, LogIn, ChevronLeft, ChevronRight } from 'lucide-vue-next'
 import { useAuthStore } from '@/stores/auth'
@@ -109,6 +109,7 @@ const {
   isLoading,
   error,
   pagination,
+  filters,
   hasOrders,
   fetchOrders,
   updateFilters,
@@ -119,17 +120,9 @@ const {
 
 const isAuthenticated = computed(() => authStore.isAuthenticated)
 
-// Local state for filters, mirroring useOrders composable
-const filters = reactive<OrderFiltersType>({
-  status: 'all',
-  sort_by: 'created_at',
-  sort_order: 'desc',
-  page: 1,
-  per_page: 10,
-})
-
 // Computed properties
 const visiblePages = computed(() => {
+  if (!pagination.value) return []
   const pages = []
   const start = Math.max(1, pagination.value.current_page - 2)
   const end = Math.min(pagination.value.last_page, pagination.value.current_page + 2)
@@ -141,30 +134,28 @@ const visiblePages = computed(() => {
 })
 
 // Methods
-const handleFiltersUpdate = async (newFilters: Partial<OrderFiltersType>) => {
-  Object.assign(filters, newFilters)
-  filters.page = 1 // Always reset to page 1 on filter change
-  await fetchOrders(filters)
+const handleFiltersUpdate = (newFilters: Partial<OrderFiltersType>) => {
+  updateFilters(newFilters)
   updateUrlParams()
 }
 
-const handleClearFilters = async () => {
-  filters.status = 'all'
-  filters.sort_by = 'created_at'
-  filters.sort_order = 'desc'
-  filters.page = 1
-  filters.per_page = 10
-  await fetchOrders(filters)
+const handleClearFilters = () => {
+  clearFilters()
   updateUrlParams()
 }
 
-const handleRetry = async () => {
+const handleRetry = () => {
   clearError()
-  await fetchOrders(filters)
+  fetchOrders(filters)
 }
 
 const handleEmptyAction = () => {
-  handleClearFilters()
+  router.push('/products') // Example: redirect to products page
+}
+
+const handleGoToPage = (page: number) => {
+  goToPage(page)
+  updateUrlParams()
 }
 
 const updateUrlParams = () => {
@@ -174,7 +165,8 @@ const updateUrlParams = () => {
   if (filters.sort_by) query.sort_by = filters.sort_by
   if (filters.sort_order) query.sort_order = filters.sort_order
   if (filters.page && filters.page > 1) query.page = filters.page.toString()
-  if (filters.per_page && filters.per_page !== 10) query.per_page = filters.per_page.toString()
+  if (filters.per_page && filters.per_page !== 10)
+    query.per_page = filters.per_page.toString()
 
   router.replace({ query })
 }
@@ -185,12 +177,13 @@ const loadFiltersFromUrl = () => {
 
   if (query.status) urlFilters.status = query.status as OrderFiltersType['status']
   if (query.sort_by) urlFilters.sort_by = query.sort_by as OrderFiltersType['sort_by']
-  if (query.sort_order) urlFilters.sort_order = query.sort_order as OrderFiltersType['sort_order']
+  if (query.sort_order)
+    urlFilters.sort_order = query.sort_order as OrderFiltersType['sort_order']
   if (query.page) urlFilters.page = parseInt(query.page as string)
   if (query.per_page) urlFilters.per_page = parseInt(query.per_page as string)
 
   if (Object.keys(urlFilters).length > 0) {
-    Object.assign(filters, urlFilters)
+    updateFilters(urlFilters)
   }
 }
 
@@ -201,28 +194,28 @@ onMounted(async () => {
   }
   if (isAuthenticated.value) {
     loadFiltersFromUrl()
-    await fetchOrders(filters)
+    fetchOrders(filters)
   }
 })
 
 // Watch for route changes to update filters and fetch orders
 watch(
   () => route.query,
-  async () => {
+  () => {
     if (isAuthenticated.value) {
       loadFiltersFromUrl()
-      await fetchOrders(filters)
     }
   },
 )
 
 // Watch for authentication status changes
-watch(isAuthenticated, async (newVal) => {
-  if (newVal) {
+watch(isAuthenticated, (newVal, oldVal) => {
+  if (newVal && !oldVal) {
     loadFiltersFromUrl()
-    await fetchOrders(filters)
-  } else {
-    orders.value = [] // Clear orders if user logs out
+    fetchOrders(filters)
+  } else if (!newVal) {
+    // Optional: Clear orders if user logs out
+    // This is handled by the store/composable, but you can add extra logic here
   }
 })
 </script>

@@ -168,11 +168,19 @@ export const useCart = () => {
   }
 
   const getTotalPrice = (): string => {
-    return total.value
+    return total.value.toFixed(2)
   }
 
   const getFormattedTotal = (): string => {
     return formatPrice(total.value)
+  }
+
+  const getStockValidationStatus = (productId: number) => {
+    const validation = stockValidation.value.find(item => item.product_id === productId)
+    if (!validation) return 'valid'
+    if (validation.available_stock === 0) return 'unavailable'
+    if (validation.available_stock < validation.cart_quantity) return 'insufficient'
+    return 'valid'
   }
 
   // Batch operations
@@ -258,5 +266,6 @@ export const useCart = () => {
     stockValidation,
     hasStockIssues,
     validateStock: cartStore.validateStock,
+    getStockValidationStatus,
   }
 }

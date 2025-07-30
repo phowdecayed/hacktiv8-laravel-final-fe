@@ -72,8 +72,8 @@
       <template v-else> Create Account </template>
     </Button>
 
-    <div v-if="error" class="text-sm text-red-600 text-center">
-      {{ error }}
+    <div v-if="error || hasError" class="text-sm text-red-600 text-center">
+      {{ error || authError?.message || 'Registration failed. Please try again.' }}
     </div>
   </form>
 </template>
@@ -82,11 +82,11 @@
 import { ref } from 'vue'
 import { useForm } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
-import * as z from 'zod'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { useAuth } from '@/composables/useAuth'
+import { registerSchema, type RegisterFormData } from '@/lib/validationSchemas'
 import type { RegisterData } from '@/types/api'
 
 interface Props {
@@ -102,44 +102,21 @@ const emit = defineEmits<{
   error: [error: any]
 }>()
 
-const { register, isLoading } = useAuth()
+const { register, isLoading, hasError, error: authError, clearError } = useAuth()
 const error = ref<string>('')
 
-const registerSchema = toTypedSchema(
-  z
-    .object({
-      name: z
-        .string()
-        .min(1, 'Name is required')
-        .min(2, 'Name must be at least 2 characters')
-        .max(255, 'Name must not exceed 255 characters'),
-      email: z
-        .string()
-        .min(1, 'Email is required')
-        .email('Please enter a valid email address')
-        .max(255, 'Email must not exceed 255 characters'),
-      password: z
-        .string()
-        .min(1, 'Password is required')
-        .min(8, 'Password must be at least 8 characters')
-        .max(255, 'Password must not exceed 255 characters'),
-      password_confirmation: z.string().min(1, 'Password confirmation is required'),
-    })
-    .refine((data) => data.password === data.password_confirmation, {
-      message: "Passwords don't match",
-      path: ['password_confirmation'],
-    }),
-)
+const validationSchema = toTypedSchema(registerSchema)
 
 const form = useForm({
-  validationSchema: registerSchema,
+  validationSchema,
 })
 
-const onSubmit = form.handleSubmit(async (values: RegisterData) => {
+const onSubmit = form.handleSubmit(async (values: RegisterFormData) => {
   error.value = ''
+  clearError()
 
   try {
-    await register(values, props.redirectTo)
+    await register(values as RegisterData, props.redirectTo)
     emit('success')
   } catch (err: any) {
     error.value = err.message || 'Registration failed. Please try again.'

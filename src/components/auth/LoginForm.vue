@@ -42,8 +42,8 @@
       <template v-else> Sign In </template>
     </Button>
 
-    <div v-if="error" class="text-sm text-red-600 text-center">
-      {{ error }}
+    <div v-if="error || hasError" class="text-sm text-red-600 text-center">
+      {{ error || authError?.message || 'Login failed. Please try again.' }}
     </div>
   </form>
 </template>
@@ -52,11 +52,11 @@
 import { ref } from 'vue'
 import { useForm } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
-import * as z from 'zod'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { useAuth } from '@/composables/useAuth'
+import { loginSchema, type LoginFormData } from '@/lib/validationSchemas'
 import type { LoginCredentials } from '@/types/api'
 
 interface Props {
@@ -72,28 +72,21 @@ const emit = defineEmits<{
   error: [error: any]
 }>()
 
-const { login, isLoading } = useAuth()
+const { login, isLoading, hasError, error: authError, clearError } = useAuth()
 const error = ref<string>('')
 
-const loginSchema = toTypedSchema(
-  z.object({
-    email: z.string().min(1, 'Email is required').email('Please enter a valid email address'),
-    password: z
-      .string()
-      .min(1, 'Password is required')
-      .min(6, 'Password must be at least 6 characters'),
-  }),
-)
+const validationSchema = toTypedSchema(loginSchema)
 
 const form = useForm({
-  validationSchema: loginSchema,
+  validationSchema,
 })
 
-const onSubmit = form.handleSubmit(async (values: LoginCredentials) => {
+const onSubmit = form.handleSubmit(async (values: LoginFormData) => {
   error.value = ''
+  clearError()
 
   try {
-    await login(values, props.redirectTo)
+    await login(values as LoginCredentials, props.redirectTo)
     emit('success')
   } catch (err: any) {
     error.value = err.message || 'Login failed. Please try again.'

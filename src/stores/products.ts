@@ -22,10 +22,8 @@ export const useProductsStore = defineStore('products', () => {
   // Pagination state
   const pagination = ref<PaginationMeta>({
     current_page: 1,
-    from: 0,
     last_page: 1,
     per_page: 12,
-    to: 0,
     total: 0,
   })
 
@@ -81,17 +79,15 @@ export const useProductsStore = defineStore('products', () => {
       const response = await apiService.get<PaginatedResponse<Product>>('/products', params)
 
       products.value = response.data
-      pagination.value = response.meta
+      pagination.value = response.pagination
     } catch (err: any) {
       error.value = err.message || 'Failed to fetch products'
       products.value = []
       // Reset pagination on error to prevent template errors
       pagination.value = {
         current_page: 1,
-        from: 0,
         last_page: 1,
         per_page: 12,
-        to: 0,
         total: 0,
       }
     } finally {
@@ -146,10 +142,10 @@ export const useProductsStore = defineStore('products', () => {
       category_id: undefined,
       min_price: undefined,
       max_price: undefined,
-      sort_by: 'created_at',
-      sort_order: 'desc',
+      sort: 'created_at',
+      order: 'desc',
       page: 1,
-      per_page: 12,
+      limit: 12,
     }
   }
 

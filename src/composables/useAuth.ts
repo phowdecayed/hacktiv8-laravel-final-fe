@@ -1,7 +1,7 @@
 import { useAuthStore } from '@/stores/auth'
 import { useRouter } from 'vue-router'
 import { useErrorHandler } from '@/composables/useErrorHandler'
-import { useNotifications } from '@/composables/useNotifications'
+
 import { toast } from 'vue-sonner'
 import { computed } from 'vue'
 import type { LoginCredentials, RegisterData, UserRole } from '@/types/api'

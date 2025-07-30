@@ -140,7 +140,7 @@ export const useNotifications = () => {
     options: LoadingToastOptions & {
       loadingMessage: string
     },
-  ): Promise<T> => {
+  ): Promise<string | number | { unwrap: () => Promise<T>; } | undefined> => {
     const {
       loadingMessage,
       successMessage = 'Operation completed successfully',
