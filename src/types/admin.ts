@@ -1,16 +1,17 @@
 // Admin-related types and interfaces
 
-import type { Transaction, Product } from './api'
+import type { Transaction, Product, User } from './api'
 
 export interface AdminDashboardStats {
-  totalUsers: number
-  totalProducts: number
-  totalCategories: number
-  totalTransactions: number
-  totalRevenue: number
-  recentTransactions: Transaction[]
-  lowStockProducts: Product[]
-  topProducts: Product[]
+  total_users: number
+  total_products: number
+  total_categories: number
+  total_transactions: number
+  total_sales: number
+  recent_transactions: Transaction[]
+  top_selling_products: Product[]
+  low_stock_items: Product[]
+  recent_user_registrations: User[]
 }
 
 export interface AdminPermission {

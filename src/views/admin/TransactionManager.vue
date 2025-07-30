@@ -21,7 +21,7 @@
           <div class="flex items-center justify-between">
             <div>
               <p class="text-sm font-medium text-gray-600">Total Transactions</p>
-              <p class="text-2xl font-bold text-gray-900">{{ pagination.total }}</p>
+              <p class="text-2xl font-bold text-gray-900">{{ pagination?.total || 0 }}</p>
             </div>
             <div class="h-8 w-8 bg-blue-100 rounded-lg flex items-center justify-center">
               <ShoppingCart class="h-4 w-4 text-blue-600" />
@@ -83,14 +83,14 @@
             <Select
               v-model="filters.status"
               @update:model-value="
-                updateFilters({ status: $event === '' ? undefined : ($event as TransactionStatus) })
+                updateFilters({ status: $event === 'all' ? undefined : ($event as TransactionStatus) })
               "
             >
               <SelectTrigger>
                 <SelectValue placeholder="All statuses" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All statuses</SelectItem>
+                <SelectItem value="all">All statuses</SelectItem>
                 <SelectItem value="pending">Pending</SelectItem>
                 <SelectItem value="processing">Processing</SelectItem>
                 <SelectItem value="shipped">Shipped</SelectItem>

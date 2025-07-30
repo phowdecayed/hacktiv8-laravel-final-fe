@@ -10,7 +10,7 @@
 
     <!-- Stats cards -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-      <Card v-for="stat in stats" :key="stat.title">
+      <Card v-for="stat in statsCards" :key="stat.title">
         <CardContent class="p-6">
           <div class="flex items-center justify-between">
             <div>
@@ -96,7 +96,8 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuth } from '@/composables/useAuth'
-import { useAdminStore } from '@/stores/admin'
+import { useAnalytics } from '@/composables/useAnalytics'
+import { useAuditTrail } from '@/composables/useAuditTrail'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import {
@@ -114,66 +115,53 @@ import {
 
 const router = useRouter()
 const { user } = useAuth()
-const adminStore = useAdminStore()
+const { stats, isLoading, fetchDashboardStats, formatCurrency } = useAnalytics()
+const { entries: auditEntries, fetchEntries: fetchAuditEntries } = useAuditTrail()
 
-// State
-const isLoading = ref(false)
+// Computed properties
+const statsCards = computed(() => {
+  if (!stats.value) return []
+  return [
+    {
+      title: 'Total Users',
+      value: stats.value.total_users.toLocaleString(),
+      change: 12, // Placeholder
+      icon: Users,
+      bgColor: 'bg-blue-500',
+    },
+    {
+      title: 'Products',
+      value: stats.value.total_products.toLocaleString(),
+      change: 8, // Placeholder
+      icon: Package,
+      bgColor: 'bg-green-500',
+    },
+    {
+      title: 'Orders',
+      value: stats.value.total_transactions.toLocaleString(),
+      change: -3, // Placeholder
+      icon: ShoppingCart,
+      bgColor: 'bg-yellow-500',
+    },
+    {
+      title: 'Revenue',
+      value: formatCurrency(stats.value.total_sales),
+      change: 15, // Placeholder
+      icon: DollarSign,
+      bgColor: 'bg-purple-500',
+    },
+  ]
+})
 
-// Mock data - in real implementation, this would come from the store
-const stats = ref([
-  {
-    title: 'Total Users',
-    value: '1,234',
-    change: 12,
-    icon: Users,
-    bgColor: 'bg-blue-500',
-  },
-  {
-    title: 'Products',
-    value: '567',
-    change: 8,
-    icon: Package,
-    bgColor: 'bg-green-500',
-  },
-  {
-    title: 'Orders',
-    value: '89',
-    change: -3,
-    icon: ShoppingCart,
-    bgColor: 'bg-yellow-500',
-  },
-  {
-    title: 'Revenue',
-    value: 'Rp12.345',
-    change: 15,
-    icon: DollarSign,
-    bgColor: 'bg-purple-500',
-  },
-])
-
-const recentActivity = ref([
-  {
-    id: 1,
-    description: 'New user registered: John Doe',
-    time: '2 minutes ago',
-    icon: UserPlus,
-    bgColor: 'bg-blue-500',
-  },
-  {
-    id: 2,
-    description: 'Product "Laptop Pro" was updated',
-    time: '15 minutes ago',
-    icon: Package,
-    bgColor: 'bg-green-500',
-  },
-  {
-    id: 3,
-    description: 'Order #1234 was completed',
-    time: '1 hour ago',
-    icon: ShoppingCart,
-    bgColor: 'bg-yellow-500',
-  },
-])
+const recentActivity = computed(() => {
+  return auditEntries.slice(0, 5).map((entry: any) => ({
+    id: entry.id,
+    description: entry.description,
+    time: new Date(entry.created_at).toLocaleString(),
+    icon: UserPlus, // Placeholder
+    bgColor: 'bg-blue-500', // Placeholder
+  }))
+})
 
 // Computed properties
 const quickActions = computed(() => {
@@ -232,18 +220,7 @@ const quickActions = computed(() => {
 
 // Methods
 const loadDashboardData = async () => {
-  isLoading.value = true
-  try {
-    // In real implementation, load data from the store
-    // await adminStore.fetchDashboardStats()
-
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-  } catch (error) {
-    console.error('Failed to load dashboard data:', error)
-  } finally {
-    isLoading.value = false
-  }
+  await Promise.all([fetchDashboardStats(), fetchAuditEntries()])
 }
 
 // Lifecycle

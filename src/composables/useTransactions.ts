@@ -72,7 +72,12 @@ export const useTransactions = () => {
       const response = await adminApiService.getTransactions(cleanFilters)
 
       transactions.value = response.data.data
-      pagination.value = response.data.pagination
+      pagination.value = response.data.pagination || {
+        current_page: 1,
+        last_page: 1,
+        per_page: 10,
+        total: 0,
+      }
     } catch (err: any) {
       error.value = err.message || 'Failed to fetch transactions'
       toast.error('Failed to load transactions')

@@ -49,55 +49,7 @@
         <NotificationPanel />
 
         <!-- User menu -->
-        <DropdownMenu>
-          <DropdownMenuTrigger as-child>
-            <Button variant="ghost" class="flex items-center space-x-2 px-2 sm:px-3">
-              <Avatar class="w-8 h-8">
-                <AvatarImage :src="''" :alt="user?.name || 'User'"/>
-                <AvatarFallback>
-                  {{ userInitials }}
-                </AvatarFallback>
-              </Avatar>
-              <div class="hidden sm:block text-left">
-                <p class="text-sm font-medium text-gray-900">{{ user?.name }}</p>
-                <p class="text-xs text-gray-500 capitalize">{{ user?.role }}</p>
-              </div>
-              <ChevronDown class="w-4 h-4 text-gray-400 hidden sm:block" />
-            </Button>
-          </DropdownMenuTrigger>
-
-          <DropdownMenuContent align="end" class="w-56">
-            <DropdownMenuLabel>
-              <div class="flex flex-col">
-                <span>{{ user?.name }}</span>
-                <span class="text-xs font-normal text-gray-500 capitalize">{{ user?.role }}</span>
-              </div>
-            </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-
-            <DropdownMenuItem @click="goToProfile">
-              <User class="w-4 h-4 mr-2" />
-              Profile
-            </DropdownMenuItem>
-
-            <DropdownMenuItem @click="goToSettings" v-if="canAccessSettings">
-              <Settings class="w-4 h-4 mr-2" />
-              Settings
-            </DropdownMenuItem>
-
-            <DropdownMenuItem @click="toggleTheme">
-              <Palette class="w-4 h-4 mr-2" />
-              Theme
-            </DropdownMenuItem>
-
-            <DropdownMenuSeparator />
-
-            <DropdownMenuItem @click="handleLogout" class="text-red-600 focus:text-red-600">
-              <LogOut class="w-4 h-4 mr-2" />
-              Logout
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <UserMenu />
       </div>
     </div>
 
@@ -124,24 +76,11 @@ import { useRoute, useRouter } from 'vue-router'
 import { useAuth } from '@/composables/useAuth'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
 import NotificationPanel from '@/components/admin/NotificationPanel.vue'
+import UserMenu from '@/components/admin/UserMenu.vue'
 import {
   Menu,
   Search,
-  ChevronDown,
-  User,
-  Settings,
-  LogOut,
-  Palette,
 } from 'lucide-vue-next'
 
 interface Props {
@@ -172,16 +111,6 @@ const pageDescription = computed(() => {
   return (route.meta.description as string) || ''
 })
 
-const userInitials = computed(() => {
-  if (!user?.name) return 'U'
-  return user.name
-    .split(' ')
-    .map((word: string) => word.charAt(0))
-    .join('')
-    .toUpperCase()
-    .slice(0, 2)
-})
-
 const canAccessSettings = computed(() => {
   return isAdmin.value
 })
@@ -207,19 +136,6 @@ const toggleMobileSearch = async () => {
     await nextTick()
     mobileSearchInput.value?.focus()
   }
-}
-
-const toggleTheme = () => {
-  // Implement theme toggle functionality
-  console.log('Toggle theme')
-}
-
-const goToProfile = () => {
-  router.push('/profile')
-}
-
-const goToSettings = () => {
-  router.push('/admin/settings')
 }
 
 const handleLogout = async () => {

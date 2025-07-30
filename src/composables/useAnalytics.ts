@@ -15,7 +15,7 @@ export interface AnalyticsState {
 export function useAnalytics() {
   // State
   const stats = ref<AdminDashboardStats | null>(null)
-  const salesData = ref<any[]>([])
+  const salesData = ref<any | null>(null)
   const inventoryData = ref<any[]>([])
   const userData = ref<any[]>([])
   const isLoading = ref(false)
@@ -49,7 +49,7 @@ export function useAnalytics() {
 
     try {
       const response = await adminApiService.getSalesAnalytics(dateRange)
-      salesData.value = response.data
+      salesData.value = response.data.data
       return response.data
     } catch (err: any) {
       error.value = err.message || 'Failed to fetch sales analytics'

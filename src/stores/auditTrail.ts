@@ -32,15 +32,10 @@ export const useAuditTrailStore = defineStore('auditTrail', () => {
     }
 
     try {
-      const responseWrapper = await adminApiService.getAuditTrail(filters.value)
-      const response = responseWrapper.data
-      auditEntries.value = response.data
-      pagination.value = {
-        current_page: response.current_page,
-        per_page: response.per_page,
-        total: response.total,
-        last_page: response.last_page,
-      }
+      const response = await adminApiService.getAuditTrail(filters.value)
+      const auditResponse = response.data as ApiResponseWithPagination<AuditTrail>
+      auditEntries.value = auditResponse.data
+      pagination.value = auditResponse.pagination
     } catch (err: any) {
       error.value = err.message || 'Failed to fetch audit trail'
       throw err

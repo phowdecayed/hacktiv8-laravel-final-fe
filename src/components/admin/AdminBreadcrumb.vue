@@ -2,21 +2,15 @@
   <nav class="flex" aria-label="Breadcrumb">
     <Breadcrumb>
       <BreadcrumbList>
-        <!-- Home/Dashboard -->
         <BreadcrumbItem>
-          <BreadcrumbLink
-            :href="isCurrentRoute('/admin/dashboard') ? undefined : '/admin/dashboard'"
-            :class="isCurrentRoute('/admin/dashboard') ? 'text-gray-900 font-medium' : ''"
-          >
+          <BreadcrumbLink href="/admin/dashboard" class="flex items-center">
             <Home class="w-4 h-4 mr-1" />
             Dashboard
           </BreadcrumbLink>
         </BreadcrumbItem>
 
-        <BreadcrumbSeparator v-if="breadcrumbItems.length > 0" />
-
-        <!-- Dynamic breadcrumb items -->
         <template v-for="(item, index) in breadcrumbItems" :key="item.path">
+          <BreadcrumbSeparator />
           <BreadcrumbItem>
             <BreadcrumbLink
               v-if="index < breadcrumbItems.length - 1"
@@ -29,8 +23,6 @@
               {{ item.name }}
             </BreadcrumbPage>
           </BreadcrumbItem>
-
-          <BreadcrumbSeparator v-if="index < breadcrumbItems.length - 1" />
         </template>
       </BreadcrumbList>
     </Breadcrumb>
@@ -81,11 +73,8 @@ const breadcrumbItems = computed((): BreadcrumbItem[] => {
 
   const relevantSegments = pathSegments.slice(adminIndex + 1)
 
-  // Skip if we're on the dashboard (no additional breadcrumbs needed)
-  if (
-    relevantSegments.length === 0 ||
-    (relevantSegments.length === 1 && relevantSegments[0] === 'dashboard')
-  ) {
+  // If we are on the dashboard, don't show any breadcrumbs
+  if (relevantSegments.length === 1 && relevantSegments[0] === 'dashboard') {
     return items
   }
 

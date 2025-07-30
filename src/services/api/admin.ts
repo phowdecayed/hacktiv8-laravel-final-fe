@@ -26,7 +26,9 @@ import type {
 
 export class AdminApiService {
   // User Management
-  async getUsers(filters?: UserFilters): Promise<ApiResponseWrapper<ApiResponseWithPagination<User>>> {
+  async getUsers(
+    filters?: UserFilters,
+  ): Promise<ApiResponseWrapper<ApiResponseWithPagination<User>>> {
     return apiService.get('/users', filters)
   }
 
@@ -51,7 +53,9 @@ export class AdminApiService {
   }
 
   // Product Management
-  async getProducts(filters?: any): Promise<ApiResponseWrapper<ApiResponseWithPagination<Product>>> {
+  async getProducts(
+    filters?: any,
+  ): Promise<ApiResponseWrapper<ApiResponseWithPagination<Product>>> {
     return apiService.get('/products', filters)
   }
 
@@ -177,7 +181,9 @@ export class AdminApiService {
   }
 
   // Audit Trail
-  async getAuditTrail(filters?: AuditTrailFilters): Promise<ApiResponseWrapper<ApiResponseWithPagination<AuditTrail>>> {
+  async getAuditTrail(
+    filters?: AuditTrailFilters,
+  ): Promise<ApiResponseWrapper<ApiResponseWithPagination<AuditTrail>>> {
     return apiService.get('/audit-trails', filters)
   }
 
@@ -193,7 +199,9 @@ export class AdminApiService {
   }
 
   // Storage Management
-  async getStorageFiles(filters?: StorageFilters): Promise<ApiResponseWrapper<ApiResponseWithPagination<StorageFile>>> {
+  async getStorageFiles(
+    filters?: StorageFilters,
+  ): Promise<ApiResponseWrapper<ApiResponseWithPagination<StorageFile>>> {
     return apiService.get('/storage', filters)
   }
 
@@ -212,20 +220,23 @@ export class AdminApiService {
   }
 
   async deleteStorageFile(id: number): Promise<ApiResponse<void>> {
-    return apiService.delete(`/api/admin/storage/${id}`)
+    return apiService.delete(`/api/storage/${id}`)
   }
 
   async restoreStorageFile(id: number): Promise<ApiResponse<StorageFile>> {
-    return apiService.post(`/api/admin/storage/${id}/restore`)
+    return apiService.post(`/api/storage/${id}/restore`)
   }
 
   // Dashboard Analytics
   async getDashboardStats(): Promise<ApiResponseWrapper<any>> {
-    return apiService.get('/admin/dashboard/stats')
+    return apiService.get('/dashboard/stats')
   }
 
-  async getSalesAnalytics(dateRange?: { from: string; to: string }): Promise<ApiResponseWrapper<any>> {
-    return apiService.get('/admin/analytics/sales', dateRange)
+  async getSalesAnalytics(dateRange?: {
+    from: string
+    to: string
+  }): Promise<ApiResponseWrapper<any>> {
+    return apiService.get('/dashboard/sales', dateRange)
   }
 
   async getInventoryAnalytics(): Promise<ApiResponseWrapper<any>> {

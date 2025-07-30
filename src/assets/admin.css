@@ -47,11 +47,11 @@
   .admin-sidebar-expanded {
     transform: translateX(0);
   }
-  
+
   .admin-sidebar-collapsed {
     transform: translateX(-100%);
   }
-  
+
   .admin-main-content-mobile {
     margin-left: 0;
   }
@@ -61,15 +61,15 @@
   .admin-sidebar-collapsed {
     width: 4rem;
   }
-  
+
   .admin-sidebar-expanded {
     width: 16rem;
   }
-  
+
   .admin-main-content-collapsed {
     margin-left: 4rem;
   }
-  
+
   .admin-main-content-expanded {
     margin-left: 16rem;
   }

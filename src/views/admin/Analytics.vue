@@ -53,16 +53,42 @@
             <RefreshCw class="h-6 w-6 animate-spin text-gray-400" />
           </div>
           <div
-            v-else-if="salesData.length === 0"
+            v-else-if="!salesData?.sales_by_month || salesData.sales_by_month.length === 0"
             class="h-80 flex flex-col items-center justify-center text-gray-500"
           >
             <BarChart class="h-12 w-12 mb-2" />
             <p>No sales data available</p>
           </div>
           <div v-else class="h-80">
-            <!-- Chart placeholder - would be replaced with actual chart component -->
-            <div class="h-full bg-gray-50 rounded flex items-center justify-center">
-              <p class="text-gray-500">Sales chart visualization would appear here</p>
+            <div class="overflow-x-auto">
+              <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                  <tr>
+                    <th
+                      scope="col"
+                      class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
+                      Month
+                    </th>
+                    <th
+                      scope="col"
+                      class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
+                      Total Sales
+                    </th>
+                  </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                  <tr v-for="(sale, index) in salesData.sales_by_month" :key="index">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      {{ sale.month }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {{ formatCurrency(sale.total_sales) }}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
         </CardContent>
@@ -79,7 +105,7 @@
             <RefreshCw class="h-6 w-6 animate-spin text-gray-400" />
           </div>
           <div
-            v-else-if="!stats?.topProducts || stats.topProducts.length === 0"
+            v-else-if="!stats?.top_selling_products || stats.top_selling_products.length === 0"
             class="h-80 flex flex-col items-center justify-center text-gray-500"
           >
             <Package class="h-12 w-12 mb-2" />
@@ -87,7 +113,7 @@
           </div>
           <div v-else class="space-y-4">
             <div
-              v-for="(product, index) in stats.topProducts.slice(0, 5)"
+              v-for="(product, index) in stats.top_selling_products.slice(0, 5)"
               :key="product.id"
               class="flex items-center justify-between p-3 border rounded-lg"
             >
@@ -102,7 +128,7 @@
               </div>
               <div class="text-right">
                 <p class="font-medium text-gray-900">{{ formatCurrency(product.price) }}</p>
-                <p class="text-sm text-gray-500">{{ product.sales_count || 0 }} sold</p>
+                <p class="text-sm text-gray-500">{{ product.total_quantity_sold || 0 }} sold</p>
               </div>
             </div>
           </div>
@@ -123,7 +149,7 @@
             <RefreshCw class="h-6 w-6 animate-spin text-gray-400" />
           </div>
           <div
-            v-else-if="!stats?.lowStockProducts || stats.lowStockProducts.length === 0"
+            v-else-if="!stats?.low_stock_items || stats.low_stock_items.length === 0"
             class="h-80 flex flex-col items-center justify-center text-gray-500"
           >
             <Package class="h-12 w-12 mb-2" />
@@ -131,7 +157,7 @@
           </div>
           <div v-else class="space-y-4">
             <div
-              v-for="product in stats.lowStockProducts.slice(0, 5)"
+              v-for="product in stats.low_stock_items.slice(0, 5)"
               :key="product.id"
               class="flex items-center justify-between p-3 border rounded-lg"
             >
@@ -164,7 +190,7 @@
             <RefreshCw class="h-6 w-6 animate-spin text-gray-400" />
           </div>
           <div
-            v-else-if="userData.length === 0"
+            v-else-if="!stats?.recent_user_registrations || stats.recent_user_registrations.length === 0"
             class="h-80 flex flex-col items-center justify-center text-gray-500"
           >
             <Users class="h-12 w-12 mb-2" />
@@ -191,7 +217,7 @@
           <RefreshCw class="h-6 w-6 animate-spin text-gray-400" />
         </div>
         <div
-          v-else-if="!stats?.recentTransactions || stats.recentTransactions.length === 0"
+          v-else-if="!stats?.recent_transactions || stats.recent_transactions.length === 0"
           class="h-80 flex flex-col items-center justify-center text-gray-500"
         >
           <ShoppingCart class="h-12 w-12 mb-2" />
@@ -199,7 +225,7 @@
         </div>
         <div v-else class="space-y-4">
           <div
-            v-for="transaction in stats.recentTransactions.slice(0, 5)"
+            v-for="transaction in stats.recent_transactions.slice(0, 5)"
             :key="transaction.id"
             class="flex items-center justify-between p-3 border rounded-lg"
           >
@@ -248,8 +274,15 @@ import {
 } from 'lucide-vue-next'
 
 // Composables
-const { stats, salesData, userData, isLoading, fetchDashboardStats, formatCurrency } =
-  useAnalytics()
+const {
+  stats,
+  salesData,
+  userData,
+  isLoading,
+  fetchDashboardStats,
+  fetchSalesAnalytics,
+  formatCurrency,
+} = useAnalytics()
 
 // Reactive state
 const currentDate = new Date()
@@ -266,28 +299,28 @@ const statsCards = computed(() => {
   return [
     {
       title: 'Total Revenue',
-      value: formatCurrency(stats.value.totalRevenue || 0),
+      value: formatCurrency(stats.value.total_sales || 0),
       change: 12.5,
       icon: DollarSign,
       bgColor: 'bg-green-500',
     },
     {
       title: 'Total Users',
-      value: (stats.value.totalUsers || 0).toLocaleString(),
+      value: (stats.value.total_users || 0).toLocaleString(),
       change: 8.2,
       icon: Users,
       bgColor: 'bg-blue-500',
     },
     {
       title: 'Total Products',
-      value: (stats.value.totalProducts || 0).toLocaleString(),
+      value: (stats.value.total_products || 0).toLocaleString(),
       change: 5.7,
       icon: Package,
       bgColor: 'bg-purple-500',
     },
     {
       title: 'Total Transactions',
-      value: (stats.value.totalTransactions || 0).toLocaleString(),
+      value: (stats.value.total_transactions || 0).toLocaleString(),
       change: -2.3 || defaultChange,
       icon: ShoppingCart,
       bgColor: 'bg-orange-500',
@@ -298,7 +331,7 @@ const statsCards = computed(() => {
 // Methods
 const refreshData = async () => {
   try {
-    await fetchDashboardStats()
+    await Promise.all([fetchDashboardStats(), fetchSalesAnalytics()])
   } catch (error) {
     console.error('Failed to refresh dashboard data:', error)
   }

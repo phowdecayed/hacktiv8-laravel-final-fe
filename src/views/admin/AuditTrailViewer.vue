@@ -27,7 +27,7 @@
           <!-- User Filter -->
           <div class="space-y-2">
             <Label for="user-filter">User</Label>
-            <Select v-model="filters.user_id">
+            <Select v-if="users.length > 0" v-model="filters.user_id">
               <SelectTrigger>
                 <SelectValue placeholder="All users" />
               </SelectTrigger>
