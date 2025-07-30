@@ -11,7 +11,11 @@ export function useCategories() {
   const store = useCategoriesStore()
 
   // State
-  const categories = computed(() => store.categories || [])
+  const categories = computed(() => {
+    const cats = store.categories || []
+    console.log('Computed categories:', cats)
+    return cats
+  })
   const currentCategory = computed(() => store.currentCategory)
   const pagination = computed(() => store.pagination)
   const filters = computed(() => store.filters)

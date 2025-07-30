@@ -44,8 +44,8 @@ export const useCategoriesStore = defineStore('categories', () => {
     }
 
     try {
-      const responseWrapper = await adminApiService.getCategories(filters.value)
-      const response = responseWrapper.data
+      const response = await adminApiService.getCategories(filters.value)
+      console.log('Categories response:', response)
       categories.value = response.data
       pagination.value = {
         current_page: response.current_page,
@@ -54,6 +54,7 @@ export const useCategoriesStore = defineStore('categories', () => {
         last_page: response.last_page,
       }
     } catch (err: any) {
+      console.error('Error fetching categories:', err)
       error.value = err.message || 'Failed to fetch categories'
       throw err
     } finally {

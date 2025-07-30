@@ -293,6 +293,8 @@ const props = withDefaults(defineProps<Props>(), {
   rowKey: 'id',
 })
 
+console.log('DataTable received data:', props.data)
+
 const emit = defineEmits<{
   sort: [{ column: string; order: 'asc' | 'desc' }]
   search: [query: string]

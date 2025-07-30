@@ -83,6 +83,7 @@ export class ApiService {
       params,
       ...options,
     })
+    console.log(`API GET ${endpoint}:`, response.data)
     return response.data
   }
 

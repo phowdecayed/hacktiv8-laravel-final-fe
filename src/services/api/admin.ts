@@ -126,7 +126,7 @@ export class AdminApiService {
   }
 
   // Category Management
-  async getCategories(filters?: CategoryFilters): Promise<ApiResponseWrapper<ApiResponseWithPagination<Category>>> {
+  async getCategories(filters?: CategoryFilters): Promise<ApiResponseWithPagination<Category>> {
     return apiService.get('/categories', filters)
   }
 

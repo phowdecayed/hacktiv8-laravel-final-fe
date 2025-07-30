@@ -402,8 +402,11 @@ const bulkActions: TableAction[] = [
 // Methods
 const loadCategories = async () => {
   try {
+    console.log('Loading categories...')
     await fetchCategories()
+    console.log('Categories loaded:', categories.value)
   } catch (error) {
+    console.error('Error loading categories:', error)
     showError('Failed to load categories')
   }
 }
@@ -584,5 +587,11 @@ const formatDate = (dateString: string) => {
 // Lifecycle
 onMounted(() => {
   loadCategories()
+})
+
+// Watch for debugging
+import { watch } from 'vue'
+watch(categories, (newCategories) => {
+  console.log('Categories updated:', newCategories)
 })
 </script>
