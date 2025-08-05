@@ -3,13 +3,20 @@ import { computed, onMounted } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
-import ProductGrid from '@/components/product/ProductGrid.vue'
 import PageLayout from '@/components/layout/PageLayout.vue'
 import { Package } from 'lucide-vue-next'
 import { useAuth } from '@/composables/useAuth'
 import { useProducts } from '@/composables/useProducts'
 import { useCart } from '@/composables/useCart'
 import type { Product } from '@/types/api'
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from '@/components/ui/carousel'
+import ProductCard from '@/components/product/ProductCard.vue'
 
 const router = useRouter()
 const { user, isAuthenticated } = useAuth()
@@ -30,7 +37,7 @@ const { addToCart } = useCart()
 // Computed properties
 const featuredProducts = computed(() => {
   // Show latest 8 products as featured, only if in stock
-  return products.value.filter((product) => product.stock > 0).slice(0, 8)
+  return products.value.filter((product) => product.stock > 0).slice(0, 12)
 })
 
 const categoryProductCounts = computed(() => {
@@ -133,16 +140,32 @@ onMounted(async () => {
           </RouterLink>
         </div>
 
-        <ProductGrid
-          :products="featuredProducts"
-          :is-loading="isLoading"
-          :show-view-toggle="false"
-          :show-empty-action="false"
-          view-mode="grid"
-          @product-click="handleProductClick"
-          @product-details="handleProductDetails"
-          @add-to-cart="handleAddToCart"
-        />
+        <Carousel
+          :opts="{
+            align: 'start',
+            loop: true,
+          }"
+          class="w-full"
+        >
+          <CarouselContent>
+            <CarouselItem
+              v-for="product in featuredProducts"
+              :key="product.id"
+              class="md:basis-1/2 lg:basis-1/4"
+            >
+              <div class="p-1">
+                <ProductCard
+                  :product="product"
+                  @product-click="handleProductClick"
+                  @product-details="handleProductDetails"
+                  @add-to-cart="handleAddToCart"
+                />
+              </div>
+            </CarouselItem>
+          </CarouselContent>
+          <CarouselPrevious />
+          <CarouselNext />
+        </Carousel>
       </div>
 
       <!-- Loading States -->
