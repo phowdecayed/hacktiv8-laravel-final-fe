@@ -18,6 +18,8 @@ import {
 } from '@/components/ui/carousel'
 import ProductCard from '@/components/product/ProductCard.vue'
 
+import Autoplay from 'embla-carousel-autoplay'
+
 const router = useRouter()
 const { user, isAuthenticated } = useAuth()
 
@@ -33,6 +35,13 @@ const {
 } = useProducts()
 
 const { addToCart } = useCart()
+
+const plugins = [
+  Autoplay({
+    delay: 2000,
+    stopOnInteraction: true,
+  }),
+]
 
 // Computed properties
 const featuredProducts = computed(() => {
@@ -145,6 +154,7 @@ onMounted(async () => {
             align: 'start',
             loop: true,
           }"
+          :plugins="plugins"
           class="w-full"
         >
           <CarouselContent>
