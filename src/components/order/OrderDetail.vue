@@ -32,48 +32,38 @@
       <!-- Order Status Timeline -->
       <div class="border-t pt-6">
         <h3 class="font-semibold mb-4">Order Status</h3>
-        <div class="relative flex items-center justify-between">
-          <!-- Connecting Line -->
-          <div class="absolute left-0 top-1/2 -translate-y-1/2 h-0.5 w-full bg-gray-200" />
-          <div
-            class="absolute left-0 top-1/2 -translate-y-1/2 h-0.5 bg-green-300"
-            :style="{
-              width: `${(statusTimeline.findIndex((s) => s.current) / (statusTimeline.length - 1)) * 100}%`,
-            }"
-          />
-
-          <div
-            v-for="status in statusTimeline"
-            :key="status.key"
-            class="flex flex-col items-center flex-1 relative z-10"
+        <Stepper v-model:model-value="currentStep">
+          <StepperItem
+            v-for="(step, index) in statusTimeline"
+            :key="step.key"
+            v-slot="{ state }"
+            :step="index + 1"
           >
-            <!-- Status Icon -->
-            <div
-              :class="[
-                'w-10 h-10 rounded-full flex items-center justify-center mb-2 border-2',
-                status.completed
-                  ? 'bg-green-100 border-green-300 text-green-600'
-                  : status.current
-                    ? 'bg-blue-100 border-blue-300 text-blue-600'
-                    : 'bg-gray-100 border-gray-200 text-gray-400',
-              ]"
-            >
-              <CheckCircle v-if="status.completed" class="w-5 h-5" />
-              <Clock v-else-if="status.current" class="w-5 h-5" />
-              <Circle v-else class="w-5 h-5" />
+            <StepperSeparator v-if="index < statusTimeline.length - 1" />
+            <StepperTrigger as-child>
+              <Button
+                :variant="state === 'completed' || state === 'active' ? 'default' : 'outline'"
+                size="icon"
+                class="z-10 rounded-full shrink-0"
+                :class="[
+                  state === 'active' && 'ring-2 ring-ring ring-offset-2 ring-offset-background',
+                ]"
+              >
+                <Check v-if="state === 'completed'" class="h-5 w-5" />
+                <Clock v-else-if="state === 'active'" class="h-5 w-5" />
+                <Circle v-else class="h-5 w-5" />
+              </Button>
+            </StepperTrigger>
+            <div class="mt-5 flex flex-col items-center text-center">
+              <StepperTitle
+                :class="[state === 'active' && 'text-primary']"
+                class="text-sm font-semibold transition lg:text-base"
+              >
+                {{ step.label }}
+              </StepperTitle>
             </div>
-
-            <!-- Status Label -->
-            <span
-              :class="[
-                'text-xs text-center',
-                status.completed || status.current ? 'text-gray-900 font-medium' : 'text-gray-500',
-              ]"
-            >
-              {{ status.label }}
-            </span>
-          </div>
-        </div>
+          </StepperItem>
+        </Stepper>
 
         <!-- Status Description -->
         <div class="mt-4 p-3 bg-gray-50 rounded-md">
@@ -222,6 +212,13 @@ import { useOrders } from '@/composables/useOrders'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import {
+  Stepper,
+  StepperItem,
+  StepperSeparator,
+  StepperTrigger,
+  StepperTitle,
+} from '@/components/ui/stepper'
+import {
   Calendar,
   Package,
   CheckCircle,
@@ -231,6 +228,7 @@ import {
   ShoppingBag,
   Loader2,
   AlertCircle,
+  Check,
 } from 'lucide-vue-next'
 import type { TransactionStatus } from '@/types/api'
 
@@ -280,9 +278,15 @@ const statusTimeline = computed(() => {
 
   return allStatuses.map((status, index) => ({
     ...status,
-    completed: index <= currentIndex,
+    completed: index < currentIndex,
     current: index === currentIndex,
   }))
+})
+
+const currentStep = computed(() => {
+  if (!order.value) return 0
+  const currentIndex = statusTimeline.value.findIndex((s) => s.current)
+  return currentIndex + 1
 })
 
 // Methods

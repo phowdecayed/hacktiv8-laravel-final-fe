@@ -1,23 +1,23 @@
-<script lang="ts" setup>
-import type { StepperItemProps } from 'reka-ui'
-import type { HTMLAttributes } from 'vue'
-import { reactiveOmit } from '@vueuse/core'
-import { StepperItem, useForwardProps } from 'reka-ui'
-import { cn } from '@/lib/utils'
+<script setup lang="ts">
+import { inject, computed } from 'vue'
 
-const props = defineProps<StepperItemProps & { class?: HTMLAttributes['class'] }>()
+const props = defineProps<{
+  step: number
+}>()
 
-const delegatedProps = reactiveOmit(props, 'class')
+const currentStep = inject(
+  'currentStep',
+  computed(() => 0),
+)
 
-const forwarded = useForwardProps(delegatedProps)
+const state = computed(() => {
+  if (props.step < currentStep.value) return 'completed'
+  if (props.step === currentStep.value) return 'active'
+  return 'inactive'
+})
 </script>
-
 <template>
-  <StepperItem
-    v-slot="slotProps"
-    v-bind="forwarded"
-    :class="cn('flex items-center gap-2 group data-[disabled]:pointer-events-none', props.class)"
-  >
-    <slot v-bind="slotProps" />
-  </StepperItem>
+  <div :data-state="state" class="group relative flex w-full flex-col items-center justify-center">
+    <slot :state="state" />
+  </div>
 </template>

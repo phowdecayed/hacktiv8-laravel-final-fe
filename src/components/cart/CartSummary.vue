@@ -70,7 +70,10 @@ const router = useRouter()
 const { isEmpty, isLoading, getFormattedTotal, clearCart } = useCart()
 const isConfirmOpen = ref(false)
 
+const emit = defineEmits(['checkout'])
+
 const proceedToCheckout = () => {
+  emit('checkout')
   router.push('/checkout')
 }
 

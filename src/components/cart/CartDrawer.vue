@@ -55,7 +55,7 @@
 
       <!-- Footer with Summary -->
       <SheetFooter v-if="!isEmpty" class="mt-auto border-t pt-6">
-        <CartSummary />
+        <CartSummary @checkout="isOpen = false" />
       </SheetFooter>
     </SheetContent>
   </Sheet>
