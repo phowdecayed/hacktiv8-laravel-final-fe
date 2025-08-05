@@ -188,9 +188,7 @@
 
     <!-- Pagination -->
     <div class="flex items-center justify-between">
-      <div class="text-sm text-muted-foreground">
-        Page {{ currentPage }} of {{ totalPages }}
-      </div>
+      <div class="text-sm text-muted-foreground">Page {{ currentPage }} of {{ totalPages }}</div>
 
       <div class="flex items-center space-x-2">
         <Button

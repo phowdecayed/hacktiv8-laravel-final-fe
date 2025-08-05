@@ -6,7 +6,11 @@
       <LoadingSpinner />
     </div>
 
-    <div v-if="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+    <div
+      v-if="error"
+      class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
+      role="alert"
+    >
       <strong class="font-bold">Error:</strong>
       <span class="block sm:inline">{{ error }}</span>
     </div>
@@ -23,13 +27,19 @@
             />
             <h2 class="text-xl font-semibold">{{ user.name }}</h2>
             <p class="text-gray-500">{{ user.email }}</p>
-            <span class="mt-2 px-3 py-1 text-sm font-semibold rounded-full" :class="roleClass(user.role)">
+            <span
+              class="mt-2 px-3 py-1 text-sm font-semibold rounded-full"
+              :class="roleClass(user.role)"
+            >
               {{ user.role }}
             </span>
           </div>
           <div class="mt-6 text-sm text-gray-600">
             <p><strong>Joined:</strong> {{ formatDate(user.created_at) }}</p>
-            <p><strong>Email Verified:</strong> {{ user.email_verified_at ? formatDate(user.email_verified_at) : 'No' }}</p>
+            <p>
+              <strong>Email Verified:</strong>
+              {{ user.email_verified_at ? formatDate(user.email_verified_at) : 'No' }}
+            </p>
           </div>
         </div>
       </div>
@@ -38,12 +48,8 @@
       <div class="md:col-span-2">
         <Tabs default-value="profile" class="bg-white shadow-md rounded-lg p-6">
           <TabsList>
-            <TabsTrigger value="profile">
-              Update Profile
-            </TabsTrigger>
-            <TabsTrigger value="password">
-              Change Password
-            </TabsTrigger>
+            <TabsTrigger value="profile"> Update Profile </TabsTrigger>
+            <TabsTrigger value="password"> Change Password </TabsTrigger>
           </TabsList>
           <TabsContent value="profile">
             <form @submit.prevent="handleUpdateProfile" class="mt-4">
@@ -79,7 +85,9 @@
           <TabsContent value="password">
             <form @submit.prevent="handleChangePassword" class="mt-4">
               <div class="mb-4">
-                <label for="current_password" class="block text-sm font-medium text-gray-700">Current Password</label>
+                <label for="current_password" class="block text-sm font-medium text-gray-700"
+                  >Current Password</label
+                >
                 <input
                   type="password"
                   id="current_password"
@@ -88,7 +96,9 @@
                 />
               </div>
               <div class="mb-4">
-                <label for="new_password" class="block text-sm font-medium text-gray-700">New Password</label>
+                <label for="new_password" class="block text-sm font-medium text-gray-700"
+                  >New Password</label
+                >
                 <input
                   type="password"
                   id="new_password"
@@ -97,7 +107,11 @@
                 />
               </div>
               <div class="mb-4">
-                <label for="new_password_confirmation" class="block text-sm font-medium text-gray-700">Confirm New Password</label>
+                <label
+                  for="new_password_confirmation"
+                  class="block text-sm font-medium text-gray-700"
+                  >Confirm New Password</label
+                >
                 <input
                   type="password"
                   id="new_password_confirmation"

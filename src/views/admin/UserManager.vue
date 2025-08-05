@@ -454,8 +454,7 @@ const userFormSchema: FormSchema = {
       label: 'Confirm Password',
       placeholder: 'Confirm new password',
       required: !editingUser.value,
-      condition: (formData) =>
-        (formData.password && formData.password.length > 0),
+      condition: (formData) => formData.password && formData.password.length > 0,
     },
     {
       name: 'role',

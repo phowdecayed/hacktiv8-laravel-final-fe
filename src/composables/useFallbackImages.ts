@@ -29,7 +29,7 @@ async function fetchFallbackImages() {
       throw new Error('Failed to fetch fallback images')
     }
     const data: FakeStoreProduct[] = await response.json()
-    fallbackImages.value = data.map(p => p.image)
+    fallbackImages.value = data.map((p) => p.image)
   } catch (e: any) {
     error.value = e.message
     console.error('Error fetching fallback images:', e)
