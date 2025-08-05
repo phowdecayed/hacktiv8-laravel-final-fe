@@ -72,6 +72,7 @@ export function useFallbackImages() {
 
   return {
     getProductImage,
+    getFallbackImage,
     isLoading,
     error,
     fetchFallbackImages,
