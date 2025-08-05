@@ -2,7 +2,7 @@
   <Card
     class="group cursor-pointer transition-all duration-200 hover:shadow-lg active:scale-[0.98] select-none"
     :class="{ 'flex flex-row': variant === 'list', 'flex flex-col': variant === 'grid' }"
-    @click="$emit('click', product)"
+    @click="$emit('product-click', product)"
   >
     <div
       class="relative overflow-hidden"
@@ -84,7 +84,7 @@
           size="sm"
           variant="outline"
           class="min-h-[44px] min-w-[44px] active:scale-95 transition-transform"
-          @click.stop="$emit('view-details', product)"
+          @click.stop="$emit('product-details', product)"
         >
           <Eye class="w-4 h-4" />
         </Button>
@@ -109,8 +109,8 @@ interface Props {
 }
 
 interface Emits {
-  (e: 'click', product: Product): void
-  (e: 'view-details', product: Product): void
+  (e: 'product-click', product: Product): void
+  (e: 'product-details', product: Product): void
   (e: 'add-to-cart', product: Product): void
 }
 
