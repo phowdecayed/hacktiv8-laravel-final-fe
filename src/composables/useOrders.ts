@@ -124,7 +124,7 @@ export const useOrders = () => {
       pending: {
         label: 'Pending',
         color: 'bg-yellow-100 text-yellow-800',
-        description: 'Order is being processed',
+        description: 'Order is received and being processed',
       },
       processing: {
         label: 'Processing',
