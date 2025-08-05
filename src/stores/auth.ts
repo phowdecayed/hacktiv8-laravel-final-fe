@@ -1,7 +1,15 @@
 import { defineStore } from 'pinia'
 import { ref, computed, readonly } from 'vue'
-import type { User, AuthResponse, LoginCredentials, RegisterData, ApiResponse } from '@/types/api'
+import type {
+  User,
+  AuthResponse,
+  LoginCredentials,
+  RegisterData,
+  ApiResponse,
+  UpdateUserRequest,
+} from '@/types/api'
 import apiService from '@/lib/api'
+import { adminApiService } from '@/services/api/admin'
 
 export const useAuthStore = defineStore('auth', () => {
   // State
@@ -72,7 +80,7 @@ export const useAuthStore = defineStore('auth', () => {
       const response = await apiService.get<ApiResponse<{ user: User }>>('/user')
       user.value = response.data.user
     } catch (error) {
-      // If user fetch fails, clear auth
+      // If user fetch fails, clear it
       clearAuth()
       throw error
     } finally {
@@ -108,9 +116,34 @@ export const useAuthStore = defineStore('auth', () => {
       const response = await apiService.post<ApiResponse<AuthResponse>>('/refresh')
       setAuth(response.data)
     } catch (error) {
-      // If refresh fails, clear auth
+      // If refresh fails, clear it
       clearAuth()
       throw error
+    } finally {
+      isLoading.value = false
+    }
+  }
+
+  const updateProfile = async (userData: UpdateUserRequest): Promise<void> => {
+    if (!user.value) throw new Error('User not authenticated')
+    isLoading.value = true
+    try {
+      const response = await adminApiService.updateUser(user.value.id, userData)
+      user.value = response.data
+    } finally {
+      isLoading.value = false
+    }
+  }
+
+  const changePassword = async (passwordData: {
+    current_password: string
+    new_password: string
+    new_password_confirmation: string
+  }): Promise<void> => {
+    if (!user.value) throw new Error('User not authenticated')
+    isLoading.value = true
+    try {
+      await apiService.post('/change-password', passwordData)
     } finally {
       isLoading.value = false
     }
@@ -134,5 +167,7 @@ export const useAuthStore = defineStore('auth', () => {
     checkAuth,
     refreshToken,
     clearAuth,
+    updateProfile,
+    changePassword,
   }
 })

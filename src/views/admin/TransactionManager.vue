@@ -168,187 +168,46 @@
 
     <!-- Transactions Table -->
     <Card>
-      <CardContent class="p-0">
-        <div class="overflow-x-auto">
-          <table class="w-full">
-            <thead class="bg-gray-50 border-b">
-              <tr>
-                <th
-                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  Transaction
-                </th>
-                <th
-                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  Customer
-                </th>
-                <th
-                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  Items
-                </th>
-                <th
-                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  Total
-                </th>
-                <th
-                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  Status
-                </th>
-                <th
-                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  Date
-                </th>
-                <th
-                  class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
-              <tr v-if="isLoading" v-for="n in 5" :key="n">
-                <td v-for="col in 7" :key="col" class="px-6 py-4">
-                  <div class="h-4 bg-gray-200 rounded animate-pulse"></div>
-                </td>
-              </tr>
-              <tr v-else-if="!hasTransactions">
-                <td colspan="7" class="px-6 py-12 text-center text-gray-500">
-                  <ShoppingCart class="h-12 w-12 mx-auto mb-4 text-gray-300" />
-                  <p class="text-lg font-medium">No transactions found</p>
-                  <p class="text-sm">Try adjusting your filters or check back later.</p>
-                </td>
-              </tr>
-              <tr
-                v-else
-                v-for="transaction in transactions"
-                :key="transaction.id"
-                class="hover:bg-gray-50"
-              >
-                <td class="px-6 py-4">
-                  <div class="flex flex-col">
-                    <span class="text-sm font-medium text-gray-900">#{{ transaction.id }}</span>
-                    <span v-if="transaction.notes" class="text-xs text-gray-500 mt-1">
-                      {{ transaction.notes }}
-                    </span>
-                  </div>
-                </td>
-                <td class="px-6 py-4">
-                  <div class="flex flex-col">
-                    <span class="text-sm font-medium text-gray-900">{{
-                      transaction.user.name
-                    }}</span>
-                    <span class="text-xs text-gray-500">{{ transaction.user.email }}</span>
-                  </div>
-                </td>
-                <td class="px-6 py-4">
-                  <span class="text-sm text-gray-900">
-                    {{ getTransactionItemCount(transaction) }} items
-                  </span>
-                </td>
-                <td class="px-6 py-4">
-                  <span class="text-sm font-medium text-gray-900">
-                    {{ formatCurrency(transaction.total_amount) }}
-                  </span>
-                </td>
-                <td class="px-6 py-4">
-                  <Badge :class="getStatusInfo(transaction.status).color">
-                    {{ getStatusInfo(transaction.status).icon }}
-                    {{ getStatusInfo(transaction.status).label }}
-                  </Badge>
-                </td>
-                <td class="px-6 py-4">
-                  <span class="text-sm text-gray-900">
-                    {{ formatDate(transaction.created_at) }}
-                  </span>
-                </td>
-                <td class="px-6 py-4 text-right">
-                  <div class="flex items-center justify-end gap-2">
-                    <Button variant="outline" size="sm" @click="viewTransaction(transaction.id)">
-                      <Eye class="h-4 w-4" />
-                    </Button>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger as-child>
-                        <Button variant="outline" size="sm">
-                          <MoreHorizontal class="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem @click="viewTransaction(transaction.id)">
-                          <Eye class="h-4 w-4 mr-2" />
-                          View Details
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem
-                          v-for="status in getAvailableStatusTransitions(transaction.status)"
-                          :key="status"
-                          @click="showStatusUpdateDialog(transaction, status)"
-                        >
-                          <span class="mr-2">{{ getStatusInfo(status).icon }}</span>
-                          Mark as {{ getStatusInfo(status).label }}
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator v-if="canCancelOrRefund(transaction.status)" />
-                        <DropdownMenuItem
-                          v-if="
-                            transaction.status !== 'cancelled' && transaction.status !== 'refunded'
-                          "
-                          @click="showCancelDialog(transaction)"
-                          class="text-red-600"
-                        >
-                          <X class="h-4 w-4 mr-2" />
-                          Cancel Transaction
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          v-if="['delivered', 'completed'].includes(transaction.status)"
-                          @click="showRefundDialog(transaction)"
-                          class="text-orange-600"
-                        >
-                          <RefreshCw class="h-4 w-4 mr-2" />
-                          Refund Transaction
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+      <CardContent class="p-6">
+        <DataTable
+          :data="transactions"
+          :columns="tableColumns"
+          :loading="isLoading"
+          :selectable="false"
+          :actions="tableActions"
+          @action="handleAction"
+        >
+          <!-- Custom cell renderers -->
+          <template #cell-id="{ item }">
+            <span class="font-medium">#{{ item.id }}</span>
+          </template>
 
-        <!-- Pagination -->
-        <div v-if="pagination.last_page > 1" class="px-6 py-4 border-t">
-          <div class="flex items-center justify-between">
-            <div class="text-sm text-gray-700">
-              Showing {{ (pagination.current_page - 1) * pagination.per_page + 1 }} to
-              {{ Math.min(pagination.current_page * pagination.per_page, pagination.total) }} of
-              {{ pagination.total }} results
+          <template #cell-customer="{ item }">
+            <div>
+              <p class="font-medium">{{ item.user.name }}</p>
+              <p class="text-sm text-muted-foreground">{{ item.user.email }}</p>
             </div>
-            <div class="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                :disabled="pagination.current_page === 1"
-                @click="goToPage(pagination.current_page - 1)"
-              >
-                <ChevronLeft class="h-4 w-4" />
-                Previous
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                :disabled="pagination.current_page === pagination.last_page"
-                @click="goToPage(pagination.current_page + 1)"
-              >
-                Next
-                <ChevronRight class="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-        </div>
+          </template>
+
+          <template #cell-items="{ item }">
+            <span>{{ getTransactionItemCount(item) }} items</span>
+          </template>
+
+          <template #cell-total_amount="{ item }">
+            <span class="font-medium">{{ formatCurrency(item.total_amount) }}</span>
+          </template>
+
+          <template #cell-status="{ item }">
+            <Badge :class="getStatusInfo(item.status).color">
+              {{ getStatusInfo(item.status).icon }}
+              {{ getStatusInfo(item.status).label }}
+            </Badge>
+          </template>
+
+          <template #cell-created_at="{ item }">
+            {{ formatDate(item.created_at) }}
+          </template>
+        </DataTable>
       </CardContent>
     </Card>
 
@@ -454,7 +313,7 @@ import { onMounted, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useTransactions } from '@/composables/useTransactions'
 import { debounce } from 'lodash-es'
-import type { Transaction, TransactionStatus } from '@/types'
+import type { Transaction, TransactionStatus, TableColumn, TableAction } from '@/types'
 
 // UI Components
 import { Button } from '@/components/ui/button'
@@ -485,6 +344,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import DataTable from '@/components/admin/DataTable.vue'
 
 // Icons
 import {
@@ -499,6 +359,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Loader2,
+  Trash2,
 } from 'lucide-vue-next'
 
 const router = useRouter()
@@ -519,6 +380,7 @@ const {
   updateTransactionStatus,
   cancelTransaction,
   refundTransaction,
+  deleteTransaction,
   updateFilters,
   clearFilters,
   goToPage,
@@ -548,6 +410,21 @@ const refundDialog = reactive({
   reason: '',
 })
 
+// Table configuration
+const tableColumns: TableColumn[] = [
+  { key: 'id', label: 'Transaction', sortable: true },
+  { key: 'customer', label: 'Customer', sortable: true },
+  { key: 'items', label: 'Items', sortable: false },
+  { key: 'total_amount', label: 'Total', sortable: true, align: 'right' },
+  { key: 'status', label: 'Status', sortable: true },
+  { key: 'created_at', label: 'Date', sortable: true },
+]
+
+const tableActions: TableAction[] = [
+  { key: 'view', label: 'View Details', icon: Eye },
+  { key: 'delete', label: 'Delete', icon: Trash2, variant: 'destructive' },
+]
+
 // Methods
 const refreshTransactions = () => {
   fetchTransactions()
@@ -559,6 +436,17 @@ const debouncedSearch = debounce(() => {
 
 const viewTransaction = (id: number) => {
   router.push(`/admin/transactions/${id}`)
+}
+
+const handleAction = async ({ action, item }: { action: string; item: Transaction }) => {
+  switch (action) {
+    case 'view':
+      viewTransaction(item.id)
+      break
+    case 'delete':
+      await deleteTransaction(item.id)
+      break
+  }
 }
 
 const showStatusUpdateDialog = (transaction: Transaction, newStatus: TransactionStatus) => {

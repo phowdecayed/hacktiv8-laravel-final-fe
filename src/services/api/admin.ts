@@ -184,6 +184,10 @@ export class AdminApiService {
     return apiService.post(`/transactions/${id}/refund`, { reason })
   }
 
+  async deleteTransaction(transactionId: number): Promise<ApiResponse<void>> {
+    return apiService.delete(`/transactions/${transactionId}`)
+  }
+
   // Audit Trail
   async getAuditTrail(filters?: AuditTrailFilters): Promise<AuditTrailResponse> {
     return apiService.get('/audit-trails', filters)

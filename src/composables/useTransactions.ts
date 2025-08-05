@@ -199,6 +199,28 @@ export const useTransactions = () => {
     }
   }
 
+  const deleteTransaction = async (id: number): Promise<boolean> => {
+    isUpdating.value = true
+    error.value = null
+
+    try {
+      await adminApiService.deleteTransaction(id)
+
+      // Update local state
+      transactions.value = transactions.value.filter((t) => t.id !== id)
+
+      toast.success('Transaction deleted successfully')
+      return true
+    } catch (err: any) {
+      error.value = err.message || 'Failed to delete transaction'
+      toast.error('Failed to delete transaction')
+      console.error('Error deleting transaction:', err)
+      return false
+    } finally {
+      isUpdating.value = false
+    }
+  }
+
   // Filter and pagination utilities
   const updateFilters = (newFilters: Partial<AdminTransactionFilters>) => {
     Object.assign(filters, newFilters, { page: 1 })
@@ -351,6 +373,7 @@ export const useTransactions = () => {
     updateTransactionStatus,
     cancelTransaction,
     refundTransaction,
+    deleteTransaction,
     updateFilters,
     clearFilters,
     goToPage,
