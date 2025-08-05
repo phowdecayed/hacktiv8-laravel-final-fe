@@ -29,8 +29,8 @@
         <!-- Main Image -->
         <div class="aspect-square w-full bg-muted rounded-lg overflow-hidden">
           <img
-            v-if="selectedImage"
-            :src="selectedImage.image_path"
+            v-if="mainImageSrc"
+            :src="mainImageSrc"
             :alt="product.name"
             class="w-full h-full object-cover"
           />
@@ -52,7 +52,7 @@
             @click="selectedImageIndex = index"
           >
             <img
-              :src="image.image_path"
+              :src="getImageUrl(image.image_path)"
               :alt="`${product.name} ${index + 1}`"
               class="w-full h-full object-cover"
             />
@@ -224,6 +224,7 @@ import {
 } from '@/components/ui/breadcrumb'
 import { Package, ShoppingCart, Heart, Plus, Minus, AlertCircle } from 'lucide-vue-next'
 import type { Product } from '@/types/api'
+import { useFallbackImages } from '@/composables/useFallbackImages'
 
 interface Props {
   product: Product | null
@@ -252,11 +253,29 @@ const emit = defineEmits<Emits>()
 const quantity = ref(1)
 const selectedImageIndex = ref(0)
 const isAddingToCart = ref(false)
+const { getFallbackImage } = useFallbackImages()
+
+const getImageUrl = (imagePath: string) => {
+  if (!imagePath) return ''
+  const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
+  if (imagePath.startsWith('http')) {
+    return imagePath
+  }
+  return `${baseUrl}/storage/${imagePath}`
+}
 
 // Computed properties
-const selectedImage = computed(() => {
-  if (!props.product?.images || props.product.images.length === 0) return null
-  return props.product.images[selectedImageIndex.value]
+const mainImageSrc = computed(() => {
+  if (props.product?.images && props.product.images.length > 0) {
+    const image = props.product.images[selectedImageIndex.value]
+    if (image && image.image_path) {
+      return getImageUrl(image.image_path)
+    }
+  }
+  if (props.product) {
+    return getFallbackImage(props.product.id)
+  }
+  return ''
 })
 
 const stockBadgeVariant = computed(() => {

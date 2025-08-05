@@ -12,19 +12,11 @@
       }"
     >
       <img
-        v-if="productImage"
-        :src="productImage"
+        :src="getProductImage(product)"
         :alt="product.name"
         class="w-full h-full object-cover transition-transform duration-200 group-hover:scale-105"
         loading="lazy"
       />
-      <div
-        v-else
-        class="w-full h-full bg-muted flex items-center justify-center text-muted-foreground"
-      >
-        <Package class="w-12 h-12" />
-      </div>
-
       <!-- Stock status overlay -->
       <div
         v-if="product.stock === 0"
@@ -102,12 +94,13 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { ref } from 'vue'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Package, ShoppingCart, Eye } from 'lucide-vue-next'
+import { ShoppingCart, Eye } from 'lucide-vue-next'
 import type { Product } from '@/types/api'
+import { useFallbackImages } from '@/composables/useFallbackImages'
 
 interface Props {
   product: Product
@@ -128,14 +121,9 @@ const props = withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits<Emits>()
 
-const isAddingToCart = ref(false)
+const { getProductImage } = useFallbackImages()
 
-const productImage = computed(() => {
-  if (props.product.images && props.product.images.length > 0) {
-    return props.product.images[0].image_path
-  }
-  return null
-})
+const isAddingToCart = ref(false)
 
 const formatPrice = (price: string) => {
   const numPrice = parseFloat(price)
