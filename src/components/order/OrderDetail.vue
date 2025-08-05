@@ -32,21 +32,30 @@
       <!-- Order Status Timeline -->
       <div class="border-t pt-6">
         <h3 class="font-semibold mb-4">Order Status</h3>
-        <div class="flex items-center justify-between">
+        <div class="relative flex items-center justify-between">
+          <!-- Connecting Line -->
+          <div class="absolute left-0 top-1/2 -translate-y-1/2 h-0.5 w-full bg-gray-200" />
           <div
-            v-for="(status, index) in statusTimeline"
+            class="absolute left-0 top-1/2 -translate-y-1/2 h-0.5 bg-green-300"
+            :style="{
+              width: `${(statusTimeline.findIndex((s) => s.current) / (statusTimeline.length - 1)) * 100}%`,
+            }"
+          />
+
+          <div
+            v-for="status in statusTimeline"
             :key="status.key"
-            class="flex flex-col items-center flex-1"
+            class="flex flex-col items-center flex-1 relative z-10"
           >
             <!-- Status Icon -->
             <div
               :class="[
-                'w-10 h-10 rounded-full flex items-center justify-center mb-2',
+                'w-10 h-10 rounded-full flex items-center justify-center mb-2 border-2',
                 status.completed
-                  ? 'bg-green-100 text-green-600'
+                  ? 'bg-green-100 border-green-300 text-green-600'
                   : status.current
-                    ? 'bg-blue-100 text-blue-600'
-                    : 'bg-gray-100 text-gray-400',
+                    ? 'bg-blue-100 border-blue-300 text-blue-600'
+                    : 'bg-gray-100 border-gray-200 text-gray-400',
               ]"
             >
               <CheckCircle v-if="status.completed" class="w-5 h-5" />
@@ -63,17 +72,6 @@
             >
               {{ status.label }}
             </span>
-
-            <!-- Connecting Line -->
-            <div
-              v-if="index < statusTimeline.length - 1"
-              :class="[
-                'absolute h-0.5 top-5 transform translate-y-0.5',
-                'w-full max-w-[calc(100%-2.5rem)]',
-                status.completed ? 'bg-green-300' : 'bg-gray-200',
-              ]"
-              :style="{ left: `${(100 / statusTimeline.length) * (index + 0.5)}%` }"
-            />
           </div>
         </div>
 
